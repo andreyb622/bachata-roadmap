@@ -325,13 +325,6 @@
       window.__bInfo = openInfo;
       window.__bCloseInfo = closeInfo;
 
-      function registerServiceWorker() {
-        if (!('serviceWorker' in navigator)) return;
-        window.addEventListener('load', function () {
-          navigator.serviceWorker.register('./sw.js').catch(function () { /* ignore */ });
-        });
-      }
-
       function markStandalone() {
         var isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
           window.navigator.standalone === true;
@@ -344,7 +337,6 @@
         try {
           document.documentElement.className += ' js-ready';
           markStandalone();
-          registerServiceWorker();
           storageOk = testStorage();
           bindInteractions();
 
