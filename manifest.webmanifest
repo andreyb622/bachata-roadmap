@@ -1,0 +1,26 @@
+{
+  "name": "Бачата — программа",
+  "short_name": "Бачата",
+  "description": "Программа занятий по бачате с чеклистами и прогрессом",
+  "start_url": "./programma.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f0a18",
+  "theme_color": "#1a1028",
+  "lang": "ru",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

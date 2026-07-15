@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="0G0B0">
+  <rect width="512" height="512" rx="108" fill="#0f0a18"/>
+  <rect x="32" y="32" width="448" height="448" rx="88" fill="none" stroke="#e84393" stroke-width="8" opacity="0.35"/>
+  <circle cx="256" cy="210" r="96" fill="#e84393" opacity="0.22"/>
+  <path d="M176 300c28-52 56-78 80-78s52 26 80 78" fill="none" stroke="#fd79a8" stroke-width="28" stroke-linecap="round"/>
+  <circle cx="196" cy="188" r="18" fill="#fd79a8"/>
+  <circle cx="316" cy="188" r="18" fill="#fd79a8"/>
+  <text x="256" y="420" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,system-ui,sans-serif" font-size="72" font-weight="700" fill="#f5f0fa">10G0B0</text>
+</svg>
