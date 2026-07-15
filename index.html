@@ -24,16 +24,45 @@
     Откройте <b>andreyb622.github.io/bachata-roadmap</b> в Safari → <b>Поделиться → На экран «Домой»</b>
   </div>
   <header class="header header--split">
-    <div>
-      <div class="header__title">Бачата</div>
+    <div class="header__grow">
+      <div class="header__title" id="headerTitle">Бачата</div>
       <div class="header__subtitle" id="headerSubtitle">Программа занятий</div>
     </div>
     <div class="header__actions">
-      <a href="elementy.html" class="header__btn" title="Элементы по блокам" aria-label="Элементы по блокам">📑</a>
-      <button type="button" class="header__btn" id="infoBtn" title="О приложении" aria-label="О приложении" onclick="window.__bInfo && window.__bInfo()">ℹ</button>
-      <button type="button" class="header__btn" id="resetBtn" title="Сбросить прогресс" aria-label="Сбросить прогресс" onclick="window.__bReset && window.__bReset()">↺</button>
+      <button type="button" class="header__btn" id="menuBtn" title="Меню" aria-label="Меню" onclick="window.__bOpenSidebar && window.__bOpenSidebar()">☰</button>
     </div>
   </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="window.__bCloseSidebar && window.__bCloseSidebar()">
+    <aside class="sidebar" role="dialog" aria-labelledby="sidebarTitle" onclick="event.stopPropagation()">
+      <div class="sidebar__header">
+        <h2 class="sidebar__title" id="sidebarTitle">Меню</h2>
+        <button type="button" class="sidebar__close" aria-label="Закрыть" onclick="window.__bCloseSidebar && window.__bCloseSidebar()">✕</button>
+      </div>
+      <nav class="sidebar__nav">
+        <button type="button" class="sidebar__item" onclick="window.__bMenuEntities && window.__bMenuEntities()">
+          <span class="sidebar__icon">👥</span>
+          <span class="sidebar__label">Ученики и группы</span>
+        </button>
+        <button type="button" class="sidebar__item" onclick="window.__bMenuCreateEntity && window.__bMenuCreateEntity()">
+          <span class="sidebar__icon">＋</span>
+          <span class="sidebar__label">Новый ученик / группа</span>
+        </button>
+        <a href="elementy.html" class="sidebar__item" onclick="window.__bCloseSidebar && window.__bCloseSidebar()">
+          <span class="sidebar__icon">📑</span>
+          <span class="sidebar__label">Элементы по блокам</span>
+        </a>
+        <button type="button" class="sidebar__item" onclick="window.__bMenuInfo && window.__bMenuInfo()">
+          <span class="sidebar__icon">ℹ</span>
+          <span class="sidebar__label">О приложении</span>
+        </button>
+        <button type="button" class="sidebar__item sidebar__item--danger" onclick="window.__bMenuReset && window.__bMenuReset()">
+          <span class="sidebar__icon">↺</span>
+          <span class="sidebar__label">Сбросить прогресс</span>
+        </button>
+      </nav>
+    </aside>
+  </div>
 
   <div class="info-overlay" id="infoOverlay" onclick="window.__bCloseInfo && window.__bCloseInfo()">
     <div class="info-sheet" role="dialog" aria-labelledby="infoTitle" onclick="event.stopPropagation()">
@@ -54,7 +83,7 @@
         <ul class="info-block__list">
           <li><strong>3 мес / 3–5 / 6+</strong> — программа по этапам обучения</li>
           <li><strong>Поиск</strong> — быстрый поиск элемента по названию или разделу</li>
-          <li><strong>📑 Элементы по блокам</strong> — сводный справочник по 5 модулям (кнопка в шапке)</li>
+          <li><strong>📑 Элементы по блокам</strong> — сводный справочник по 5 модулям (в меню ☰)</li>
         </ul>
       </div>
 
@@ -84,9 +113,20 @@
       </div>
 
       <div class="info-block">
+        <div class="info-block__title">Ученики и группы</div>
+        <ul class="info-block__list">
+          <li>В меню <strong>☰</strong> — список учеников и групп, создание, справочник и сброс</li>
+          <li><strong>Ученики и группы</strong> — переключение, редактирование и удаление</li>
+          <li><strong>Новый ученик / группа</strong> — отдельный прогресс для каждого</li>
+          <li>Имя задаёте сами — это может быть человек или название группы</li>
+          <li>У каждого свой прогресс и своя последняя вкладка</li>
+        </ul>
+      </div>
+
+      <div class="info-block">
         <div class="info-block__title">Сохранение</div>
         <p class="info-block__text">
-          Прогресс и последняя вкладка сохраняются автоматически на устройстве. После первого открытия приложение работает без интернета.
+          Прогресс, список учеников и последняя вкладка сохраняются автоматически на устройстве. После первого открытия приложение работает без интернета.
         </p>
       </div>
 
@@ -100,8 +140,35 @@
       <div class="info-block">
         <div class="info-block__title">Сброс прогресса</div>
         <p class="info-block__text">
-          Кнопка <strong>↺</strong> в шапке сбрасывает все отметки после подтверждения.
+          Кнопка <strong>↺</strong> в меню сбрасывает отметки только для <strong>текущего</strong> выбранного ученика или группы после подтверждения.
         </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-overlay" id="entitiesOverlay" onclick="window.__bCloseEntities && window.__bCloseEntities()">
+    <div class="info-sheet" role="dialog" aria-labelledby="entitiesTitle" onclick="event.stopPropagation()">
+      <div class="info-sheet__header">
+        <h2 class="info-sheet__title" id="entitiesTitle">Ученики и группы</h2>
+        <button type="button" class="info-sheet__close" aria-label="Закрыть" onclick="window.__bCloseEntities && window.__bCloseEntities()">✕</button>
+      </div>
+      <div class="entities-list" id="entitiesList"></div>
+    </div>
+  </div>
+
+  <div class="info-overlay" id="entityFormOverlay" onclick="window.__bCloseEntityForm && window.__bCloseEntityForm()">
+    <div class="info-sheet" role="dialog" aria-labelledby="entityFormTitle" onclick="event.stopPropagation()">
+      <div class="info-sheet__header">
+        <h2 class="info-sheet__title" id="entityFormTitle">Новый ученик / группа</h2>
+        <button type="button" class="info-sheet__close" aria-label="Закрыть" onclick="window.__bCloseEntityForm && window.__bCloseEntityForm()">✕</button>
+      </div>
+      <div class="entity-form">
+        <label class="entity-form__label" for="entityFormInput">Имя или название группы</label>
+        <input class="entity-form__input" id="entityFormInput" type="text" maxlength="50" placeholder="Например: Маша или Группа А" autocomplete="off" autocorrect="off" spellcheck="false">
+        <div class="entity-form__actions">
+          <button type="button" class="entity-form__btn entity-form__btn--secondary" onclick="window.__bCloseEntityForm && window.__bCloseEntityForm()">Отмена</button>
+          <button type="button" class="entity-form__btn entity-form__btn--primary" id="entityFormSaveBtn" onclick="window.__bSaveEntityForm && window.__bSaveEntityForm()">Создать</button>
+        </div>
       </div>
     </div>
   </div>

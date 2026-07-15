@@ -1,12 +1,25 @@
       'use strict';
 
-      var STORAGE_KEY = 'bachata-progress-v1';
-      var TAB_KEY = 'bachata-tab-v1';
+      var STATE_KEY = 'bachata-state-v2';
+      var OLD_PROGRESS_KEY = 'bachata-progress-v1';
+      var OLD_TAB_KEY = 'bachata-tab-v1';
       var PERIOD_NAMES = ['3 месяца', '3–5 месяцев', '6+ месяцев'];
+      var DEFAULT_ENTITY_NAME = 'Мой прогресс';
+      var MAX_ENTITY_NAME_LEN = 50;
 
+      var state = {
+        version: 2,
+        entities: [],
+        activeId: '',
+        progress: {},
+        tabs: {}
+      };
       var progress = {};
       var allItems = [];
       var storageOk = false;
+      var currentTabIndex = 0;
+      var entityFormMode = 'create';
+      var entityFormEditId = null;
 
       /* Совместимость с iPhone/Safari: не полагаемся на Element.closest(). */
       function matchesSelector(el, selector) {
@@ -61,14 +74,114 @@
         delete memStore[key];
       }
 
-      function loadProgress() {
+      function generateId() {
+        return 'e_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 8);
+      }
+
+      function createDefaultState() {
+        var id = generateId();
+        return {
+          version: 2,
+          entities: [{ id: id, name: DEFAULT_ENTITY_NAME, createdAt: new Date().toISOString() }],
+          activeId: id,
+          progress: {},
+          tabs: {}
+        };
+      }
+
+      function migrateFromV1() {
+        var oldProgress = {};
+        var oldTab = '0';
         try {
-          var raw = storageGet(STORAGE_KEY);
-          progress = raw ? JSON.parse(raw) : {};
+          var raw = storageGet(OLD_PROGRESS_KEY);
+          if (raw) oldProgress = JSON.parse(raw);
+        } catch (e) { /* ignore */ }
+        var savedTab = storageGet(OLD_TAB_KEY);
+        if (savedTab !== null && savedTab !== '') oldTab = savedTab;
+
+        var id = generateId();
+        state = {
+          version: 2,
+          entities: [{ id: id, name: DEFAULT_ENTITY_NAME, createdAt: new Date().toISOString() }],
+          activeId: id,
+          progress: {},
+          tabs: {}
+        };
+        state.progress[id] = oldProgress;
+        state.tabs[id] = oldTab;
+        cleanupOrphanProgressForEntity(id);
+        saveState();
+        storageRemove(OLD_PROGRESS_KEY);
+        storageRemove(OLD_TAB_KEY);
+      }
+
+      function loadState() {
+        try {
+          var raw = storageGet(STATE_KEY);
+          if (raw) {
+            state = JSON.parse(raw);
+            if (!state.entities || !state.entities.length) {
+              state = createDefaultState();
+              saveState();
+            }
+            if (!state.progress) state.progress = {};
+            if (!state.tabs) state.tabs = {};
+            if (!state.activeId || !getEntityById(state.activeId)) {
+              state.activeId = state.entities[0].id;
+              saveState();
+            }
+          } else if (storageGet(OLD_PROGRESS_KEY)) {
+            migrateFromV1();
+          } else {
+            state = createDefaultState();
+            saveState();
+          }
         } catch (e) {
-          progress = {};
+          state = createDefaultState();
         }
+        syncProgressFromState();
+      }
+
+      function saveState() {
+        try {
+          storageSet(STATE_KEY, JSON.stringify(state));
+        } catch (e) { /* ignore */ }
+      }
+
+      function syncProgressFromState() {
+        var activeProgress = state.progress[state.activeId];
+        progress = activeProgress ? Object.assign({}, activeProgress) : {};
         cleanupOrphanProgress();
+      }
+
+      function syncProgressToState() {
+        state.progress[state.activeId] = Object.assign({}, progress);
+        saveState();
+      }
+
+      function getEntityById(id) {
+        for (var i = 0; i < state.entities.length; i++) {
+          if (state.entities[i].id === id) return state.entities[i];
+        }
+        return null;
+      }
+
+      function getActiveEntity() {
+        return getEntityById(state.activeId);
+      }
+
+      function cleanupOrphanProgressForEntity(entityId) {
+        var entityProgress = state.progress[entityId];
+        if (!entityProgress) return;
+        var keys = Object.keys(entityProgress);
+        var changed = false;
+        for (var i = 0; i < keys.length; i++) {
+          if (keys[i].charAt(0) === '3' && keys[i].indexOf('-') !== -1) {
+            delete entityProgress[keys[i]];
+            changed = true;
+          }
+        }
+        if (changed) saveState();
       }
 
       function cleanupOrphanProgress() {
@@ -80,13 +193,11 @@
             changed = true;
           }
         }
-        if (changed) saveProgress();
+        if (changed) syncProgressToState();
       }
 
       function saveProgress() {
-        try {
-          storageSet(STORAGE_KEY, JSON.stringify(progress));
-        } catch (e) { /* ignore */ }
+        syncProgressToState();
       }
 
       function applyProgress() {
@@ -101,6 +212,27 @@
           }
         }
         updateCounts();
+      }
+
+      function getEntityProgressPct(entityId) {
+        var entityProgress = state.progress[entityId] || {};
+        var total = allItems.length;
+        if (!total) return 0;
+        var done = 0;
+        for (var i = 0; i < allItems.length; i++) {
+          if (entityProgress[allItems[i].id]) done++;
+        }
+        return Math.round((done / total) * 100);
+      }
+
+      function updateHeaderSubtitle() {
+        var title = document.getElementById('headerTitle');
+        var subtitle = document.getElementById('headerSubtitle');
+        var entity = getActiveEntity();
+        var entityName = entity ? entity.name : DEFAULT_ENTITY_NAME;
+        var tabLabel = currentTabIndex < 3 ? PERIOD_NAMES[currentTabIndex] : 'Поиск';
+        if (title) title.textContent = 'Бачата · ' + entityName;
+        if (subtitle) subtitle.textContent = tabLabel;
       }
 
       function updateCounts() {
@@ -145,6 +277,7 @@
       }
 
       function switchTab(index) {
+        currentTabIndex = index;
         var tabs = document.querySelectorAll('.tab');
         var panels = document.querySelectorAll('.panel');
         for (var i = 0; i < tabs.length; i++) {
@@ -163,11 +296,9 @@
             panels[p].classList.remove('active');
           }
         }
-        var subtitle = document.getElementById('headerSubtitle');
-        if (subtitle) {
-          subtitle.textContent = index < 3 ? PERIOD_NAMES[index] : 'Поиск по элементам';
-        }
-        storageSet(TAB_KEY, String(index));
+        state.tabs[state.activeId] = String(index);
+        saveState();
+        updateHeaderSubtitle();
 
         var main = document.querySelector('.main');
         if (main) main.scrollTop = 0;
@@ -263,6 +394,212 @@
         searchResults.innerHTML = html;
       }
 
+      /* ── Управление учениками / группами ── */
+
+      function renderEntitiesList() {
+        var listEl = document.getElementById('entitiesList');
+        if (!listEl) return;
+
+        if (!state.entities.length) {
+          listEl.innerHTML = '<div class="entities-empty">Пока никого нет.<br>Откройте меню <strong>☰</strong> и нажмите «Новый ученик / группа».</div>';
+          return;
+        }
+
+        var html = '';
+        for (var i = 0; i < state.entities.length; i++) {
+          var entity = state.entities[i];
+          var isActive = entity.id === state.activeId;
+          var pct = getEntityProgressPct(entity.id);
+          html += '<div class="entities-item' + (isActive ? ' entities-item--active' : '') + '" data-entity-id="' + entity.id + '">' +
+            '<button type="button" class="entities-item__main" onclick="window.__bSwitchEntity && window.__bSwitchEntity(\'' + entity.id + '\')">' +
+              '<span class="entities-item__name">' + escapeHtml(entity.name) + '</span>' +
+              '<span class="entities-item__pct">' + pct + '%</span>' +
+              (isActive ? '<span class="entities-item__badge">активен</span>' : '') +
+            '</button>' +
+            '<div class="entities-item__actions">' +
+              '<button type="button" class="entities-item__btn" title="Редактировать" aria-label="Редактировать" onclick="event.stopPropagation(); window.__bEditEntity && window.__bEditEntity(\'' + entity.id + '\')">✏</button>' +
+              '<button type="button" class="entities-item__btn entities-item__btn--danger" title="Удалить" aria-label="Удалить" onclick="event.stopPropagation(); window.__bDeleteEntity && window.__bDeleteEntity(\'' + entity.id + '\')">🗑</button>' +
+            '</div>' +
+          '</div>';
+        }
+        listEl.innerHTML = html;
+      }
+
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      }
+
+      function openEntitiesSheet() {
+        renderEntitiesList();
+        var overlay = document.getElementById('entitiesOverlay');
+        if (!overlay) return;
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeEntitiesSheet() {
+        var overlay = document.getElementById('entitiesOverlay');
+        if (!overlay) return;
+        overlay.classList.remove('show');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function openEntityForm(mode, entityId) {
+        entityFormMode = mode || 'create';
+        entityFormEditId = entityId || null;
+
+        var overlay = document.getElementById('entityFormOverlay');
+        var titleEl = document.getElementById('entityFormTitle');
+        var inputEl = document.getElementById('entityFormInput');
+        var saveBtn = document.getElementById('entityFormSaveBtn');
+        if (!overlay || !inputEl) return;
+
+        if (titleEl) {
+          titleEl.textContent = mode === 'edit' ? 'Редактировать' : 'Новый ученик / группа';
+        }
+        if (saveBtn) {
+          saveBtn.textContent = mode === 'edit' ? 'Сохранить' : 'Создать';
+        }
+
+        if (mode === 'edit' && entityId) {
+          var entity = getEntityById(entityId);
+          inputEl.value = entity ? entity.name : '';
+        } else {
+          inputEl.value = '';
+        }
+
+        closeEntitiesSheet();
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        setTimeout(function () {
+          inputEl.focus();
+          inputEl.select();
+        }, 100);
+      }
+
+      function closeEntityForm() {
+        var overlay = document.getElementById('entityFormOverlay');
+        if (!overlay) return;
+        overlay.classList.remove('show');
+        document.body.style.overflow = 'hidden';
+        entityFormMode = 'create';
+        entityFormEditId = null;
+      }
+
+      function validateEntityName(name) {
+        var trimmed = name.trim();
+        if (!trimmed) {
+          showToast('Введите имя или название');
+          return null;
+        }
+        if (trimmed.length > MAX_ENTITY_NAME_LEN) {
+          showToast('Не более ' + MAX_ENTITY_NAME_LEN + ' символов');
+          return null;
+        }
+        return trimmed;
+      }
+
+      function saveEntityForm() {
+        var inputEl = document.getElementById('entityFormInput');
+        if (!inputEl) return;
+        var name = validateEntityName(inputEl.value);
+        if (!name) return;
+
+        if (entityFormMode === 'edit' && entityFormEditId) {
+          updateEntity(entityFormEditId, name);
+        } else {
+          createEntity(name);
+        }
+        closeEntityForm();
+      }
+
+      function createEntity(name) {
+        var id = generateId();
+        state.entities.push({
+          id: id,
+          name: name,
+          createdAt: new Date().toISOString()
+        });
+        state.progress[id] = {};
+        state.tabs[id] = '0';
+        state.activeId = id;
+        saveState();
+        syncProgressFromState();
+        applyProgress();
+        switchTab(0);
+        showToast('Создано: ' + name);
+      }
+
+      function updateEntity(id, name) {
+        var entity = getEntityById(id);
+        if (!entity) return;
+        entity.name = name;
+        saveState();
+        updateHeaderSubtitle();
+        renderEntitiesList();
+        showToast('Имя обновлено');
+      }
+
+      function deleteEntity(id) {
+        if (state.entities.length <= 1) {
+          showToast('Нельзя удалить последнего');
+          return;
+        }
+        var entity = getEntityById(id);
+        if (!entity) return;
+        if (!confirm('Удалить «' + entity.name + '»? Прогресс будет потерян.')) return;
+
+        var wasActive = state.activeId === id;
+        state.entities = state.entities.filter(function (e) { return e.id !== id; });
+        delete state.progress[id];
+        delete state.tabs[id];
+
+        if (wasActive) {
+          state.activeId = state.entities[0].id;
+          syncProgressFromState();
+          applyProgress();
+          var savedTab = state.tabs[state.activeId];
+          var tabIdx = savedTab !== undefined ? parseInt(savedTab, 10) : 0;
+          if (isNaN(tabIdx) || tabIdx < 0 || tabIdx > 3) tabIdx = 0;
+          switchTab(tabIdx);
+        }
+
+        saveState();
+        renderEntitiesList();
+        showToast('Удалено: ' + entity.name);
+      }
+
+      function switchEntity(id) {
+        if (id === state.activeId) {
+          closeEntitiesSheet();
+          return;
+        }
+        var entity = getEntityById(id);
+        if (!entity) return;
+
+        syncProgressToState();
+        state.activeId = id;
+        saveState();
+        syncProgressFromState();
+        applyProgress();
+
+        var savedTab = state.tabs[id];
+        var tabIdx = savedTab !== undefined ? parseInt(savedTab, 10) : 0;
+        if (tabIdx === 4) tabIdx = 3;
+        if (isNaN(tabIdx) || tabIdx < 0 || tabIdx > 3) tabIdx = 0;
+        switchTab(tabIdx);
+        closeEntitiesSheet();
+        showToast('Выбрано: ' + entity.name);
+      }
+
+      function editEntity(id) {
+        openEntityForm('edit', id);
+      }
+
       function bindInteractions() {
         var headers = document.querySelectorAll('.section__header');
         for (var h = 0; h < headers.length; h++) {
@@ -294,13 +631,38 @@
             searchResults.innerHTML = '';
           });
         }
+
+        var entityFormInput = document.getElementById('entityFormInput');
+        if (entityFormInput) {
+          entityFormInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') saveEntityForm();
+          });
+        }
+      }
+
+      function openSidebar() {
+        var overlay = document.getElementById('sidebarOverlay');
+        if (!overlay) return;
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeSidebar() {
+        var overlay = document.getElementById('sidebarOverlay');
+        if (!overlay) return;
+        overlay.classList.remove('show');
+        document.body.style.overflow = 'hidden';
       }
 
       function resetProgress() {
-        if (confirm('Сбросить весь прогресс?')) {
+        var entity = getActiveEntity();
+        var name = entity ? entity.name : DEFAULT_ENTITY_NAME;
+        if (confirm('Сбросить прогресс для «' + name + '»?')) {
           progress = {};
-          storageRemove(STORAGE_KEY);
+          state.progress[state.activeId] = {};
+          saveState();
           applyProgress();
+          renderEntitiesList();
           showToast('Прогресс сброшен');
         }
       }
@@ -320,10 +682,24 @@
       }
 
       /* Глобальные функции для inline onclick — самый надёжный способ на iOS */
+      window.__bOpenSidebar = openSidebar;
+      window.__bCloseSidebar = closeSidebar;
+      window.__bMenuEntities = function () { closeSidebar(); openEntitiesSheet(); };
+      window.__bMenuCreateEntity = function () { closeSidebar(); openEntityForm('create'); };
+      window.__bMenuInfo = function () { closeSidebar(); openInfo(); };
+      window.__bMenuReset = function () { closeSidebar(); resetProgress(); };
       window.__bSwitchTab = switchTab;
       window.__bReset = resetProgress;
       window.__bInfo = openInfo;
       window.__bCloseInfo = closeInfo;
+      window.__bOpenEntities = openEntitiesSheet;
+      window.__bCloseEntities = closeEntitiesSheet;
+      window.__bOpenCreateEntity = function () { openEntityForm('create'); };
+      window.__bCloseEntityForm = closeEntityForm;
+      window.__bSaveEntityForm = saveEntityForm;
+      window.__bSwitchEntity = switchEntity;
+      window.__bEditEntity = editEntity;
+      window.__bDeleteEntity = deleteEntity;
 
       function markStandalone() {
         var isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
@@ -346,16 +722,20 @@
           }
 
           buildSearchIndex();
-          loadProgress();
+          loadState();
           applyProgress();
 
-          var savedTab = storageGet(TAB_KEY);
-          if (savedTab !== null && savedTab !== '') {
+          var savedTab = state.tabs[state.activeId];
+          if (savedTab !== undefined && savedTab !== null && savedTab !== '') {
             var tabIdx = parseInt(savedTab, 10);
             if (tabIdx === 4) tabIdx = 3;
             if (!isNaN(tabIdx) && tabIdx >= 0 && tabIdx <= 3) {
               switchTab(tabIdx);
+            } else {
+              updateHeaderSubtitle();
             }
+          } else {
+            updateHeaderSubtitle();
           }
 
           if (!storageOk) {
