@@ -1,4 +1,5 @@
 import { closestBySelector, escapeHtml } from './dom.js';
+import { APP_NAME } from './app-meta.js';
 import { PROGRAM } from './program-data.js';
 import { getUserMessage } from './errors.js';
 import * as storage from './storage.js';
@@ -251,7 +252,7 @@ export function updateHeaderSubtitle() {
     ? PROGRAM[currentTabIndex].name
     : 'Поиск';
 
-  if (title) title.textContent = `Бачата · ${entityName}`;
+  if (title) title.textContent = `${APP_NAME} · ${entityName}`;
   if (subtitle) subtitle.textContent = tabLabel;
 }
 

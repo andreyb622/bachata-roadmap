@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Бачата">
+  <meta name="apple-mobile-web-app-title" content="Roadmap">
   <meta name="theme-color" content="#1a1028">
-  <meta name="description" content="Программа занятий по бачате">
+  <meta name="description" content="Дорожная карта занятий по бачате с чеклистами и прогрессом">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon.svg">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/app.css">
-  <title>Бачата — программа</title>
+  <title>Bachata Roadmap</title>
 </head>
 <body class="program">
   <noscript>
@@ -25,7 +25,7 @@
   </div>
   <header class="header header--split">
     <div class="header__grow">
-      <div class="header__title" id="headerTitle">Бачата</div>
+      <div class="header__title" id="headerTitle">Bachata Roadmap</div>
       <div class="header__subtitle" id="headerSubtitle">Программа занятий</div>
     </div>
     <div class="header__actions">
@@ -81,7 +81,7 @@
       <div class="info-block">
         <div class="info-block__title">Что это</div>
         <p class="info-block__text">
-          <strong>Бачата</strong> — мобильное PWA с программой занятий: разминка, соло, элементы в паре и справочные блоки. Можно установить на экран «Домой» и пользоваться офлайн.
+          <strong>Bachata Roadmap</strong> — мобильное приложение с дорожной картой занятий: разминка, соло, элементы в паре и справочные блоки. Можно установить на экран «Домой» и пользоваться офлайн.
         </p>
       </div>
 
@@ -131,9 +131,29 @@
 
       <div class="info-block">
         <div class="info-block__title">Сохранение</div>
+        <ul class="info-block__list">
+          <li>Прогресс, список учеников и последняя вкладка сохраняются автоматически на устройстве</li>
+          <li>После первого открытия приложение работает без интернета</li>
+          <li>При каждом сохранении создаётся резервная копия на случай повреждения данных</li>
+          <li>Обновление приложения <strong>не удаляет</strong> учеников и их прогресс</li>
+        </ul>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Обновления</div>
         <p class="info-block__text">
-          Прогресс, список учеников и последняя вкладка сохраняются автоматически на устройстве. После первого открытия приложение работает без интернета.
+          При выходе новой версии приложение подтягивает её само при следующем открытии или возврате на вкладку. Страница может перезагрузиться один раз — это нормально. Ваши данные при этом сохраняются.
         </p>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Если что-то пошло не так</div>
+        <ul class="info-block__list">
+          <li>Внизу экрана появляется короткое сообщение с объяснением</li>
+          <li>Если данные повреждены — приложение попробует восстановить последнюю копию</li>
+          <li>Если хранилище недоступно (режим инкогнито и т.п.) — прогресс не сохранится после перезагрузки</li>
+          <li>Не хватает места на устройстве — освободите память в настройках браузера</li>
+        </ul>
       </div>
 
       <div class="info-block">
