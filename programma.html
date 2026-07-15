@@ -122,6 +122,126 @@
 
     .header__btn:active { background: var(--accent-glow); color: var(--accent2); }
 
+    .header__actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* Info modal */
+    .info-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 250;
+      background: rgba(0, 0, 0, 0.55);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .info-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .info-sheet {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 251;
+      max-height: calc(100% - var(--safe-top) - var(--header-h) - 16px);
+      background: var(--surface);
+      border-radius: 20px 20px 0 0;
+      border-top: 1px solid var(--border);
+      padding: 16px 20px calc(var(--safe-bottom) + 20px);
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+
+    .info-overlay.show .info-sheet {
+      transform: translateY(0);
+    }
+
+    .info-sheet__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .info-sheet__title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .info-sheet__close {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 10px;
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+
+    .info-sheet__close:active { background: var(--accent-glow); color: var(--accent2); }
+
+    .info-block {
+      margin-bottom: 16px;
+    }
+
+    .info-block:last-child { margin-bottom: 0; }
+
+    .info-block__title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent2);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .info-block__text {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .info-block__text strong { color: var(--text); font-weight: 600; }
+
+    .info-block__list {
+      list-style: none;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .info-block__list li {
+      position: relative;
+      padding-left: 14px;
+      margin-bottom: 4px;
+    }
+
+    .info-block__list li::before {
+      content: '·';
+      position: absolute;
+      left: 0;
+      color: var(--accent2);
+      font-weight: 700;
+    }
+
     /* Tab bar */
     .tabs {
       position: fixed;
@@ -505,8 +625,82 @@
       <div class="header__title">Бачата</div>
       <div class="header__subtitle" id="headerSubtitle">Программа занятий</div>
     </div>
-    <button type="button" class="header__btn" id="resetBtn" title="Сбросить прогресс" aria-label="Сбросить прогресс" onclick="window.__bReset && window.__bReset()">↺</button>
+    <div class="header__actions">
+      <button type="button" class="header__btn" id="infoBtn" title="О приложении" aria-label="О приложении" onclick="window.__bInfo && window.__bInfo()">ℹ</button>
+      <button type="button" class="header__btn" id="resetBtn" title="Сбросить прогресс" aria-label="Сбросить прогресс" onclick="window.__bReset && window.__bReset()">↺</button>
+    </div>
   </header>
+
+  <div class="info-overlay" id="infoOverlay" onclick="window.__bCloseInfo && window.__bCloseInfo()">
+    <div class="info-sheet" role="dialog" aria-labelledby="infoTitle" onclick="event.stopPropagation()">
+      <div class="info-sheet__header">
+        <h2 class="info-sheet__title" id="infoTitle">О приложении</h2>
+        <button type="button" class="info-sheet__close" aria-label="Закрыть" onclick="window.__bCloseInfo && window.__bCloseInfo()">✕</button>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Что это</div>
+        <p class="info-block__text">
+          <strong>Бачата</strong> — мобильное PWA с программой занятий: разминка, соло, элементы в паре и справочные блоки. Можно установить на экран «Домой» и пользоваться офлайн.
+        </p>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Вкладки</div>
+        <ul class="info-block__list">
+          <li><strong>3 мес / 3–5 / 6+</strong> — программа по этапам обучения</li>
+          <li><strong>Справочник</strong> — рамочка, хват, изоляция, футворк и другие базовые темы</li>
+          <li><strong>Поиск</strong> — быстрый поиск элемента по названию или разделу</li>
+        </ul>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Чеклисты и прогресс</div>
+        <ul class="info-block__list">
+          <li>Нажмите на элемент, чтобы отметить его выполненным</li>
+          <li>Повторное нажатие снимает отметку</li>
+          <li>Над списком — <strong>прогресс-бар</strong> по текущему периоду</li>
+          <li>В заголовке секции — счётчик <strong>выполнено / всего</strong></li>
+          <li>Блоки <strong>Shit block</strong> — дополнительные элементы вне основной программы</li>
+        </ul>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Секции</div>
+        <p class="info-block__text">
+          Нажмите на заголовок раздела (Разминка, Элементы в паре и т.д.), чтобы свернуть или развернуть список.
+        </p>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Поиск</div>
+        <p class="info-block__text">
+          Введите название фигуры или раздела. Нажмите на результат — приложение откроет нужную вкладку и период.
+        </p>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Сохранение</div>
+        <p class="info-block__text">
+          Прогресс и последняя вкладка сохраняются автоматически на устройстве. После первого открытия приложение работает без интернета.
+        </p>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Установка на iPhone</div>
+        <p class="info-block__text">
+          Откройте ссылку в <strong>Safari</strong> → Поделиться → «На экран «Домой»». Не открывайте из приложения «Файлы» — там PWA не работает.
+        </p>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Сброс прогресса</div>
+        <p class="info-block__text">
+          Кнопка <strong>↺</strong> в шапке сбрасывает все отметки после подтверждения.
+        </p>
+      </div>
+    </div>
+  </div>
 
   <div class="app">
     <main class="main">
@@ -1192,9 +1386,25 @@
         }
       }
 
+      function openInfo() {
+        var overlay = document.getElementById('infoOverlay');
+        if (!overlay) return;
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeInfo() {
+        var overlay = document.getElementById('infoOverlay');
+        if (!overlay) return;
+        overlay.classList.remove('show');
+        document.body.style.overflow = 'hidden';
+      }
+
       /* Глобальные функции для inline onclick — самый надёжный способ на iOS */
       window.__bSwitchTab = switchTab;
       window.__bReset = resetProgress;
+      window.__bInfo = openInfo;
+      window.__bCloseInfo = closeInfo;
 
       function registerServiceWorker() {
         if (!('serviceWorker' in navigator)) return;
