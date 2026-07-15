@@ -1,6 +1,12 @@
-var CACHE_NAME = 'bachata-pwa-v2';
+var CACHE_NAME = 'bachata-pwa-v4';
 var ASSETS = [
   './index.html',
+  './elementy.html',
+  './css/base.css',
+  './css/app.css',
+  './css/elementy.css',
+  './js/app.js',
+  './js/sections.js',
   './manifest.webmanifest',
   './icons/icon.svg'
 ];
@@ -29,10 +35,20 @@ self.addEventListener('activate', function (event) {
 self.addEventListener('fetch', function (event) {
   if (event.request.method !== 'GET') return;
 
+  var url = new URL(event.request.url);
+  if (url.origin !== self.location.origin) return;
+
   event.respondWith(
     caches.match(event.request).then(function (cached) {
       if (cached) return cached;
       return fetch(event.request).then(function (response) {
+        if (!response || response.status !== 200 || response.type === 'opaque') {
+          return response;
+        }
+        var copy = response.clone();
+        caches.open(CACHE_NAME).then(function (cache) {
+          cache.put(event.request, copy);
+        });
         return response;
       }).catch(function () {
         if (event.request.mode === 'navigate') {

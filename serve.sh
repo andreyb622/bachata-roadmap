@@ -19,7 +19,7 @@ fi
 echo ""
 echo "iPhone и Mac должны быть в одной Wi‑Fi сети."
 echo "Для PWA откройте ссылку в Safari → Поделиться → На экран «Домой»."
-echo "Нужны все файлы: index.html, manifest.webmanifest, sw.js, icons/"
+echo "Нужны: index.html, elementy.html, css/, js/, manifest.webmanifest, sw.js, icons/"
 echo "Нажмите Ctrl+C для остановки."
 echo ""
 
