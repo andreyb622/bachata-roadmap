@@ -1,5 +1,6 @@
 import './sw-update.js';
 import { initSectionToggles } from './sections.js';
+import { ERROR_CODES } from './errors.js';
 import * as storage from './storage.js';
 import * as render from './render.js';
 import * as overlays from './overlays.js';
@@ -114,7 +115,28 @@ function exposeGlobals() {
   });
 }
 
+function setupGlobalErrorHandlers() {
+  window.addEventListener('unhandledrejection', (event) => {
+    console.error('Unhandled promise rejection', event.reason);
+    render.showError(event.reason);
+  });
+}
+
+function showStartupMessages() {
+  const recoveryMessage = storage.getStorageRecoveryMessage();
+  if (recoveryMessage) {
+    render.showToast(recoveryMessage, 4000);
+    return;
+  }
+
+  if (!storage.isStorageOk()) {
+    render.showError(ERROR_CODES.STORAGE_UNAVAILABLE);
+  }
+}
+
 function init() {
+  setupGlobalErrorHandlers();
+
   try {
     document.documentElement.classList.add('js-ready');
     markStandalone();
@@ -137,13 +159,13 @@ function init() {
     }
 
     maybeShowInstallHint();
+    showStartupMessages();
+  } catch (error) {
+    console.error('App init failed', error);
+    render.showError(ERROR_CODES.APP_INIT_FAILED);
 
-    if (!storage.isStorageOk()) {
-      render.showToast('Хранилище недоступно — прогресс не сохранится');
-    }
-  } catch {
     const subtitle = document.getElementById('headerSubtitle');
-    if (subtitle) subtitle.textContent = 'Ошибка загрузки скрипта';
+    if (subtitle) subtitle.textContent = 'Ошибка загрузки';
   }
 }
 

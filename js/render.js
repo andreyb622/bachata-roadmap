@@ -1,5 +1,6 @@
 import { closestBySelector, escapeHtml } from './dom.js';
 import { PROGRAM } from './program-data.js';
+import { getUserMessage } from './errors.js';
 import * as storage from './storage.js';
 
 /** @typedef {{ id: string, text: string, period: string, section: string, periodIdx: number }} SearchItem */
@@ -148,6 +149,12 @@ function toggleItem(item) {
   const isDone = storage.toggleProgressItem(id);
   item.classList.toggle('done', isDone);
   updateCounts();
+
+  const storageError = storage.consumeStorageError();
+  if (storageError) {
+    showError(storageError);
+    return;
+  }
 }
 
 function highlight(text, query) {
@@ -219,6 +226,9 @@ export function switchTab(index) {
 
   storage.setSavedTabIndex(index);
 
+  const storageError = storage.consumeStorageError();
+  if (storageError) showError(storageError);
+
   const main = document.querySelector('.main');
   if (main) main.scrollTop = 0;
 
@@ -245,13 +255,18 @@ export function updateHeaderSubtitle() {
   if (subtitle) subtitle.textContent = tabLabel;
 }
 
-export function showToast(message) {
+export function showToast(message, duration = 2000) {
   const toast = document.getElementById('toast');
   if (!toast) return;
 
   toast.textContent = message;
   toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), 2000);
+  setTimeout(() => toast.classList.remove('show'), duration);
+}
+
+export function showError(codeOrError, options = {}) {
+  const message = getUserMessage(codeOrError, options.context);
+  showToast(message, options.duration ?? 3500);
 }
 
 export function bindMainInteractions(onTabSwitch) {

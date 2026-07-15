@@ -1,4 +1,5 @@
 import { closestBySelector, escapeHtml, setBodyScrollLocked } from './dom.js';
+import { ERROR_CODES } from './errors.js';
 import * as storage from './storage.js';
 import * as render from './render.js';
 
@@ -117,95 +118,142 @@ export function closeEntityForm() {
   entityFormEditId = null;
 }
 
+function showStorageErrorIfAny() {
+  const code = storage.consumeStorageError();
+  if (code) render.showError(code);
+}
+
 function validateEntityName(name) {
   const trimmed = name.trim();
   if (!trimmed) {
-    render.showToast('Введите имя или название');
+    render.showError(ERROR_CODES.ENTITY_NAME_REQUIRED);
     return null;
   }
   if (trimmed.length > storage.MAX_ENTITY_NAME_LEN) {
-    render.showToast(`Не более ${storage.MAX_ENTITY_NAME_LEN} символов`);
+    render.showError(ERROR_CODES.ENTITY_NAME_TOO_LONG, {
+      context: { maxLen: storage.MAX_ENTITY_NAME_LEN },
+    });
     return null;
   }
   return trimmed;
 }
 
 export function saveEntityForm() {
-  const inputEl = document.getElementById('entityFormInput');
-  if (!inputEl) return;
+  try {
+    const inputEl = document.getElementById('entityFormInput');
+    if (!inputEl) return;
 
-  const name = validateEntityName(inputEl.value);
-  if (!name) return;
+    const name = validateEntityName(inputEl.value);
+    if (!name) return;
 
-  if (entityFormMode === 'edit' && entityFormEditId) {
-    storage.updateEntity(entityFormEditId, name);
-    render.updateHeaderSubtitle();
-    renderEntitiesList();
-    render.showToast('Имя обновлено');
-  } else {
-    const entity = storage.createEntity(name);
-    if (!entity) {
-      render.showToast('Не удалось создать');
-      return;
+    if (entityFormMode === 'edit' && entityFormEditId) {
+      const entity = storage.updateEntity(entityFormEditId, name);
+      if (!entity) {
+        render.showError(ERROR_CODES.ENTITY_UPDATE_FAILED);
+        return;
+      }
+
+      showStorageErrorIfAny();
+      render.updateHeaderSubtitle();
+      renderEntitiesList();
+      render.showToast('Имя обновлено');
+    } else {
+      const entity = storage.createEntity(name);
+      if (!entity) {
+        render.showError(ERROR_CODES.ENTITY_CREATE_FAILED);
+        return;
+      }
+
+      showStorageErrorIfAny();
+      render.applyProgress();
+      render.switchTab(0);
+      render.updateHeaderSubtitle();
+      render.showToast(`Создано: ${name}`);
     }
 
-    render.applyProgress();
-    render.switchTab(0);
-    render.updateHeaderSubtitle();
-    render.showToast(`Создано: ${name}`);
+    closeEntityForm();
+  } catch (error) {
+    console.error('saveEntityForm failed', error);
+    render.showError(error);
   }
-
-  closeEntityForm();
 }
 
 export function switchEntity(id) {
-  if (!id || id === storage.getState()?.activeId) {
-    closeEntitiesSheet();
-    return;
-  }
+  try {
+    if (!id || id === storage.getState()?.activeId) {
+      closeEntitiesSheet();
+      return;
+    }
 
-  const entity = storage.switchEntity(id);
-  if (!entity) return;
+    const entity = storage.switchEntity(id);
+    if (!entity) {
+      render.showError(ERROR_CODES.ENTITY_SWITCH_FAILED);
+      return;
+    }
 
-  render.applyProgress();
-  render.switchTab(storage.getSavedTabIndex() ?? 0);
-  render.updateHeaderSubtitle();
-  closeEntitiesSheet();
-  render.showToast(`Выбрано: ${entity.name}`);
-}
-
-export function deleteEntity(id) {
-  if (storage.getEntities().length <= 1) {
-    render.showToast('Нельзя удалить последнего');
-    return;
-  }
-
-  const entity = storage.getEntityById(id);
-  if (!entity) return;
-  if (!confirm(`Удалить «${entity.name}»? Прогресс будет потерян.`)) return;
-
-  const result = storage.deleteEntity(id);
-  if (!result) return;
-
-  if (result.wasActive) {
+    showStorageErrorIfAny();
     render.applyProgress();
     render.switchTab(storage.getSavedTabIndex() ?? 0);
     render.updateHeaderSubtitle();
+    closeEntitiesSheet();
+    render.showToast(`Выбрано: ${entity.name}`);
+  } catch (error) {
+    console.error('switchEntity failed', error);
+    render.showError(error);
   }
+}
 
-  renderEntitiesList();
-  render.showToast(`Удалено: ${result.entity?.name ?? 'запись'}`);
+export function deleteEntity(id) {
+  try {
+    if (storage.getEntities().length <= 1) {
+      render.showError(ERROR_CODES.ENTITY_DELETE_LAST);
+      return;
+    }
+
+    const entity = storage.getEntityById(id);
+    if (!entity) {
+      render.showError(ERROR_CODES.ENTITY_NOT_FOUND);
+      return;
+    }
+    if (!confirm(`Удалить «${entity.name}»? Прогресс будет потерян.`)) return;
+
+    const result = storage.deleteEntity(id);
+    if (!result) {
+      render.showError(ERROR_CODES.ENTITY_DELETE_FAILED);
+      return;
+    }
+
+    showStorageErrorIfAny();
+
+    if (result.wasActive) {
+      render.applyProgress();
+      render.switchTab(storage.getSavedTabIndex() ?? 0);
+      render.updateHeaderSubtitle();
+    }
+
+    renderEntitiesList();
+    render.showToast(`Удалено: ${result.entity?.name ?? 'запись'}`);
+  } catch (error) {
+    console.error('deleteEntity failed', error);
+    render.showError(error);
+  }
 }
 
 export function resetProgress() {
-  const entity = storage.getActiveEntity();
-  const name = entity?.name ?? storage.DEFAULT_ENTITY_NAME;
+  try {
+    const entity = storage.getActiveEntity();
+    const name = entity?.name ?? storage.DEFAULT_ENTITY_NAME;
 
-  if (confirm(`Сбросить прогресс для «${name}»?`)) {
-    storage.clearActiveProgress();
-    render.applyProgress();
-    renderEntitiesList();
-    render.showToast('Прогресс сброшен');
+    if (confirm(`Сбросить прогресс для «${name}»?`)) {
+      storage.clearActiveProgress();
+      showStorageErrorIfAny();
+      render.applyProgress();
+      renderEntitiesList();
+      render.showToast('Прогресс сброшен');
+    }
+  } catch (error) {
+    console.error('resetProgress failed', error);
+    render.showError(error);
   }
 }
 
