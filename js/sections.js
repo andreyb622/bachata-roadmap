@@ -1,11 +1,11 @@
-(function () {
-  var headers = document.querySelectorAll('.section__header');
-  for (var i = 0; i < headers.length; i++) {
-    (function (header) {
-      header.addEventListener('click', function () {
-        var section = header.parentNode;
-        if (section) section.classList.toggle('open');
-      });
-    })(headers[i]);
-  }
-})();
+import { closestBySelector } from './dom.js';
+
+export function initSectionToggles() {
+  document.addEventListener('click', (event) => {
+    const header = closestBySelector(event.target, '.section__header');
+    if (!header) return;
+
+    const section = closestBySelector(header, '.section');
+    section?.classList.toggle('open');
+  });
+}

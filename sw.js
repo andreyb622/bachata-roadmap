@@ -1,91 +1,101 @@
-var CACHE_NAME = 'bachata-pwa-active';
-var CACHE_PREFIX = 'bachata-pwa-';
-var ASSETS = [
+const CACHE_NAME = 'bachata-pwa-active';
+const CACHE_PREFIX = 'bachata-pwa-';
+
+const ASSETS = [
   './index.html',
   './elementy.html',
   './css/base.css',
   './css/app.css',
   './css/elementy.css',
-  './js/app.js',
+  './js/program-data.js',
+  './js/dom.js',
+  './js/storage.js',
   './js/sections.js',
+  './js/render.js',
+  './js/overlays.js',
+  './js/app.js',
+  './js/elementy.js',
   './js/sw-update.js',
   './manifest.webmanifest',
-  './icons/icon.svg'
+  './icons/icon.svg',
 ];
 
 function isStaticAsset(url) {
-  var path = url.pathname;
-  return path.endsWith('.html') ||
-    path.endsWith('.css') ||
-    path.endsWith('.js') ||
-    path.endsWith('.webmanifest') ||
-    path.indexOf('/icons/') !== -1;
+  const { pathname } = url;
+  return pathname.endsWith('.html')
+    || pathname.endsWith('.css')
+    || pathname.endsWith('.js')
+    || pathname.endsWith('.webmanifest')
+    || pathname.includes('/icons/');
 }
 
 function clearOldCaches() {
-  return caches.keys().then(function (keys) {
-    return Promise.all(
-      keys.filter(function (key) { return key.indexOf(CACHE_PREFIX) === 0; })
-        .map(function (key) { return caches.delete(key); })
-    );
-  });
+  return caches.keys().then((keys) =>
+    Promise.all(
+      keys
+        .filter((key) => key.startsWith(CACHE_PREFIX))
+        .map((key) => caches.delete(key)),
+    ),
+  );
 }
 
 function cacheResponse(request, response) {
   if (!response || response.status !== 200 || response.type === 'opaque') return;
-  var copy = response.clone();
-  caches.open(CACHE_NAME).then(function (cache) {
+
+  const copy = response.clone();
+  caches.open(CACHE_NAME).then((cache) => {
     cache.put(request, copy);
   });
 }
 
-self.addEventListener('install', function (event) {
+self.addEventListener('install', (event) => {
   event.waitUntil(
-    clearOldCaches().then(function () {
-      return caches.open(CACHE_NAME).then(function (cache) {
-        return cache.addAll(ASSETS);
-      });
-    })
+    clearOldCaches().then(() =>
+      caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)),
+    ),
   );
   self.skipWaiting();
 });
 
-self.addEventListener('activate', function (event) {
+self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys().then(function (keys) {
-      return Promise.all(
-        keys.filter(function (key) { return key !== CACHE_NAME && key.indexOf(CACHE_PREFIX) === 0; })
-          .map(function (key) { return caches.delete(key); })
-      );
-    })
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys
+          .filter((key) => key !== CACHE_NAME && key.startsWith(CACHE_PREFIX))
+          .map((key) => caches.delete(key)),
+      ),
+    ),
   );
   self.clients.claim();
 });
 
-self.addEventListener('message', function (event) {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+self.addEventListener('message', (event) => {
+  if (event.data?.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 });
 
-self.addEventListener('fetch', function (event) {
+self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
 
-  var url = new URL(event.request.url);
+  const url = new URL(event.request.url);
   if (url.origin !== self.location.origin) return;
   if (!isStaticAsset(url) && event.request.mode !== 'navigate') return;
 
   event.respondWith(
-    fetch(event.request).then(function (response) {
-      cacheResponse(event.request, response);
-      return response;
-    }).catch(function () {
-      return caches.match(event.request).then(function (cached) {
-        if (cached) return cached;
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
-      });
-    })
+    fetch(event.request)
+      .then((response) => {
+        cacheResponse(event.request, response);
+        return response;
+      })
+      .catch(() =>
+        caches.match(event.request).then((cached) => {
+          if (cached) return cached;
+          if (event.request.mode === 'navigate') {
+            return caches.match('./index.html');
+          }
+        }),
+      ),
   );
 });
