@@ -54,7 +54,7 @@ export function renderEntitiesList() {
 
   const entities = storage.getEntities();
   const allItemIds = render.getAllItemIds();
-  const activeId = storage.getState().activeId;
+  const activeId = storage.getState()?.activeId ?? '';
 
   if (!entities.length) {
     listEl.innerHTML = '<div class="entities-empty">Пока никого нет.<br>Откройте меню <strong>☰</strong> и нажмите «Новый ученик / группа».</div>';
@@ -68,7 +68,7 @@ export function renderEntitiesList() {
     return `
       <div class="entities-item${isActive ? ' entities-item--active' : ''}" data-entity-id="${entity.id}">
         <button type="button" class="entities-item__main" data-action="switch-entity" data-entity-id="${entity.id}">
-          <span class="entities-item__name">${escapeHtml(entity.name)}</span>
+          <span class="entities-item__name">${escapeHtml(entity.name ?? storage.DEFAULT_ENTITY_NAME)}</span>
           <span class="entities-item__pct">${pct}%</span>
           ${isActive ? '<span class="entities-item__badge">активен</span>' : ''}
         </button>
@@ -143,7 +143,12 @@ export function saveEntityForm() {
     renderEntitiesList();
     render.showToast('Имя обновлено');
   } else {
-    storage.createEntity(name);
+    const entity = storage.createEntity(name);
+    if (!entity) {
+      render.showToast('Не удалось создать');
+      return;
+    }
+
     render.applyProgress();
     render.switchTab(0);
     render.updateHeaderSubtitle();
@@ -154,7 +159,7 @@ export function saveEntityForm() {
 }
 
 export function switchEntity(id) {
-  if (id === storage.getState().activeId) {
+  if (!id || id === storage.getState()?.activeId) {
     closeEntitiesSheet();
     return;
   }
@@ -189,7 +194,7 @@ export function deleteEntity(id) {
   }
 
   renderEntitiesList();
-  render.showToast(`Удалено: ${result.entity.name}`);
+  render.showToast(`Удалено: ${result.entity?.name ?? 'запись'}`);
 }
 
 export function resetProgress() {

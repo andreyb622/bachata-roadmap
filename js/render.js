@@ -9,18 +9,31 @@ let allItems = [];
 let searchTimer = null;
 let currentTabIndex = 0;
 
+const TAB_COUNT = 4;
+const PROGRAM_TAB_COUNT = 3;
+
+function clampTabIndex(index) {
+  const tabIdx = Number(index);
+  if (!Number.isFinite(tabIdx)) return 0;
+  if (tabIdx < 0) return 0;
+  if (tabIdx >= TAB_COUNT) return TAB_COUNT - 1;
+  return Math.trunc(tabIdx);
+}
+
 function buildItemIndex() {
-  allItems = PROGRAM.flatMap((period) =>
-    period.sections.flatMap((section, sectionIndex) =>
-      section.items.map((text, itemIndex) => ({
+  allItems = PROGRAM.flatMap((period) => {
+    const sections = Array.isArray(period?.sections) ? period.sections : [];
+    return sections.flatMap((section, sectionIndex) => {
+      const items = Array.isArray(section?.items) ? section.items : [];
+      return items.map((text, itemIndex) => ({
         id: `${period.id}-${sectionIndex}-${itemIndex}`,
-        text,
-        period: period.name,
-        section: section.title,
-        periodIdx: period.id,
-      })),
-    ),
-  );
+        text: String(text ?? ''),
+        period: period?.name ?? '',
+        section: section?.title ?? '',
+        periodIdx: period?.id ?? 0,
+      }));
+    });
+  });
   return allItems;
 }
 
@@ -30,7 +43,8 @@ export function getAllItemIds() {
 
 function renderSection(periodId, sectionIndex, section) {
   const sectionId = `${periodId}-${sectionIndex}`;
-  const itemsHtml = section.items.map((text, itemIndex) => {
+  const items = Array.isArray(section?.items) ? section.items : [];
+  const itemsHtml = items.map((text, itemIndex) => {
     const itemId = `${periodId}-${sectionIndex}-${itemIndex}`;
     return `
       <div class="item" data-id="${itemId}">
@@ -43,7 +57,7 @@ function renderSection(periodId, sectionIndex, section) {
     <div class="section${sectionIndex === 0 ? ' open' : ''}" data-section="${sectionId}">
       <div class="section__header">
         <span class="section__title">${escapeHtml(section.title)}</span>
-        <span class="section__count">0/${section.items.length}</span>
+        <span class="section__count">0/${items.length}</span>
         <span class="section__chevron">▼</span>
       </div>
       <div class="section__body">${itemsHtml}</div>
@@ -54,13 +68,14 @@ function renderProgramPanels(container) {
   if (!container) return;
 
   container.innerHTML = PROGRAM.map((period, periodIndex) => {
-    const sectionsHtml = period.sections
+    const sections = Array.isArray(period?.sections) ? period.sections : [];
+    const sectionsHtml = sections
       .map((section, sectionIndex) => renderSection(period.id, sectionIndex, section))
       .join('');
 
     return `
       <div class="panel${periodIndex === 0 ? ' active' : ''}" id="panel-${period.id}" data-period="${period.id}">
-        <div class="period-badge">${escapeHtml(period.badge)}</div>
+        <div class="period-badge">${escapeHtml(period?.badge ?? '')}</div>
         <div class="progress-wrap" data-progress="${period.id}">
           <div class="progress-wrap__label">
             <span>Прогресс</span>
@@ -80,9 +95,11 @@ export function initRender(container) {
 
 export function applyProgress() {
   const progress = storage.getActiveProgress();
+  if (!progress || typeof progress !== 'object') return;
 
   for (const item of document.querySelectorAll('.item[data-id]')) {
     const id = item.getAttribute('data-id');
+    if (!id) continue;
     item.classList.toggle('done', !!progress[id]);
   }
 
@@ -91,12 +108,16 @@ export function applyProgress() {
 
 export function updateCounts() {
   const progress = storage.getActiveProgress();
+  if (!progress || typeof progress !== 'object') return;
 
   for (const section of document.querySelectorAll('.section')) {
     const secItems = section.querySelectorAll('.item[data-id]');
     if (!secItems.length) continue;
 
-    const done = [...secItems].filter((item) => progress[item.getAttribute('data-id')]).length;
+    const done = [...secItems].filter((item) => {
+      const id = item.getAttribute('data-id');
+      return id && progress[id];
+    }).length;
     const countEl = section.querySelector('.section__count');
     if (countEl) countEl.textContent = `${done}/${secItems.length}`;
   }
@@ -107,7 +128,10 @@ export function updateCounts() {
     if (!panel) continue;
 
     const pItems = panel.querySelectorAll('.item[data-id]');
-    const pDone = [...pItems].filter((item) => progress[item.getAttribute('data-id')]).length;
+    const pDone = [...pItems].filter((item) => {
+      const id = item.getAttribute('data-id');
+      return id && progress[id];
+    }).length;
     const pct = pItems.length ? Math.round((pDone / pItems.length) * 100) : 0;
 
     const pctEl = wrap.querySelector('.progress-pct');
@@ -127,6 +151,8 @@ function toggleItem(item) {
 }
 
 function highlight(text, query) {
+  if (!query) return escapeHtml(text);
+
   const lower = text.toLowerCase();
   const idx = lower.indexOf(query);
   if (idx === -1) return escapeHtml(text);
@@ -179,7 +205,7 @@ export function clearSearch() {
 }
 
 export function switchTab(index) {
-  currentTabIndex = index;
+  currentTabIndex = clampTabIndex(index);
 
   document.querySelectorAll('.tab').forEach((tab, tabIndex) => {
     const isActive = tabIndex === index;
@@ -211,7 +237,9 @@ export function updateHeaderSubtitle() {
   const subtitle = document.getElementById('headerSubtitle');
   const entity = storage.getActiveEntity();
   const entityName = entity?.name ?? storage.DEFAULT_ENTITY_NAME;
-  const tabLabel = currentTabIndex < 3 ? PROGRAM[currentTabIndex].name : 'Поиск';
+  const tabLabel = currentTabIndex < PROGRAM_TAB_COUNT && PROGRAM[currentTabIndex]
+    ? PROGRAM[currentTabIndex].name
+    : 'Поиск';
 
   if (title) title.textContent = `Бачата · ${entityName}`;
   if (subtitle) subtitle.textContent = tabLabel;
@@ -238,7 +266,7 @@ export function bindMainInteractions(onTabSwitch) {
 
       const result = closestBySelector(event.target, '.search-result-item');
       if (result) {
-        const tabIdx = Number.parseInt(result.getAttribute('data-goto'), 10);
+        const tabIdx = clampTabIndex(Number.parseInt(result.getAttribute('data-goto'), 10));
         onTabSwitch?.(tabIdx);
         clearSearch();
       }

@@ -9,6 +9,90 @@ const memStore = new Map();
 let storageOk = false;
 let state = null;
 
+function isPlainObject(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+function sanitizeEntity(raw) {
+  if (!isPlainObject(raw)) return null;
+
+  const id = typeof raw.id === 'string' && raw.id.trim() ? raw.id.trim() : null;
+  if (!id) return null;
+
+  let name = typeof raw.name === 'string' ? raw.name.trim() : '';
+  if (!name) name = DEFAULT_ENTITY_NAME;
+  if (name.length > MAX_ENTITY_NAME_LEN) {
+    name = name.slice(0, MAX_ENTITY_NAME_LEN);
+  }
+
+  const createdAt = typeof raw.createdAt === 'string' ? raw.createdAt : new Date().toISOString();
+  return { id, name, createdAt };
+}
+
+function sanitizeProgress(raw) {
+  if (!isPlainObject(raw)) return {};
+
+  const progress = {};
+  for (const [key, value] of Object.entries(raw)) {
+    if (typeof key === 'string' && key && value) {
+      progress[key] = true;
+    }
+  }
+  return progress;
+}
+
+function sanitizeTabs(raw, entityIds) {
+  const tabs = {};
+  const source = isPlainObject(raw) ? raw : {};
+
+  for (const id of entityIds) {
+    const saved = source[id];
+    tabs[id] = saved != null && saved !== '' ? String(saved) : '0';
+  }
+
+  return tabs;
+}
+
+function normalizeState(raw) {
+  if (!isPlainObject(raw)) return createDefaultState();
+
+  const entities = Array.isArray(raw.entities)
+    ? raw.entities.map(sanitizeEntity).filter(Boolean)
+    : [];
+
+  if (!entities.length) return createDefaultState();
+
+  const entityIds = new Set(entities.map((entity) => entity.id));
+  const progress = {};
+
+  if (isPlainObject(raw.progress)) {
+    for (const [entityId, entityProgress] of Object.entries(raw.progress)) {
+      if (!entityIds.has(entityId)) continue;
+
+      const sanitized = sanitizeProgress(entityProgress);
+      cleanupOrphanProgress(sanitized);
+      progress[entityId] = sanitized;
+    }
+  }
+
+  for (const id of entityIds) {
+    progress[id] ??= {};
+  }
+
+  let activeId = typeof raw.activeId === 'string' ? raw.activeId : null;
+  if (!activeId || !entityIds.has(activeId)) {
+    activeId = entities[0].id;
+  }
+
+  return {
+    version: 2,
+    entities,
+    activeId,
+    progress,
+    tabs: sanitizeTabs(raw.tabs, [...entityIds]),
+  };
+}
+
 function testStorage() {
   try {
     const key = '__bachata_test__';
@@ -101,13 +185,19 @@ function migrateFromV1() {
 
   try {
     const raw = storageGet(OLD_PROGRESS_KEY);
-    if (raw) oldProgress = JSON.parse(raw);
+    if (raw) oldProgress = sanitizeProgress(JSON.parse(raw));
   } catch {
     // ignore corrupt data
   }
 
   const savedTab = storageGet(OLD_TAB_KEY);
-  if (savedTab) oldTab = savedTab;
+  if (savedTab) {
+    let tabIdx = Number.parseInt(savedTab, 10);
+    if (tabIdx === 4) tabIdx = 3;
+    if (!Number.isNaN(tabIdx) && tabIdx >= 0 && tabIdx <= 3) {
+      oldTab = String(tabIdx);
+    }
+  }
 
   const id = generateId();
   state = {
@@ -130,23 +220,14 @@ export function initStorage() {
   try {
     const raw = storageGet(STATE_KEY);
     if (raw) {
-      state = JSON.parse(raw);
-      if (!state.entities?.length) {
-        state = createDefaultState();
-        saveState();
+      let parsed = null;
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        parsed = null;
       }
-      state.progress ??= {};
-      state.tabs ??= {};
-
-      if (!state.activeId || !getEntityById(state.activeId)) {
-        state.activeId = state.entities[0].id;
-        saveState();
-      }
-
-      const activeProgress = state.progress[state.activeId];
-      if (activeProgress && cleanupOrphanProgress(activeProgress)) {
-        saveState();
-      }
+      state = normalizeState(parsed);
+      saveState();
     } else if (storageGet(OLD_PROGRESS_KEY)) {
       migrateFromV1();
     } else {
@@ -173,10 +254,11 @@ export function getActiveEntity() {
 }
 
 export function getEntities() {
-  return [...state.entities];
+  return [...(state?.entities ?? [])];
 }
 
 export function getActiveProgress() {
+  if (!state) return {};
   return state.progress[state.activeId] ?? {};
 }
 
@@ -186,6 +268,8 @@ function setActiveProgress(progress) {
 }
 
 export function toggleProgressItem(itemId) {
+  if (!state || typeof itemId !== 'string' || !itemId) return false;
+
   const progress = { ...getActiveProgress() };
 
   if (progress[itemId]) {
@@ -199,19 +283,23 @@ export function toggleProgressItem(itemId) {
 }
 
 export function clearActiveProgress() {
+  if (!state) return;
   state.progress[state.activeId] = {};
   saveState();
 }
 
 export function getEntityProgressPct(entityId, allItemIds) {
+  if (!state || !Array.isArray(allItemIds) || !allItemIds.length) return 0;
+
   const entityProgress = state.progress[entityId] ?? {};
-  if (!allItemIds.length) return 0;
 
   const done = allItemIds.filter((id) => entityProgress[id]).length;
   return Math.round((done / allItemIds.length) * 100);
 }
 
 export function getSavedTabIndex() {
+  if (!state) return null;
+
   const savedTab = state.tabs[state.activeId];
   if (savedTab == null || savedTab === '') return null;
 
@@ -222,13 +310,23 @@ export function getSavedTabIndex() {
 }
 
 export function setSavedTabIndex(index) {
-  state.tabs[state.activeId] = String(index);
+  if (!state) return;
+
+  const tabIdx = Number(index);
+  const safeIndex = Number.isFinite(tabIdx) && tabIdx >= 0 && tabIdx <= 3
+    ? Math.trunc(tabIdx)
+    : 0;
+
+  state.tabs[state.activeId] = String(safeIndex);
   saveState();
 }
 
 export function createEntity(name) {
+  if (!state || typeof name !== 'string' || !name.trim()) return null;
+
   const id = generateId();
-  state.entities.push({ id, name, createdAt: new Date().toISOString() });
+  const trimmed = name.trim().slice(0, MAX_ENTITY_NAME_LEN);
+  state.entities.push({ id, name: trimmed, createdAt: new Date().toISOString() });
   state.progress[id] = {};
   state.tabs[id] = '0';
   state.activeId = id;
@@ -237,15 +335,19 @@ export function createEntity(name) {
 }
 
 export function updateEntity(id, name) {
+  if (!state || typeof name !== 'string' || !name.trim()) return null;
+
   const entity = getEntityById(id);
   if (!entity) return null;
-  entity.name = name;
+
+  const trimmed = name.trim().slice(0, MAX_ENTITY_NAME_LEN);
+  entity.name = trimmed;
   saveState();
   return entity;
 }
 
 export function deleteEntity(id) {
-  if (state.entities.length <= 1) return false;
+  if (!state || state.entities.length <= 1) return false;
 
   const entity = getEntityById(id);
   if (!entity) return false;
@@ -264,7 +366,7 @@ export function deleteEntity(id) {
 }
 
 export function switchEntity(id) {
-  if (id === state.activeId) return null;
+  if (!state || id === state.activeId) return null;
   const entity = getEntityById(id);
   if (!entity) return null;
 
