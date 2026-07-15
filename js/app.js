@@ -3,6 +3,7 @@
       var STATE_KEY = 'bachata-state-v2';
       var OLD_PROGRESS_KEY = 'bachata-progress-v1';
       var OLD_TAB_KEY = 'bachata-tab-v1';
+      var INSTALL_HINT_KEY = 'bachata-install-hint-dismissed';
       var PERIOD_NAMES = ['3 месяца', '3–5 месяцев', '6+ месяцев'];
       var DEFAULT_ENTITY_NAME = 'Мой прогресс';
       var MAX_ENTITY_NAME_LEN = 50;
@@ -277,7 +278,11 @@
       }
 
       function switchTab(index) {
+        var prevTab = currentTabIndex;
         currentTabIndex = index;
+        if (prevTab !== index) {
+          dismissInstallHint();
+        }
         var tabs = document.querySelectorAll('.tab');
         var panels = document.querySelectorAll('.panel');
         for (var i = 0; i < tabs.length; i++) {
@@ -682,6 +687,7 @@
       }
 
       /* Глобальные функции для inline onclick — самый надёжный способ на iOS */
+      window.__bCloseInstallHint = closeInstallHint;
       window.__bOpenSidebar = openSidebar;
       window.__bCloseSidebar = closeSidebar;
       window.__bMenuEntities = function () { closeSidebar(); openEntitiesSheet(); };
@@ -700,6 +706,50 @@
       window.__bSwitchEntity = switchEntity;
       window.__bEditEntity = editEntity;
       window.__bDeleteEntity = deleteEntity;
+
+      function dismissInstallHint() {
+        try { sessionStorage.setItem(INSTALL_HINT_KEY, '1'); } catch (e) { /* ignore */ }
+        var el = document.getElementById('installHint');
+        if (el) el.classList.remove('show');
+        document.documentElement.classList.remove('install-hint-visible');
+        document.documentElement.style.removeProperty('--install-hint-h');
+      }
+
+      function isFirstPageLoad() {
+        try {
+          var nav = performance.getEntriesByType('navigation')[0];
+          if (nav) return nav.type === 'navigate';
+        } catch (e) { /* ignore */ }
+        try {
+          return !sessionStorage.getItem(INSTALL_HINT_KEY);
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function maybeShowInstallHint() {
+        if (document.documentElement.className.indexOf('standalone') !== -1) return;
+        try {
+          if (sessionStorage.getItem(INSTALL_HINT_KEY)) return;
+        } catch (e) { return; }
+        if (!isFirstPageLoad()) return;
+
+        var el = document.getElementById('installHint');
+        if (!el) return;
+
+        setTimeout(function () {
+          try {
+            if (sessionStorage.getItem(INSTALL_HINT_KEY)) return;
+          } catch (e) { return; }
+          el.classList.add('show');
+          document.documentElement.classList.add('install-hint-visible');
+          document.documentElement.style.setProperty('--install-hint-h', el.offsetHeight + 'px');
+        }, 500);
+      }
+
+      function closeInstallHint() {
+        dismissInstallHint();
+      }
 
       function markStandalone() {
         var isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
@@ -737,6 +787,8 @@
           } else {
             updateHeaderSubtitle();
           }
+
+          maybeShowInstallHint();
 
           if (!storageOk) {
             showToast('Хранилище недоступно — прогресс не сохранится');

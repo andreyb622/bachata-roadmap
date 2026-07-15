@@ -313,20 +313,6 @@ body.program {
 
 .search-result-item__text { font-size: 14px; line-height: 1.4; }
 
-.tag-shit {
-  display: inline-block;
-  font-size: 10px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: #ffeaa7;
-  background: rgba(255, 234, 167, 0.12);
-  padding: 2px 7px;
-  border-radius: 6px;
-  margin-left: 6px;
-  vertical-align: middle;
-}
-
 .toast {
   position: fixed;
   bottom: calc(var(--safe-bottom) + var(--tab-h) + 16px);
@@ -365,21 +351,59 @@ body.program {
 }
 
 html.js-ready .ios-hint { display: none; }
-html.js-ready:not(.standalone) .install-hint { display: block; }
 
 .install-hint {
+  position: fixed;
+  top: calc(var(--safe-top) + var(--header-h));
+  left: 0;
+  right: 0;
+  z-index: 95;
   display: none;
+  align-items: flex-start;
+  gap: 10px;
   background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px 14px;
-  margin-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  padding: 12px 12px 12px 16px;
   font-size: 13px;
   line-height: 1.45;
   color: var(--muted);
 }
 
-.install-hint strong { color: var(--accent2); }
+.install-hint.show { display: flex; }
+
+.install-hint__text {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.install-hint__text strong { color: var(--accent2); }
+
+.install-hint__close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  touch-action: manipulation;
+}
+
+.install-hint__close:active { background: var(--accent-glow); color: var(--accent2); }
+
+html.install-hint-visible .app {
+  top: calc(var(--safe-top) + var(--header-h) + var(--install-hint-h, 0px));
+}
+
+html.install-hint-visible {
+  --install-hint-h: 64px;
+}
 
 /* ── Ученики и группы ── */
 
