@@ -1,6 +1,6 @@
-var CACHE_NAME = 'bachata-pwa-v1';
+var CACHE_NAME = 'bachata-pwa-v2';
 var ASSETS = [
-  './programma.html',
+  './index.html',
   './manifest.webmanifest',
   './icons/icon.svg'
 ];
@@ -36,7 +36,7 @@ self.addEventListener('fetch', function (event) {
         return response;
       }).catch(function () {
         if (event.request.mode === 'navigate') {
-          return caches.match('./programma.html');
+          return caches.match('./index.html');
         }
       });
     })

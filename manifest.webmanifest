@@ -2,7 +2,7 @@
   "name": "Бачата — программа",
   "short_name": "Бачата",
   "description": "Программа занятий по бачате с чеклистами и прогрессом",
-  "start_url": "./programma.html",
+  "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",

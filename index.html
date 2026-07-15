@@ -2,13 +2,1465 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=programma.html">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Бачата — программа</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Бачата">
+  <meta name="theme-color" content="#1a1028">
+  <meta name="description" content="Программа занятий по бачате">
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+  <title>Бачата — программа</title>
+  <style>
+    :root {
+      --bg: #0f0a18;
+      --surface: #1a1228;
+      --surface2: #241a36;
+      --border: rgba(255, 255, 255, 0.08);
+      --text: #f5f0fa;
+      --muted: #9b8fb0;
+      --accent: #e84393;
+      --accent2: #fd79a8;
+      --accent-glow: rgba(232, 67, 147, 0.25);
+      --green: #55efc4;
+      --tab-h: 56px;
+      --header-h: 52px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --radius: 14px;
+      --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      height: 100%;
+      -webkit-text-size-adjust: 100%;
+      background: var(--bg);
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      height: 100%;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+      touch-action: manipulation;
+    }
+
+    .app {
+      position: fixed;
+      top: calc(var(--safe-top) + var(--header-h));
+      bottom: calc(var(--safe-bottom) + var(--tab-h));
+      left: 0;
+      right: 0;
+      overflow: hidden;
+    }
+
+    /* Main content — единственная прокручиваемая область */
+    .main {
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      padding: 12px 16px 16px;
+    }
+
+    /* Header */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: calc(var(--safe-top) + var(--header-h));
+      padding-top: var(--safe-top);
+      background: rgba(15, 10, 24, 0.98);
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    .header__title {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .header__subtitle {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .header__btn {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 10px;
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s;
+      touch-action: manipulation;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .header__btn:active { background: var(--accent-glow); color: var(--accent2); }
+
+    .header__actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* Info modal */
+    .info-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 250;
+      background: rgba(0, 0, 0, 0.55);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .info-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .info-sheet {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 251;
+      max-height: calc(100% - var(--safe-top) - var(--header-h) - 16px);
+      background: var(--surface);
+      border-radius: 20px 20px 0 0;
+      border-top: 1px solid var(--border);
+      padding: 16px 20px calc(var(--safe-bottom) + 20px);
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+
+    .info-overlay.show .info-sheet {
+      transform: translateY(0);
+    }
+
+    .info-sheet__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .info-sheet__title {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .info-sheet__close {
+      width: 36px;
+      height: 36px;
+      border: none;
+      border-radius: 10px;
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      touch-action: manipulation;
+    }
+
+    .info-sheet__close:active { background: var(--accent-glow); color: var(--accent2); }
+
+    .info-block {
+      margin-bottom: 16px;
+    }
+
+    .info-block:last-child { margin-bottom: 0; }
+
+    .info-block__title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent2);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .info-block__text {
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--muted);
+    }
+
+    .info-block__text strong { color: var(--text); font-weight: 600; }
+
+    .info-block__list {
+      list-style: none;
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .info-block__list li {
+      position: relative;
+      padding-left: 14px;
+      margin-bottom: 4px;
+    }
+
+    .info-block__list li::before {
+      content: '·';
+      position: absolute;
+      left: 0;
+      color: var(--accent2);
+      font-weight: 700;
+    }
+
+    /* Tab bar */
+    .tabs {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      height: calc(var(--safe-bottom) + var(--tab-h));
+      padding-bottom: var(--safe-bottom);
+      background: rgba(15, 10, 24, 0.98);
+      transform: translateZ(0);
+      -webkit-transform: translateZ(0);
+      border-top: 1px solid var(--border);
+      display: flex;
+    }
+
+    .tab {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      border: none;
+      background: none;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 6px 4px;
+      min-height: 44px;
+      transition: color 0.15s;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .tab__icon { font-size: 20px; line-height: 1; }
+
+    .tab.active { color: var(--accent2); }
+    .tab:active,
+    .tab.tab--touch { opacity: 0.7; }
+
+    /* Main content */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* Period badge */
+    .period-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-glow);
+      color: var(--accent2);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 5px 12px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+      border: 1px solid rgba(232, 67, 147, 0.2);
+    }
+
+    /* Accordion */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .section__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      min-height: 44px;
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: manipulation;
+      gap: 12px;
+    }
+
+    .section__header:active { background: var(--surface2); }
+
+    .section__title {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: -0.2px;
+    }
+
+    .section__count {
+      font-size: 12px;
+      color: var(--muted);
+      background: var(--surface2);
+      padding: 2px 8px;
+      border-radius: 10px;
+      white-space: nowrap;
+    }
+
+    .section__chevron {
+      color: var(--muted);
+      font-size: 12px;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+
+    .section.open .section__chevron { transform: rotate(180deg); }
+
+    .section__body {
+      display: none;
+      padding: 0 8px 8px;
+    }
+
+    .section.open .section__body { display: block; }
+
+    /* Checklist items */
+    .item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 10px;
+      min-height: 44px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.12s;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .item:active,
+    .item.item--touch { background: var(--surface2); }
+
+    .item.done .item__text {
+      color: var(--muted);
+      text-decoration: line-through;
+      text-decoration-color: rgba(155, 143, 176, 0.5);
+    }
+
+    .item__check {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .item.done .item__check {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .item.done .item__check::after {
+      content: "✓";
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .item__text {
+      font-size: 14px;
+      line-height: 1.45;
+      flex: 1;
+    }
+
+    /* Numbered list (main program) */
+    .numbered-item {
+      display: flex;
+      gap: 12px;
+      padding: 11px 10px;
+      border-radius: 10px;
+    }
+
+    .numbered-item__num {
+      width: 24px;
+      height: 24px;
+      border-radius: 8px;
+      background: var(--accent-glow);
+      color: var(--accent2);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .numbered-item__text {
+      font-size: 14px;
+      line-height: 1.45;
+      padding-top: 2px;
+    }
+
+    /* Progress bar */
+    .progress-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+
+    .progress-wrap__label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .progress-wrap__label span:last-child {
+      color: var(--accent2);
+      font-weight: 600;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--surface2);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-bar__fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 3px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    /* Search */
+    .search {
+      position: relative;
+      margin-bottom: 14px;
+    }
+
+    .search__input {
+      width: 100%;
+      padding: 11px 16px 11px 40px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-size: 15px;
+      font-family: var(--font);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .search__input::placeholder { color: var(--muted); }
+    .search__input:focus { border-color: rgba(232, 67, 147, 0.4); }
+
+    .search__icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 16px;
+      pointer-events: none;
+    }
+
+    .search-results { margin-top: 4px; }
+    .search-empty {
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+      padding: 32px 16px;
+    }
+
+    .search-result-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+
+    .search-result-item__period {
+      font-size: 11px;
+      color: var(--accent2);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .search-result-item__text { font-size: 14px; line-height: 1.4; }
+
+    /* Shit block label */
+    .tag-shit {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #ffeaa7;
+      background: rgba(255, 234, 167, 0.12);
+      padding: 2px 7px;
+      border-radius: 6px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    /* Reset toast */
+    .toast {
+      position: fixed;
+      bottom: calc(var(--safe-bottom) + var(--tab-h) + 16px);
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 13px;
+      padding: 10px 18px;
+      border-radius: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s;
+      z-index: 200;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* Подсказка, если JS не запустился (типично для предпросмотра «Файлы») */
+    .ios-hint {
+      position: fixed;
+      top: calc(var(--safe-top) + var(--header-h));
+      left: 0;
+      right: 0;
+      z-index: 300;
+      background: #3d2a00;
+      color: #ffeaa7;
+      font-size: 13px;
+      line-height: 1.45;
+      padding: 10px 16px;
+      border-bottom: 1px solid rgba(255, 234, 167, 0.25);
+    }
+
+    html.js-ready .ios-hint { display: none; }
+
+    html.js-ready:not(.standalone) .install-hint {
+      display: block;
+    }
+
+    .install-hint {
+      display: none;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      margin-bottom: 12px;
+      font-size: 13px;
+      line-height: 1.45;
+      color: var(--muted);
+    }
+
+    .install-hint strong { color: var(--accent2); }
+  </style>
 </head>
 <body>
-  <p><a href="programma.html">Открыть программу бачаты</a></p>
+  <noscript>
+    <div class="ios-hint">JavaScript отключён. Откройте файл в Safari, не в предпросмотре «Файлы».</div>
+  </noscript>
+  <div class="ios-hint" id="iosHint">
+    PWA работает только по HTTPS-ссылке (не из «Файлов»).<br>
+    1) Загрузите папку на <b>netlify.com/drop</b><br>
+    2) Откройте URL в Safari → <b>Поделиться → На экран «Домой»</b><br>
+    3) Или с Mac: <b>./serve.sh</b> → ссылка в Safari
+  </div>
+  <header class="header">
+    <div>
+      <div class="header__title">Бачата</div>
+      <div class="header__subtitle" id="headerSubtitle">Программа занятий</div>
+    </div>
+    <div class="header__actions">
+      <button type="button" class="header__btn" id="infoBtn" title="О приложении" aria-label="О приложении" onclick="window.__bInfo && window.__bInfo()">ℹ</button>
+      <button type="button" class="header__btn" id="resetBtn" title="Сбросить прогресс" aria-label="Сбросить прогресс" onclick="window.__bReset && window.__bReset()">↺</button>
+    </div>
+  </header>
+
+  <div class="info-overlay" id="infoOverlay" onclick="window.__bCloseInfo && window.__bCloseInfo()">
+    <div class="info-sheet" role="dialog" aria-labelledby="infoTitle" onclick="event.stopPropagation()">
+      <div class="info-sheet__header">
+        <h2 class="info-sheet__title" id="infoTitle">О приложении</h2>
+        <button type="button" class="info-sheet__close" aria-label="Закрыть" onclick="window.__bCloseInfo && window.__bCloseInfo()">✕</button>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Что это</div>
+        <p class="info-block__text">
+          <strong>Бачата</strong> — мобильное PWA с программой занятий: разминка, соло, элементы в паре и справочные блоки. Можно установить на экран «Домой» и пользоваться офлайн.
+        </p>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Вкладки</div>
+        <ul class="info-block__list">
+          <li><strong>3 мес / 3–5 / 6+</strong> — программа по этапам обучения</li>
+          <li><strong>Справочник</strong> — рамочка, хват, изоляция, футворк и другие базовые темы</li>
+          <li><strong>Поиск</strong> — быстрый поиск элемента по названию или разделу</li>
+        </ul>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Чеклисты и прогресс</div>
+        <ul class="info-block__list">
+          <li>Нажмите на элемент, чтобы отметить его выполненным</li>
+          <li>Повторное нажатие снимает отметку</li>
+          <li>Над списком — <strong>прогресс-бар</strong> по текущему периоду</li>
+          <li>В заголовке секции — счётчик <strong>выполнено / всего</strong></li>
+          <li>Блоки <strong>Shit block</strong> — дополнительные элементы вне основной программы</li>
+        </ul>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Секции</div>
+        <p class="info-block__text">
+          Нажмите на заголовок раздела (Разминка, Элементы в паре и т.д.), чтобы свернуть или развернуть список.
+        </p>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Поиск</div>
+        <p class="info-block__text">
+          Введите название фигуры или раздела. Нажмите на результат — приложение откроет нужную вкладку и период.
+        </p>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Сохранение</div>
+        <p class="info-block__text">
+          Прогресс и последняя вкладка сохраняются автоматически на устройстве. После первого открытия приложение работает без интернета.
+        </p>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Установка на iPhone</div>
+        <p class="info-block__text">
+          Откройте ссылку в <strong>Safari</strong> → Поделиться → «На экран «Домой»». Не открывайте из приложения «Файлы» — там PWA не работает.
+        </p>
+      </div>
+
+      <div class="info-block">
+        <div class="info-block__title">Сброс прогресса</div>
+        <p class="info-block__text">
+          Кнопка <strong>↺</strong> в шапке сбрасывает все отметки после подтверждения.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="app">
+    <main class="main">
+
+      <!-- Panel: 3 months -->
+      <div class="panel active" id="panel-0" data-period="0">
+        <div class="install-hint" id="installHint">
+          <strong>Установить как приложение:</strong> Safari → Поделиться → «На экран «Домой»». Работает офлайн после первого открытия.
+        </div>
+        <div class="period-badge">🌱 Первые 3 месяца</div>
+        <div class="progress-wrap" data-progress="0">
+          <div class="progress-wrap__label">
+            <span>Прогресс</span>
+            <span class="progress-pct">0%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-bar__fill"></div></div>
+        </div>
+
+        <div class="section open" data-section="0-0">
+          <div class="section__header">
+            <span class="section__title">Разминка</span>
+            <span class="section__count">0/2</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="0-0-0"><div class="item__check"></div><div class="item__text">Перенос веса на месте</div></div>
+            <div class="item" data-id="0-0-1"><div class="item__check"></div><div class="item__text">Грудной отдел — работа лопаток</div></div>
+          </div>
+        </div>
+
+        <div class="section" data-section="0-1">
+          <div class="section__header">
+            <span class="section__title">Соло разминка</span>
+            <span class="section__count">0/2</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="0-1-0"><div class="item__check"></div><div class="item__text">Прогон пройденных фигур</div></div>
+            <div class="item" data-id="0-1-1"><div class="item__check"></div><div class="item__text">Попадание в 1 счёт</div></div>
+          </div>
+        </div>
+
+        <div class="section" data-section="0-2">
+          <div class="section__header">
+            <span class="section__title">Элементы в паре</span>
+            <span class="section__count">0/23</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="0-2-0"><div class="item__check"></div><div class="item__text">Бейсик, шаг с точкой, поворот</div></div>
+            <div class="item" data-id="0-2-1"><div class="item__check"></div><div class="item__text">Обычный поворот партнёрши в паре</div></div>
+            <div class="item" data-id="0-2-2"><div class="item__check"></div><div class="item__text">Прогулка</div></div>
+            <div class="item" data-id="0-2-3"><div class="item__check"></div><div class="item__text">Поворот через фрисби</div></div>
+            <div class="item" data-id="0-2-4"><div class="item__check"></div><div class="item__text">Прогулка через фрисби</div></div>
+            <div class="item" data-id="0-2-5"><div class="item__check"></div><div class="item__text">Повороты партнёров (через плечо)</div></div>
+            <div class="item" data-id="0-2-6"><div class="item__check"></div><div class="item__text">Смена направлений и смена мест, скрестный</div></div>
+            <div class="item" data-id="0-2-7"><div class="item__check"></div><div class="item__text">Аллардо</div></div>
+            <div class="item" data-id="0-2-8"><div class="item__check"></div><div class="item__text">Бросок рук</div></div>
+            <div class="item" data-id="0-2-9"><div class="item__check"></div><div class="item__text">Ганчо</div></div>
+            <div class="item" data-id="0-2-10"><div class="item__check"></div><div class="item__text">Замок</div></div>
+            <div class="item" data-id="0-2-11"><div class="item__check"></div><div class="item__text">V-стэп</div></div>
+            <div class="item" data-id="0-2-12"><div class="item__check"></div><div class="item__text">Квадрат</div></div>
+            <div class="item" data-id="0-2-13"><div class="item__check"></div><div class="item__text">Hammerlock</div></div>
+            <div class="item" data-id="0-2-14"><div class="item__check"></div><div class="item__text">Слайд</div></div>
+            <div class="item" data-id="0-2-15"><div class="item__check"></div><div class="item__text">Поворот с 2 руками</div></div>
+            <div class="item" data-id="0-2-16"><div class="item__check"></div><div class="item__text">Поворот за корпус</div></div>
+            <div class="item" data-id="0-2-17"><div class="item__check"></div><div class="item__text">Кулито, циркуло</div></div>
+            <div class="item" data-id="0-2-18"><div class="item__check"></div><div class="item__text">Полузакрытая и закрытая позиции</div></div>
+            <div class="item" data-id="0-2-19"><div class="item__check"></div><div class="item__text">Ромпе</div></div>
+            <div class="item" data-id="0-2-20"><div class="item__check"></div><div class="item__text">Медиа (поворот для выхода из теневой)</div></div>
+            <div class="item" data-id="0-2-21"><div class="item__check"></div><div class="item__text">Теневая</div></div>
+            <div class="item" data-id="0-2-22"><div class="item__check"></div><div class="item__text">Смена позиций в открытой позиции</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel: 3-5 months -->
+      <div class="panel" id="panel-1" data-period="1">
+        <div class="period-badge">🌿 3–5 месяцев</div>
+        <div class="progress-wrap" data-progress="1">
+          <div class="progress-wrap__label">
+            <span>Прогресс</span>
+            <span class="progress-pct">0%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-bar__fill"></div></div>
+        </div>
+
+        <div class="section open" data-section="1-0">
+          <div class="section__header">
+            <span class="section__title">Разминка</span>
+            <span class="section__count">0/3</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="1-0-0"><div class="item__check"></div><div class="item__text">Принцип маятника на базовых перемещениях (крабом)</div></div>
+            <div class="item" data-id="1-0-1"><div class="item__check"></div><div class="item__text">Принципы работы грудного отдела</div></div>
+            <div class="item" data-id="1-0-2"><div class="item__check"></div><div class="item__text">Зиг-заг</div></div>
+          </div>
+        </div>
+
+        <div class="section" data-section="1-1">
+          <div class="section__header">
+            <span class="section__title">Соло разминка</span>
+            <span class="section__count">0/2</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="1-1-0"><div class="item__check"></div><div class="item__text">Прогон пройденных фигур</div></div>
+            <div class="item" data-id="1-1-1"><div class="item__check"></div><div class="item__text">Бейсик на месте</div></div>
+          </div>
+        </div>
+
+        <div class="section" data-section="1-2">
+          <div class="section__header">
+            <span class="section__title">Элементы в паре</span>
+            <span class="section__count">0/12</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="1-2-0"><div class="item__check"></div><div class="item__text">Side бейсик</div></div>
+            <div class="item" data-id="1-2-1"><div class="item__check"></div><div class="item__text">Мадридский шаг (зиг-заг)</div></div>
+            <div class="item" data-id="1-2-2"><div class="item__check"></div><div class="item__text">Обратный поворот</div></div>
+            <div class="item" data-id="1-2-3"><div class="item__check"></div><div class="item__text">Pico-pico</div></div>
+            <div class="item" data-id="1-2-4"><div class="item__check"></div><div class="item__text">Triple step на месте</div></div>
+            <div class="item" data-id="1-2-5"><div class="item__check"></div><div class="item__text">Open break</div></div>
+            <div class="item" data-id="1-2-6"><div class="item__check"></div><div class="item__text">Прочёс в теневой</div></div>
+            <div class="item" data-id="1-2-7"><div class="item__check"></div><div class="item__text">Импульсо в теневой</div></div>
+            <div class="item" data-id="1-2-8"><div class="item__check"></div><div class="item__text">Мельница</div></div>
+            <div class="item" data-id="1-2-9"><div class="item__check"></div><div class="item__text">Reverse step</div></div>
+            <div class="item" data-id="1-2-10"><div class="item__check"></div><div class="item__text">Reverse turn</div></div>
+            <div class="item" data-id="1-2-11"><div class="item__check"></div><div class="item__text">Кулито в закрытой</div></div>
+          </div>
+        </div>
+
+        <div class="section" data-section="1-3">
+          <div class="section__header">
+            <span class="section__title">Shit block<span class="tag-shit">extra</span></span>
+            <span class="section__count">0/2</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="1-3-0"><div class="item__check"></div><div class="item__text">Боковая поддержка</div></div>
+            <div class="item" data-id="1-3-1"><div class="item__check"></div><div class="item__text">Paseala</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel: 6+ months -->
+      <div class="panel" id="panel-2" data-period="2">
+        <div class="period-badge">🌸 6+ месяцев</div>
+        <div class="progress-wrap" data-progress="2">
+          <div class="progress-wrap__label">
+            <span>Прогресс</span>
+            <span class="progress-pct">0%</span>
+          </div>
+          <div class="progress-bar"><div class="progress-bar__fill"></div></div>
+        </div>
+
+        <div class="section open" data-section="2-0">
+          <div class="section__header">
+            <span class="section__title">Разминка</span>
+            <span class="section__count">0/2</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="2-0-0"><div class="item__check"></div><div class="item__text">Волны</div></div>
+            <div class="item" data-id="2-0-1"><div class="item__check"></div><div class="item__text">Принципы грудного отдела на хедролах</div></div>
+          </div>
+        </div>
+
+        <div class="section" data-section="2-1">
+          <div class="section__header">
+            <span class="section__title">Соло разминка</span>
+            <span class="section__count">0/8</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="2-1-0"><div class="item__check"></div><div class="item__text">Прогон пройденных фигур</div></div>
+            <div class="item" data-id="2-1-1"><div class="item__check"></div><div class="item__text">Bass step</div></div>
+            <div class="item" data-id="2-1-2"><div class="item__check"></div><div class="item__text">На 2, на 6</div></div>
+            <div class="item" data-id="2-1-3"><div class="item__check"></div><div class="item__text">На 3, на 7</div></div>
+            <div class="item" data-id="2-1-4"><div class="item__check"></div><div class="item__text">Двойной поворот</div></div>
+            <div class="item" data-id="2-1-5"><div class="item__check"></div><div class="item__text">Triple cha-cha pico</div></div>
+            <div class="item" data-id="2-1-6"><div class="item__check"></div><div class="item__text">Виды точек</div></div>
+            <div class="item" data-id="2-1-7"><div class="item__check"></div><div class="item__text">Sakaíta</div></div>
+          </div>
+        </div>
+
+        <div class="section" data-section="2-2">
+          <div class="section__header">
+            <span class="section__title">Элементы в паре</span>
+            <span class="section__count">0/11</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="2-2-0"><div class="item__check"></div><div class="item__text">Чистим мадрид с твистом</div></div>
+            <div class="item" data-id="2-2-1"><div class="item__check"></div><div class="item__text">Фронтальная волна в закрытой</div></div>
+            <div class="item" data-id="2-2-2"><div class="item__check"></div><div class="item__text">Боковая волна в закрытой</div></div>
+            <div class="item" data-id="2-2-3"><div class="item__check"></div><div class="item__text">Боковая волна в закрытой на точку</div></div>
+            <div class="item" data-id="2-2-4"><div class="item__check"></div><div class="item__text">Волны в обратном направлении</div></div>
+            <div class="item" data-id="2-2-5"><div class="item__check"></div><div class="item__text">Спуск / подъём (поклон)</div></div>
+            <div class="item" data-id="2-2-6"><div class="item__check"></div><div class="item__text">Обычный хедрол</div></div>
+            <div class="item" data-id="2-2-7"><div class="item__check"></div><div class="item__text">Bass step triple cha-cha pico-pico</div></div>
+            <div class="item" data-id="2-2-8"><div class="item__check"></div><div class="item__text">Двойной поворот</div></div>
+            <div class="item" data-id="2-2-9"><div class="item__check"></div><div class="item__text">Поворот на 2,6 и на 3,7</div></div>
+            <div class="item" data-id="2-2-10"><div class="item__check"></div><div class="item__text">Свивлы</div></div>
+          </div>
+        </div>
+
+        <div class="section" data-section="2-3">
+          <div class="section__header">
+            <span class="section__title">Shit block<span class="tag-shit">extra</span></span>
+            <span class="section__count">0/1</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="2-3-0"><div class="item__check"></div><div class="item__text">Tango step</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel: Reference -->
+      <div class="panel" id="panel-3" data-period="3">
+        <div class="period-badge">📚 Справочник</div>
+
+        <div class="section open" data-section="3-0">
+          <div class="section__header">
+            <span class="section__title">Рамочка, хват и перенос веса</span>
+            <span class="section__count">0/4</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="3-0-0"><div class="item__check"></div><div class="item__text">Игра с переносом веса (за плечи, за локти, в закрытой позиции) — с ноги на ногу, на рамочке сохраняя ось</div></div>
+            <div class="item" data-id="3-0-1"><div class="item__check"></div><div class="item__text">Хват — контроль и фигурный</div></div>
+            <div class="item" data-id="3-0-2"><div class="item__check"></div><div class="item__text">Включить / выключить рамочку, хождение вперёд и назад</div></div>
+            <div class="item" data-id="3-0-3"><div class="item__check"></div><div class="item__text">Игра веса в открытой позиции</div></div>
+          </div>
+        </div>
+
+        <div class="section" data-section="3-1">
+          <div class="section__header">
+            <span class="section__title">Позиции</span>
+            <span class="section__count">0/6</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="3-1-0"><div class="item__check"></div><div class="item__text">Открытая позиция — бейсик в разных направлениях</div></div>
+            <div class="item" data-id="3-1-1"><div class="item__check"></div><div class="item__text">Замах, раскрытие и закрытие объёма в руках</div></div>
+            <div class="item" data-id="3-1-2"><div class="item__check"></div><div class="item__text">Как подойти и закрыть партнёра</div></div>
+            <div class="item" data-id="3-1-3"><div class="item__check"></div><div class="item__text">Переходы закрытая ↔ открытая (руки скользят вниз с контактом)</div></div>
+            <div class="item" data-id="3-1-4"><div class="item__check"></div><div class="item__text">Закрытая позиция — бейсик (боковые, вперёд-назад, квадрат)</div></div>
+            <div class="item" data-id="3-1-5"><div class="item__check"></div><div class="item__text">Полуоткрытая позиция</div></div>
+          </div>
+        </div>
+
+        <div class="section" data-section="3-2">
+          <div class="section__header">
+            <span class="section__title">Музыкальность и ритмы</span>
+            <span class="section__count">0/6</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="3-2-0"><div class="item__check"></div><div class="item__text">Виды музыки бачаты, ритм, фон, проигрыш</div></div>
+            <div class="item" data-id="3-2-1"><div class="item__check"></div><div class="item__text">Обыгрывание ногами ритмов 123и4, 1и2и34</div></div>
+            <div class="item" data-id="3-2-2"><div class="item__check"></div><div class="item__text">Ритм бас (1и34)</div></div>
+            <div class="item" data-id="3-2-3"><div class="item__check"></div><div class="item__text">Три варианта обыгрывания ритма (плавно, доводчик, роботик)</div></div>
+            <div class="item" data-id="3-2-4"><div class="item__check"></div><div class="item__text">Sakaíta и таки-таки в паре</div></div>
+            <div class="item" data-id="3-2-5"><div class="item__check"></div><div class="item__text">Остановочный вперёд + футворк (переборка, таки-таки)</div></div>
+          </div>
+        </div>
+
+        <div class="section" data-section="3-3">
+          <div class="section__header">
+            <span class="section__title">Прогулка и смена направлений</span>
+            <span class="section__count">0/4</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="3-3-0"><div class="item__check"></div><div class="item__text">Прогулка по кругу</div></div>
+            <div class="item" data-id="3-3-1"><div class="item__check"></div><div class="item__text">Смена направлений с поворотами партнёрши</div></div>
+            <div class="item" data-id="3-3-2"><div class="item__check"></div><div class="item__text">Смена направлений при ведении на себе + с hammerlock</div></div>
+            <div class="item" data-id="3-3-3"><div class="item__check"></div><div class="item__text">Аллардо: обычные и обратные повороты, прогулка, шаги вперёд-назад</div></div>
+          </div>
+        </div>
+
+        <div class="section" data-section="3-4">
+          <div class="section__header">
+            <span class="section__title">Основная программа</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="numbered-item"><div class="numbered-item__num">1</div><div class="numbered-item__text">Броски рук сложнее</div></div>
+            <div class="numbered-item"><div class="numbered-item__num">2</div><div class="numbered-item__text">Связка под музыку с видео</div></div>
+            <div class="numbered-item"><div class="numbered-item__num">3</div><div class="numbered-item__text">Хедрол назад</div></div>
+            <div class="numbered-item"><div class="numbered-item__num">4</div><div class="numbered-item__text">Хедрол назад с боковой волны</div></div>
+            <div class="numbered-item"><div class="numbered-item__num">5</div><div class="numbered-item__text">Поддержка с уходом вниз</div></div>
+            <div class="numbered-item"><div class="numbered-item__num">6</div><div class="numbered-item__text">Поддержка (в закрытой в сторону; вперёд — камбре; на себя)</div></div>
+            <div class="numbered-item"><div class="numbered-item__num">7</div><div class="numbered-item__text">Изоляция корпуса, изоляция бёдер и восьмёрки</div></div>
+            <div class="numbered-item"><div class="numbered-item__num">8</div><div class="numbered-item__text">Свивлы (внутренние, внешние на месте и с продвижением)</div></div>
+            <div class="numbered-item"><div class="numbered-item__num">9</div><div class="numbered-item__text">Ведение на пластику в лодочке</div></div>
+          </div>
+        </div>
+
+        <div class="section" data-section="3-5">
+          <div class="section__header">
+            <span class="section__title">Поддержки и камбре</span>
+            <span class="section__count">0/7</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="3-5-0"><div class="item__check"></div><div class="item__text">Камбре (после Rompe, в боковой позиции, в прогулке, после складки)</div></div>
+            <div class="item" data-id="3-5-1"><div class="item__check"></div><div class="item__text">Социальные поддержки (на себя через сторону + складка)</div></div>
+            <div class="item" data-id="3-5-2"><div class="item__check"></div><div class="item__text">Боковое раскрытие партнёрши (сразу и после хедрола)</div></div>
+            <div class="item" data-id="3-5-3"><div class="item__check"></div><div class="item__text">Комбинация: боковая волна, хедрол, раскрытие, фронтальная волна, складка</div></div>
+            <div class="item" data-id="3-5-4"><div class="item__check"></div><div class="item__text">Камбре + кулито</div></div>
+            <div class="item" data-id="3-5-5"><div class="item__check"></div><div class="item__text">Двойной хедрол (у обоих)</div></div>
+            <div class="item" data-id="3-5-6"><div class="item__check"></div><div class="item__text">Хедрол у партнёра (из фронтальной, после обратного поворота, при выходе из теневой)</div></div>
+          </div>
+        </div>
+
+        <div class="section" data-section="3-6">
+          <div class="section__header">
+            <span class="section__title">Замедления, выталкивание, прогулка</span>
+            <span class="section__count">0/6</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="3-6-0"><div class="item__check"></div><div class="item__text">Замедление на 2 и 4 счёта в прогулке</div></div>
+            <div class="item" data-id="3-6-1"><div class="item__check"></div><div class="item__text">Выталкивание в длину (садить бедро) в прогулке и теневой</div></div>
+            <div class="item" data-id="3-6-2"><div class="item__check"></div><div class="item__text">Выталкивание партнёрши в фронтальной плоскости</div></div>
+            <div class="item" data-id="3-6-3"><div class="item__check"></div><div class="item__text">Скольжение по рукам при смене мест</div></div>
+            <div class="item" data-id="3-6-4"><div class="item__check"></div><div class="item__text">Продление контакта при выходе из прогулки</div></div>
+            <div class="item" data-id="3-6-5"><div class="item__check"></div><div class="item__text">Как остановить партнёршу во время танца</div></div>
+          </div>
+        </div>
+
+        <div class="section" data-section="3-7">
+          <div class="section__header">
+            <span class="section__title">Свивлы, изоляция, футворк</span>
+            <span class="section__count">0/5</span>
+            <span class="section__chevron">▼</span>
+          </div>
+          <div class="section__body">
+            <div class="item" data-id="3-7-0"><div class="item__check"></div><div class="item__text">Хук у партнёра (ноги накрест)</div></div>
+            <div class="item" data-id="3-7-1"><div class="item__check"></div><div class="item__text">Свивлы в паре и у девушки в теневой / прогулке</div></div>
+            <div class="item" data-id="3-7-2"><div class="item__check"></div><div class="item__text">Изоляция — точки грудной клеткой, подкрутка бедра, плечи</div></div>
+            <div class="item" data-id="3-7-3"><div class="item__check"></div><div class="item__text">Футворк без ведения с контактом в поднятой руке (переборка, скольжение, таки-таки, кросс по точкам)</div></div>
+            <div class="item" data-id="3-7-4"><div class="item__check"></div><div class="item__text">Ронд</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel: Search -->
+      <div class="panel" id="panel-4">
+        <div class="search">
+          <span class="search__icon">🔍</span>
+          <input class="search__input" id="searchInput" type="search" placeholder="Найти элемент..." autocomplete="off" autocorrect="off" spellcheck="false">
+        </div>
+        <div class="search-results" id="searchResults"></div>
+      </div>
+
+    </main>
+  </div>
+
+  <nav class="tabs" role="tablist">
+    <button type="button" class="tab active" data-tab="0" role="tab" aria-selected="true" onclick="window.__bSwitchTab && window.__bSwitchTab(0)">
+      <span class="tab__icon">🌱</span>
+      <span>3 мес</span>
+    </button>
+    <button type="button" class="tab" data-tab="1" role="tab" onclick="window.__bSwitchTab && window.__bSwitchTab(1)">
+      <span class="tab__icon">🌿</span>
+      <span>3–5</span>
+    </button>
+    <button type="button" class="tab" data-tab="2" role="tab" onclick="window.__bSwitchTab && window.__bSwitchTab(2)">
+      <span class="tab__icon">🌸</span>
+      <span>6+</span>
+    </button>
+    <button type="button" class="tab" data-tab="3" role="tab" onclick="window.__bSwitchTab && window.__bSwitchTab(3)">
+      <span class="tab__icon">📚</span>
+      <span>Справ.</span>
+    </button>
+    <button type="button" class="tab" data-tab="4" role="tab" onclick="window.__bSwitchTab && window.__bSwitchTab(4)">
+      <span class="tab__icon">🔍</span>
+      <span>Поиск</span>
+    </button>
+  </nav>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      var STORAGE_KEY = 'bachata-progress-v1';
+      var TAB_KEY = 'bachata-tab-v1';
+      var PERIOD_NAMES = ['3 месяца', '3–5 месяцев', '6+ месяцев', 'Справочник', 'Поиск'];
+
+      var progress = {};
+      var allItems = [];
+      var storageOk = false;
+
+      /* Совместимость с iPhone/Safari: не полагаемся на Element.closest(). */
+      function matchesSelector(el, selector) {
+        if (!el || el.nodeType !== 1) return false;
+        var fn = el.matches ||
+          el.webkitMatchesSelector ||
+          el.msMatchesSelector ||
+          el.mozMatchesSelector;
+        return fn ? fn.call(el, selector) : false;
+      }
+
+      function closestBySelector(el, selector) {
+        while (el && el !== document) {
+          if (matchesSelector(el, selector)) return el;
+          el = el.parentNode;
+        }
+        return null;
+      }
+
+      /* ── Безопасное хранилище (localStorage + fallback) ── */
+      var memStore = {};
+
+      function testStorage() {
+        try {
+          var k = '__bachata_test__';
+          localStorage.setItem(k, '1');
+          localStorage.removeItem(k);
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function storageGet(key) {
+        if (storageOk) {
+          try { return localStorage.getItem(key); } catch (e) { /* fallthrough */ }
+        }
+        return memStore[key] != null ? memStore[key] : null;
+      }
+
+      function storageSet(key, val) {
+        if (storageOk) {
+          try { localStorage.setItem(key, val); return; } catch (e) { /* fallthrough */ }
+        }
+        memStore[key] = val;
+      }
+
+      function storageRemove(key) {
+        if (storageOk) {
+          try { localStorage.removeItem(key); } catch (e) { /* fallthrough */ }
+        }
+        delete memStore[key];
+      }
+
+      function loadProgress() {
+        try {
+          var raw = storageGet(STORAGE_KEY);
+          progress = raw ? JSON.parse(raw) : {};
+        } catch (e) {
+          progress = {};
+        }
+      }
+
+      function saveProgress() {
+        try {
+          storageSet(STORAGE_KEY, JSON.stringify(progress));
+        } catch (e) { /* ignore */ }
+      }
+
+      function applyProgress() {
+        var items = document.querySelectorAll('.item[data-id]');
+        for (var i = 0; i < items.length; i++) {
+          var item = items[i];
+          var id = item.getAttribute('data-id');
+          if (progress[id]) {
+            item.classList.add('done');
+          } else {
+            item.classList.remove('done');
+          }
+        }
+        updateCounts();
+      }
+
+      function updateCounts() {
+        var sections = document.querySelectorAll('.section');
+        for (var s = 0; s < sections.length; s++) {
+          var section = sections[s];
+          var secItems = section.querySelectorAll('.item[data-id]');
+          if (!secItems.length) continue;
+          var done = 0;
+          for (var j = 0; j < secItems.length; j++) {
+            if (secItems[j].classList.contains('done')) done++;
+          }
+          var countEl = section.querySelector('.section__count');
+          if (countEl) countEl.textContent = done + '/' + secItems.length;
+        }
+
+        var wraps = document.querySelectorAll('.progress-wrap[data-progress]');
+        for (var w = 0; w < wraps.length; w++) {
+          var wrap = wraps[w];
+          var period = wrap.getAttribute('data-progress');
+          var panel = document.getElementById('panel-' + period);
+          if (!panel) continue;
+          var pItems = panel.querySelectorAll('.item[data-id]');
+          var pDone = 0;
+          for (var k = 0; k < pItems.length; k++) {
+            if (progress[pItems[k].getAttribute('data-id')]) pDone++;
+          }
+          var pct = pItems.length ? Math.round((pDone / pItems.length) * 100) : 0;
+          var pctEl = wrap.querySelector('.progress-pct');
+          var fillEl = wrap.querySelector('.progress-bar__fill');
+          if (pctEl) pctEl.textContent = pct + '%';
+          if (fillEl) fillEl.style.width = pct + '%';
+        }
+      }
+
+      function showToast(msg) {
+        var toast = document.getElementById('toast');
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(function () { toast.classList.remove('show'); }, 2000);
+      }
+
+      function switchTab(index) {
+        var tabs = document.querySelectorAll('.tab');
+        var panels = document.querySelectorAll('.panel');
+        for (var i = 0; i < tabs.length; i++) {
+          if (i === index) {
+            tabs[i].classList.add('active');
+            tabs[i].setAttribute('aria-selected', 'true');
+          } else {
+            tabs[i].classList.remove('active');
+            tabs[i].setAttribute('aria-selected', 'false');
+          }
+        }
+        for (var p = 0; p < panels.length; p++) {
+          if (p === index) {
+            panels[p].classList.add('active');
+          } else {
+            panels[p].classList.remove('active');
+          }
+        }
+        var subtitle = document.getElementById('headerSubtitle');
+        if (subtitle) {
+          subtitle.textContent = index < 4 ? PERIOD_NAMES[index] : 'Поиск по элементам';
+        }
+        storageSet(TAB_KEY, String(index));
+
+        var main = document.querySelector('.main');
+        if (main) main.scrollTop = 0;
+
+        if (index === 4) {
+          var searchInput = document.getElementById('searchInput');
+          if (searchInput) {
+            setTimeout(function () { searchInput.focus(); }, 100);
+          }
+        }
+      }
+
+      function toggleItem(item) {
+        var id = item.getAttribute('data-id');
+        if (!id) return;
+        if (progress[id]) {
+          delete progress[id];
+          item.classList.remove('done');
+        } else {
+          progress[id] = true;
+          item.classList.add('done');
+        }
+        saveProgress();
+        updateCounts();
+      }
+
+      function buildSearchIndex() {
+        allItems = [];
+        var items = document.querySelectorAll('.panel .item[data-id]');
+        for (var i = 0; i < items.length; i++) {
+          var item = items[i];
+          var panel = closestBySelector(item, '.panel');
+          if (!panel || panel.id === 'panel-4') continue;
+          var periodIdx = parseInt(panel.getAttribute('data-period'), 10);
+          if (isNaN(periodIdx)) continue;
+          var section = closestBySelector(item, '.section');
+          var titleEl = section ? section.querySelector('.section__title') : null;
+          var sectionTitle = titleEl ? titleEl.textContent.replace(/extra/gi, '').trim() : '';
+          var textEl = item.querySelector('.item__text');
+          allItems.push({
+            id: item.getAttribute('data-id'),
+            text: textEl ? textEl.textContent : '',
+            period: PERIOD_NAMES[periodIdx] || '',
+            section: sectionTitle,
+            periodIdx: periodIdx
+          });
+        }
+      }
+
+      function highlight(text, q) {
+        var lower = text.toLowerCase();
+        var idx = lower.indexOf(q);
+        if (idx === -1) return text;
+        return text.slice(0, idx) +
+          '<mark style="background:rgba(232,67,147,0.3);color:inherit;border-radius:2px">' +
+          text.slice(idx, idx + q.length) + '</mark>' +
+          text.slice(idx + q.length);
+      }
+
+      function onSearchInput() {
+        var searchInput = document.getElementById('searchInput');
+        var searchResults = document.getElementById('searchResults');
+        if (!searchInput || !searchResults) return;
+
+        var q = searchInput.value.trim().toLowerCase();
+        if (!q) {
+          searchResults.innerHTML = '';
+          return;
+        }
+
+        var matches = [];
+        for (var i = 0; i < allItems.length; i++) {
+          var it = allItems[i];
+          if (it.text.toLowerCase().indexOf(q) !== -1 ||
+              it.section.toLowerCase().indexOf(q) !== -1) {
+            matches.push(it);
+          }
+        }
+
+        if (!matches.length) {
+          searchResults.innerHTML = '<div class="search-empty">Ничего не найдено</div>';
+          return;
+        }
+
+        var html = '';
+        for (var m = 0; m < matches.length; m++) {
+          var match = matches[m];
+          html += '<div class="search-result-item" data-goto="' + match.periodIdx + '">' +
+            '<div class="search-result-item__period">' + match.period + ' · ' + match.section + '</div>' +
+            '<div class="search-result-item__text">' + highlight(match.text, q) + '</div>' +
+            '</div>';
+        }
+        searchResults.innerHTML = html;
+      }
+
+      function bindInteractions() {
+        var headers = document.querySelectorAll('.section__header');
+        for (var h = 0; h < headers.length; h++) {
+          (function (header) {
+            header.addEventListener('click', function () {
+              var section = closestBySelector(header, '.section');
+              if (section) section.classList.toggle('open');
+            });
+          })(headers[h]);
+        }
+
+        var items = document.querySelectorAll('.item[data-id]');
+        for (var i = 0; i < items.length; i++) {
+          (function (item) {
+            item.addEventListener('click', function () {
+              toggleItem(item);
+            });
+          })(items[i]);
+        }
+
+        var searchResults = document.getElementById('searchResults');
+        if (searchResults) {
+          searchResults.addEventListener('click', function (e) {
+            var result = closestBySelector(e.target, '.search-result-item');
+            if (!result) return;
+            switchTab(parseInt(result.getAttribute('data-goto'), 10));
+            var si = document.getElementById('searchInput');
+            if (si) si.value = '';
+            searchResults.innerHTML = '';
+          });
+        }
+      }
+
+      function resetProgress() {
+        if (confirm('Сбросить весь прогресс?')) {
+          progress = {};
+          storageRemove(STORAGE_KEY);
+          applyProgress();
+          showToast('Прогресс сброшен');
+        }
+      }
+
+      function openInfo() {
+        var overlay = document.getElementById('infoOverlay');
+        if (!overlay) return;
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeInfo() {
+        var overlay = document.getElementById('infoOverlay');
+        if (!overlay) return;
+        overlay.classList.remove('show');
+        document.body.style.overflow = 'hidden';
+      }
+
+      /* Глобальные функции для inline onclick — самый надёжный способ на iOS */
+      window.__bSwitchTab = switchTab;
+      window.__bReset = resetProgress;
+      window.__bInfo = openInfo;
+      window.__bCloseInfo = closeInfo;
+
+      function registerServiceWorker() {
+        if (!('serviceWorker' in navigator)) return;
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('./sw.js').catch(function () { /* ignore */ });
+        });
+      }
+
+      function markStandalone() {
+        var isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+          window.navigator.standalone === true;
+        if (isStandalone) {
+          document.documentElement.className += ' standalone';
+        }
+      }
+
+      function init() {
+        try {
+          document.documentElement.className += ' js-ready';
+          markStandalone();
+          registerServiceWorker();
+          storageOk = testStorage();
+          bindInteractions();
+
+          var searchInput = document.getElementById('searchInput');
+          if (searchInput) {
+            searchInput.addEventListener('input', onSearchInput);
+          }
+
+          buildSearchIndex();
+          loadProgress();
+          applyProgress();
+
+          var savedTab = storageGet(TAB_KEY);
+          if (savedTab !== null && savedTab !== '') {
+            var tabIdx = parseInt(savedTab, 10);
+            if (!isNaN(tabIdx) && tabIdx >= 0 && tabIdx <= 4) {
+              switchTab(tabIdx);
+            }
+          }
+
+          if (!storageOk) {
+            showToast('Хранилище недоступно — прогресс не сохранится');
+          }
+        } catch (err) {
+          var sub = document.getElementById('headerSubtitle');
+          if (sub) sub.textContent = 'Ошибка загрузки скрипта';
+        }
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+    })();
+  </script>
 </body>
 </html>
