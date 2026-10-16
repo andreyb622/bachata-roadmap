@@ -9,9 +9,10 @@ paths and commands stay as is.
 
 ## Current state
 
-Migration from vanilla JS to Vue 3 + PWA is in progress — plan, stack, architecture, data contract and stages:
-`.claude/plans/vue-migration.md`. Each stage runs as a separate `/team` task on branch `vue-migration`.
-Until stage 11 the old app (repo root before stage 1, `legacy/` after) is the reference for behavior, copy and styles.
+Migration from vanilla JS to Vue 3 + PWA: stages 0–11 are done; stage 12 (owner acceptance on an iPhone, merge
+`vue-migration` → `main`) is still open — plan, stack, architecture, data contract and stages:
+`.claude/plans/vue-migration.md`. Stages ran as separate `/team` tasks on branch `vue-migration`.
+There is no legacy app in the repo; the old behavior can be looked up in git history (until the merge, also in `main`).
 
 ## Language of files
 

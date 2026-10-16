@@ -23,7 +23,7 @@ Look for, in priority order:
 1. Bugs: wrong logic, unhandled storage errors, missing null checks, broken reactivity, races, leaks (listeners, timers, subscriptions).
 2. Plan mismatch: a plan step not done, or changes outside the plan's scope.
 3. Broken contracts: stored data keys/shape, progress item ids, service worker URL/scope, props, emits, store shape, routes — and callers not updated.
-   For ported features: behavior or Russian copy that differs from the legacy reference (`legacy/` or the repo-root vanilla app).
+   For ported features: behavior or Russian copy that differs from the existing `src/` reference (old behavior only via git history if needed).
 4. Project rules violations (cite the rule file), incl. inline `style`/`:style`, CSS inside `.vue`, non-BEM or appearance-based class names.
 5. Missing tests for new logic in utils/composables/stores.
 Do not report formatting (prettier/eslint already ran) or matters of taste.

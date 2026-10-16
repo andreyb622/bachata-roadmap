@@ -14,7 +14,7 @@ If context is insufficient to plan safely, do not guess: write the missing facts
 Write `.claude/work/plan.md` (overwrite), max 80 lines:
 - `## Goal` — one line.
 - `## Steps` — numbered. Each step: `file path` — exact change — done criterion.
-  Prefer the smallest change. Follow project patterns from context and `.claude/rules/` (KISS, YAGNI, reuse existing components, composables and `src/lib` utils). Styles go to a separate `.css` file per component. For ported features, behavior and Russian copy must match the legacy reference in context.
+  Prefer the smallest change. Follow project patterns from context and `.claude/rules/` (KISS, YAGNI, reuse existing components, composables and `src/lib` utils). Styles go to a separate `.css` file per component. For ported features, behavior and Russian copy must match the existing `src/` reference in context (old behavior only via git history if needed).
 - `## Tests` — exact commands to run, targeted only:
   - single test file: `npx vitest run <path/to/file.spec.ts>`
   - lint touched files: `npx eslint <files>`

@@ -113,12 +113,12 @@ on the user's request, following the `git-commit` skill (RS School / Conventiona
 | 3 | Storage | /team (`storage-migration` skill) | `lib/storage.ts` 1:1 with legacy + recovery tests | ✅ `930cd76` |
 | 4 | Store and composables | /team | `useProfilesStore`, `useToast`, `useStandalone` + tests | ✅ `2fdf40b` |
 | 5 | UI shell | /team | header, bottom tabs, routing, toast, styles, install hint | ✅ `13e313c` |
-| 6 | Program screen | /team | sections, checklist, progress bar, counters, collapsing | |
-| 7 | Search | /team | search with highlighting, jump to the item | |
-| 8 | Menu and overlays | /team | menu, «О приложении», students/groups, form, confirmations, reset | |
-| 9 | Elements by blocks | /team | `#/elements` with all 41 sections and the table | |
-| 10 | PWA | /team | vite-plugin-pwa, manifest, SVG icon, legacy cache cleanup, `elementy.html` redirect | |
-| 11 | Deploy | /team | GitHub Actions workflow, `base`, removal of `legacy/` and old files | |
+| 6 | Program screen | /team | sections, checklist, progress bar, counters, collapsing | ✅ done |
+| 7 | Search | /team | search with highlighting, jump to the item | ✅ done |
+| 8 | Menu and overlays | /team | menu, «О приложении», students/groups, form, confirmations, reset | ✅ done |
+| 9 | Elements by blocks | /team | `#/elements` with all 41 sections and the table | ✅ done |
+| 10 | PWA | /team | vite-plugin-pwa, manifest, SVG icon, legacy cache cleanup, `elementy.html` redirect | ✅ done |
+| 11 | Deploy | /team | GitHub Actions workflow, `base`, removal of `legacy/` and old files | ✅ done |
 | 12 | Acceptance | `pwa-release-check` skill + the owner on an iPhone | update from the old version without data loss → merge into `main` | |
 
 ### Progress log
@@ -126,7 +126,8 @@ on the user's request, following the `git-commit` skill (RS School / Conventiona
 - Stages 0–5 are done and pushed to `origin/vue-migration` (2026-10-16). Paused before stage 6 at the owner's request.
 - Not verified yet: the UI shell in a real browser/iPhone (no browser in the session) — check with `npm run dev`.
 - Pipeline fixes made on the way: executor writes `report.md` via Bash; `/team` baseline snapshot includes untracked files.
-- Next: stage 6 (program screen).
+- Stages 6–11 are done (program screen, search, menu and overlays, elements, PWA, deploy workflow, `legacy/` removed).
+- Next: stage 12 (owner acceptance on an iPhone, Pages Source = GitHub Actions, merge `vue-migration` → `main`).
 
 ### /team task texts
 

@@ -10,7 +10,7 @@ Rules: `.claude/rules/pwa.md` (User data section), `testing.md`.
 
 ## 1. Inventory
 
-1. Read `src/lib/storage.ts` (or legacy `js/storage.js`): current keys, version, stored type, backup keys, fallback logic.
+1. Read `src/lib/storage.ts`: current keys, version, stored type, backup keys, fallback logic.
 2. Write down the **current** stored shape as a type `StoredStateVn` and collect 2–3 real example payloads
    (from tests, or ask the user to copy `localStorage` from the device via Safari Web Inspector).
 3. Determine whether item ids change. Positional ids (`period-section-item`) change when content is reordered/inserted —
