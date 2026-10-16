@@ -1,0 +1,52 @@
+.install-hint {
+  position: fixed;
+  top: calc(var(--safe-top) + var(--header-h));
+  left: 0;
+  right: 0;
+  z-index: var(--z-hint);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 12px 12px 16px;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.install-hint__text {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.install-hint__text strong {
+  color: var(--accent2);
+}
+
+.install-hint__close {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  touch-action: manipulation;
+}
+
+.install-hint__close:active {
+  background: var(--accent-glow);
+  color: var(--accent2);
+}
+
+.install-hint__close:focus-visible {
+  outline: 2px solid var(--accent2);
+  outline-offset: 2px;
+}

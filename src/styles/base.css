@@ -1,0 +1,46 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+  -webkit-text-size-adjust: 100%;
+  background: var(--bg);
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  -webkit-tap-highlight-color: transparent;
+  -webkit-font-smoothing: antialiased;
+  touch-action: manipulation;
+}
+
+html,
+body,
+#app {
+  height: 100dvh;
+}
+
+.ios-hint {
+  position: fixed;
+  top: calc(var(--safe-top) + var(--header-h));
+  left: 0;
+  right: 0;
+  z-index: 300;
+  background: var(--warn-bg);
+  color: var(--warn-text);
+  font-size: 13px;
+  line-height: 1.45;
+  padding: 10px 16px;
+  border-bottom: 1px solid rgba(255, 234, 167, 0.25);
+}
+
+html.js-ready .ios-hint {
+  display: none;
+}

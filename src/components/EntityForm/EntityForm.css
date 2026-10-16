@@ -1,0 +1,64 @@
+.entity-form {
+  padding-top: 4px;
+}
+
+.entity-form__label {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.entity-form__input {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 16px;
+  font-family: var(--font);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  margin-bottom: 16px;
+}
+
+.entity-form__input::placeholder {
+  color: var(--muted);
+}
+
+.entity-form__input:focus {
+  border-color: var(--accent);
+}
+
+.entity-form__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.entity-form__button {
+  flex: 1;
+  min-height: 44px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.entity-form__button:active {
+  opacity: 0.85;
+}
+
+.entity-form__button--secondary {
+  background: var(--surface2);
+  color: var(--muted);
+}
+
+.entity-form__button--primary {
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: var(--text);
+}

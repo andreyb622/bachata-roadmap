@@ -1,0 +1,25 @@
+.confirm-dialog__button {
+  flex: 1;
+  min-height: 44px;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.confirm-dialog__button:active {
+  opacity: 0.85;
+}
+
+.confirm-dialog__button--secondary {
+  background: var(--surface2);
+  color: var(--muted);
+}
+
+.confirm-dialog__button--danger {
+  background: var(--danger);
+  color: var(--bg);
+}

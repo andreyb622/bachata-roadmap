@@ -1,0 +1,56 @@
+.bottom-tabs {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-tabs);
+  height: calc(var(--safe-bottom) + var(--tab-h));
+  padding-bottom: var(--safe-bottom);
+  background: var(--header-bg);
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  border-top: 1px solid var(--border);
+  display: flex;
+}
+
+.bottom-tabs__tab {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 6px 4px;
+  min-height: 44px;
+  transition: color 0.15s;
+  -webkit-user-select: none;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.bottom-tabs__tab:active {
+  opacity: 0.7;
+}
+
+.bottom-tabs__tab:focus-visible {
+  outline: 2px solid var(--accent2);
+  outline-offset: -2px;
+}
+
+.bottom-tabs__tab[aria-selected='true'] {
+  color: var(--accent2);
+}
+
+.bottom-tabs__icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
+.bottom-tabs__label {
+  font-size: 10px;
+  font-weight: 500;
+}
