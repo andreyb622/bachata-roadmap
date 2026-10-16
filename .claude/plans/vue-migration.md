@@ -112,7 +112,7 @@ on the user's request, following the `git-commit` skill (RS School / Conventiona
 | 2 | Data and errors | /team | `data/*`, `lib/errors.ts` + id tests | ✅ `3c84682` |
 | 3 | Storage | /team (`storage-migration` skill) | `lib/storage.ts` 1:1 with legacy + recovery tests | ✅ `930cd76` |
 | 4 | Store and composables | /team | `useProfilesStore`, `useToast`, `useStandalone` + tests | ✅ `2fdf40b` |
-| 5 | UI shell | /team | header, bottom tabs, routing, toast, styles, install hint | |
+| 5 | UI shell | /team | header, bottom tabs, routing, toast, styles, install hint | ✅ `13e313c` |
 | 6 | Program screen | /team | sections, checklist, progress bar, counters, collapsing | |
 | 7 | Search | /team | search with highlighting, jump to the item | |
 | 8 | Menu and overlays | /team | menu, «О приложении», students/groups, form, confirmations, reset | |
@@ -120,6 +120,13 @@ on the user's request, following the `git-commit` skill (RS School / Conventiona
 | 10 | PWA | /team | vite-plugin-pwa, manifest, SVG icon, legacy cache cleanup, `elementy.html` redirect | |
 | 11 | Deploy | /team | GitHub Actions workflow, `base`, removal of `legacy/` and old files | |
 | 12 | Acceptance | `pwa-release-check` skill + the owner on an iPhone | update from the old version without data loss → merge into `main` | |
+
+### Progress log
+
+- Stages 0–5 are done and pushed to `origin/vue-migration` (2026-10-16). Paused before stage 6 at the owner's request.
+- Not verified yet: the UI shell in a real browser/iPhone (no browser in the session) — check with `npm run dev`.
+- Pipeline fixes made on the way: executor writes `report.md` via Bash; `/team` baseline snapshot includes untracked files.
+- Next: stage 6 (program screen).
 
 ### /team task texts
 
