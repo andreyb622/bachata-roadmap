@@ -52,3 +52,13 @@ Vue 3, TypeScript, Vite, Pinia, vite-plugin-pwa, Vitest.
 
 Push в `main` → GitHub Actions (type-check, eslint, тесты, сборка) → GitHub Pages.
 В репозитории: Settings → Pages → Source: GitHub Actions.
+
+## Версия
+
+Версия показывается внизу бокового меню: «Версия 2.0.N · дата сборки · коммит».
+
+- `N` подставляется автоматически при каждом деплое — это номер запуска workflow в GitHub Actions
+  (`GITHUB_RUN_NUMBER`). Коммитить смену версии не нужно.
+- Первые две цифры берутся из `version` в `package.json`. Меняйте их вручную для крупных релизов
+  (например, `2.0.0` → `2.1.0`); последняя цифра в `package.json` ни на что не влияет.
+- При локальной сборке версия берётся из `package.json` как есть.

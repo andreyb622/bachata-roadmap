@@ -9,6 +9,16 @@ const packageJson = JSON.parse(
   readFileSync(new URL('./package.json', import.meta.url), 'utf8'),
 ) as { version: string };
 
+// In CI the patch number is the workflow run number, so every deploy gets a new version
+// without a version-bump commit; local builds show the version from package.json as is.
+function readAppVersion(): string {
+  const runNumber = process.env.GITHUB_RUN_NUMBER;
+  if (!runNumber) return packageJson.version;
+
+  const [major = '0', minor = '0'] = packageJson.version.split('.');
+  return `${major}.${minor}.${runNumber}`;
+}
+
 function readBuildCommit(): string {
   try {
     return execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim();
@@ -20,7 +30,7 @@ function readBuildCommit(): string {
 export default defineConfig({
   base: '/bachata-roadmap/',
   define: {
-    __APP_VERSION__: JSON.stringify(packageJson.version),
+    __APP_VERSION__: JSON.stringify(readAppVersion()),
     __BUILD_DATE__: JSON.stringify(new Date().toISOString().slice(0, 10)),
     __BUILD_COMMIT__: JSON.stringify(readBuildCommit()),
   },
