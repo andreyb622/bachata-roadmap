@@ -3,6 +3,7 @@ import { createPinia } from 'pinia';
 import App from './App.vue';
 import { router } from './router';
 import { useToast } from './composables/useToast';
+import { usePwaUpdate } from '@/composables/usePwaUpdate';
 import { ERROR_CODES } from './lib/errors';
 import './styles/tokens.css';
 import './styles/base.css';
@@ -29,3 +30,5 @@ try {
   console.error(err);
   useToast().showError(ERROR_CODES.APP_INIT_FAILED);
 }
+
+usePwaUpdate();
