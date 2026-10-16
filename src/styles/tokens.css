@@ -23,6 +23,9 @@
   --z-hint: 95;
   --z-header: 100;
   --z-tabs: 100;
-  --z-toast: 200;
+  --z-menu: 240;
+  --z-sheet: 250;
+  --z-dialog: 260;
+  --z-toast: 300;
   --install-hint-h-fallback: 64px;
 }
