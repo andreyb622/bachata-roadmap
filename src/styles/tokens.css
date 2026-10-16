@@ -1,4 +1,28 @@
 :root {
   --bg: #0f0a18;
+  --surface: #1a1228;
+  --surface2: #241a36;
+  --border: rgba(255, 255, 255, 0.08);
   --text: #f5f0fa;
+  --muted: #9b8fb0;
+  --accent: #e84393;
+  --accent2: #fd79a8;
+  --accent-glow: rgba(232, 67, 147, 0.25);
+  --green: #55efc4;
+  --tab-h: 56px;
+  --header-h: 52px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --radius: 14px;
+  --font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+  --header-bg: rgba(15, 10, 24, 0.98);
+  --danger: #ff7675;
+  --warn-bg: #3d2a00;
+  --warn-text: #ffeaa7;
+  --overlay: rgba(0, 0, 0, 0.55);
+  --z-hint: 95;
+  --z-header: 100;
+  --z-tabs: 100;
+  --z-toast: 200;
+  --install-hint-h-fallback: 64px;
 }

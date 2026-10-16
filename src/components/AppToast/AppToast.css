@@ -1,0 +1,30 @@
+.app-toast {
+  position: fixed;
+  bottom: calc(var(--safe-bottom) + var(--tab-h) + 16px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 13px;
+  padding: 10px 18px;
+  border-radius: 20px;
+  pointer-events: none;
+  z-index: var(--z-toast);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .app-toast-enter-active,
+  .app-toast-leave-active {
+    transition:
+      opacity 0.25s,
+      transform 0.25s;
+  }
+
+  .app-toast-enter-from,
+  .app-toast-leave-to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(20px);
+  }
+}
