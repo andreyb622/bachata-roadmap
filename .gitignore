@@ -1,4 +1,5 @@
 .DS_Store
-.claude*
+.claude/settings.local.json
+.claude/work/
 node_modules
 dist
