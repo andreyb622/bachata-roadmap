@@ -80,7 +80,7 @@ watch(tab, (next, prev) => {
   <InstallHint :visible="isVisible" @close="dismiss" />
   <div class="app" :class="{ 'is-tabs-hidden': route.meta.hideTabs }">
     <main ref="main" class="app__main">
-      <RouterView />
+      <RouterView v-if="!initFailed" />
     </main>
   </div>
   <BottomTabs v-if="!route.meta.hideTabs" :active-tab="tab" @select="onSelect" />
