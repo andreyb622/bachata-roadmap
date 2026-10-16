@@ -5,6 +5,7 @@ import { createMemoryHistory, createRouter } from 'vue-router';
 import App from '@/App.vue';
 import { useToast } from '@/composables/useToast';
 import { ERROR_CODES, getUserMessage } from '@/lib/errors';
+import ProgramPage from '@/pages/ProgramPage/ProgramPage.vue';
 import { routes } from '@/router';
 
 vi.mock('@/stores/useProfilesStore', () => ({
@@ -31,6 +32,7 @@ describe('App init failure', () => {
     });
     await wrapper.vm.$nextTick();
     expect(wrapper.text()).toContain('Ошибка загрузки');
+    expect(wrapper.findComponent(ProgramPage).exists()).toBe(false);
     expect(document.body.querySelector('[role="status"]')?.textContent).toBe(
       getUserMessage(ERROR_CODES.APP_INIT_FAILED),
     );
