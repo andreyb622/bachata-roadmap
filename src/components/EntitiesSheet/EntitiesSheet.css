@@ -1,0 +1,119 @@
+.entities-sheet__list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.entities-sheet__empty {
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 24px 8px;
+}
+
+.entities-sheet__empty strong {
+  color: var(--accent2);
+}
+
+.entities-sheet__item {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.entities-sheet__item--active {
+  border-color: var(--accent-glow);
+  background: var(--accent-glow);
+}
+
+.entities-sheet__main {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  padding: 12px 14px;
+  border: none;
+  background: none;
+  color: var(--text);
+  font-family: var(--font);
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.entities-sheet__main:active {
+  opacity: 0.75;
+}
+
+.entities-sheet__name {
+  font-size: 15px;
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.entities-sheet__percent {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent2);
+}
+
+.entities-sheet__badge {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--accent2);
+  background: var(--accent-glow);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.entities-sheet__actions {
+  display: flex;
+  align-items: center;
+  padding-right: 4px;
+}
+
+.entities-sheet__action {
+  width: 44px;
+  height: 44px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.entities-sheet__action:active {
+  color: var(--accent2);
+}
+
+.entities-sheet__action--danger:active {
+  color: var(--danger);
+}
+
+.entities-sheet__main:focus-visible,
+.entities-sheet__action:focus-visible {
+  outline: 2px solid var(--accent2);
+}

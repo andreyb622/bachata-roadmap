@@ -6,6 +6,7 @@ import { createMemoryHistory, createRouter } from 'vue-router';
 import App from '@/App.vue';
 import { useToast } from '@/composables/useToast';
 import { getSavedTabIndex, initStorage, setSavedTabIndex } from '@/lib/storage';
+import { useProfilesStore } from '@/stores/useProfilesStore';
 import { routes } from '@/router';
 
 let wrapper: VueWrapper | null = null;
@@ -72,5 +73,65 @@ describe('App', () => {
   it('menu button click does not throw', async () => {
     const { wrapper } = await mountApp('/program/0');
     await expect(wrapper.find('button[aria-label="Меню"]').trigger('click')).resolves.not.toThrow();
+  });
+
+  it('menu button opens the side menu', async () => {
+    const { wrapper } = await mountApp('/program/0');
+    await wrapper.find('button[aria-label="Меню"]').trigger('click');
+    await wrapper.vm.$nextTick();
+    expect(document.body.textContent).toContain('Меню');
+    expect(document.body.querySelector('aside[role="dialog"]')).not.toBeNull();
+  });
+
+  it('returns focus to the menu button after a sheet opened from the menu closes', async () => {
+    const { wrapper } = await mountApp('/program/0');
+    const menuButton = wrapper.find<HTMLButtonElement>('button[aria-label="Меню"]');
+    menuButton.element.focus();
+    await menuButton.trigger('click');
+    await wrapper.vm.$nextTick();
+    const infoItem = document.body.querySelector<HTMLButtonElement>('[data-test="menu-info"]');
+    infoItem?.focus();
+    infoItem?.click();
+    await wrapper.vm.$nextTick();
+    await wrapper.vm.$nextTick();
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+    await wrapper.vm.$nextTick();
+    await wrapper.vm.$nextTick();
+    expect(document.activeElement).toBe(menuButton.element);
+  });
+
+  async function openReset(wrapper: VueWrapper) {
+    await wrapper.find('button[aria-label="Меню"]').trigger('click');
+    await wrapper.vm.$nextTick();
+    document.body.querySelector<HTMLButtonElement>('[data-test="menu-reset"]')?.click();
+    await wrapper.vm.$nextTick();
+    await wrapper.vm.$nextTick();
+  }
+
+  it('reset confirm clears only the active progress', async () => {
+    const { wrapper } = await mountApp('/program/0');
+    const store = useProfilesStore();
+    store.toggleItem('item-a');
+    const first = store.activeEntityId;
+    expect(first).not.toBeNull();
+    store.createEntity('Другой');
+    store.toggleItem('item-b');
+    await openReset(wrapper);
+    document.body.querySelector<HTMLButtonElement>('[data-test="confirm-accept"]')?.click();
+    await wrapper.vm.$nextTick();
+    expect(store.activeProgress).toEqual({});
+    expect(useToast().current.value).toBe('Прогресс сброшен');
+    store.switchEntity(first ?? '');
+    expect(store.activeProgress).toEqual({ 'item-a': true });
+  });
+
+  it('reset cancel keeps the progress', async () => {
+    const { wrapper } = await mountApp('/program/0');
+    const store = useProfilesStore();
+    store.toggleItem('item-a');
+    await openReset(wrapper);
+    document.body.querySelector<HTMLButtonElement>('[data-test="confirm-cancel"]')?.click();
+    await wrapper.vm.$nextTick();
+    expect(store.activeProgress).toEqual({ 'item-a': true });
   });
 });
