@@ -1,10 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import type { MockInstance } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import type { VueWrapper } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import { createMemoryHistory, createRouter } from 'vue-router';
 import { resetSectionCollapse } from '@/composables/useSectionCollapse';
 import { PROGRAM } from '@/data/program';
+import { ROUTE_NAMES } from '@/router';
 import ProgramPage from '@/pages/ProgramPage/ProgramPage.vue';
 import { useProfilesStore } from '@/stores/useProfilesStore';
 
@@ -15,7 +17,9 @@ async function mountPage(path: string) {
   setActivePinia(pinia);
   const router = createRouter({
     history: createMemoryHistory(),
-    routes: [{ path: '/program/:period(0|1|2)', component: ProgramPage }],
+    routes: [
+      { path: '/program/:period(0|1|2)', name: ROUTE_NAMES.program, component: ProgramPage },
+    ],
   });
   await router.push(path);
   await router.isReady();
@@ -35,6 +39,7 @@ describe('ProgramPage', () => {
   });
 
   afterEach(() => {
+    vi.useRealTimers();
     wrapper?.unmount();
     wrapper = null;
   });
@@ -91,5 +96,52 @@ describe('ProgramPage', () => {
     await router.push('/program/0');
     await flushPromises();
     expect(bodies(wrapper)[0]?.isVisible()).toBe(false);
+  });
+
+  describe('navigation to an item', () => {
+    const targetId = PROGRAM[0].sections[1].items[0].id;
+    const foreignId = PROGRAM[1].sections[0].items[0].id;
+    let scrollIntoView: MockInstance<Element['scrollIntoView']>;
+
+    beforeEach(() => {
+      // jsdom does not implement scrollIntoView, so define it before spying
+      Element.prototype.scrollIntoView ??= () => {};
+      scrollIntoView = vi.spyOn(Element.prototype, 'scrollIntoView').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      scrollIntoView.mockRestore();
+    });
+
+    it('opens the section, highlights and scrolls to the item, clears the query', async () => {
+      const { wrapper, router } = await mountPage(`/program/0?item=${targetId}`);
+      await flushPromises();
+      expect(bodies(wrapper)[1]?.isVisible()).toBe(true);
+      const item = wrapper.find(`[data-item-id="${targetId}"]`);
+      expect(item.classes()).toContain('is-highlighted');
+      expect(scrollIntoView).toHaveBeenCalledWith({ block: 'center' });
+      expect(router.currentRoute.value.query).toEqual({});
+    });
+
+    it.each([
+      ['unknown', 'nope'],
+      ['foreign-period', foreignId],
+    ])('ignores %s item and clears the query', async (_name, itemId) => {
+      const { wrapper, router } = await mountPage(`/program/0?item=${itemId}`);
+      await flushPromises();
+      expect(wrapper.find('.is-highlighted').exists()).toBe(false);
+      expect(scrollIntoView).not.toHaveBeenCalled();
+      expect(router.currentRoute.value.query).toEqual({});
+    });
+
+    it('removes the highlight after 2000 ms', async () => {
+      vi.useFakeTimers();
+      const { wrapper } = await mountPage(`/program/0?item=${targetId}`);
+      await flushPromises();
+      expect(wrapper.find('.is-highlighted').exists()).toBe(true);
+      vi.advanceTimersByTime(2000);
+      await flushPromises();
+      expect(wrapper.find('.is-highlighted').exists()).toBe(false);
+    });
   });
 });

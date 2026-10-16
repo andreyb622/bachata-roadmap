@@ -20,7 +20,13 @@ export function useSectionCollapse() {
       : [...current, sectionIndex];
   }
 
-  return { isOpen, toggle };
+  function open(periodId: number, sectionIndex: number): void {
+    const current = getOpenSections(periodId);
+    if (current.includes(sectionIndex)) return;
+    openSections[periodId] = [...current, sectionIndex];
+  }
+
+  return { isOpen, toggle, open };
 }
 
 // tests only

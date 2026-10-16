@@ -71,3 +71,8 @@
     transition: 0.15s;
   }
 }
+
+.checklist-item.is-highlighted {
+  background: var(--accent-glow);
+  outline: 2px solid var(--accent);
+}

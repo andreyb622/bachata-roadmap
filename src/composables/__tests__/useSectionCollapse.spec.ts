@@ -35,4 +35,21 @@ describe('useSectionCollapse', () => {
     first.toggle(1, 2);
     expect(second.isOpen(1, 2)).toBe(true);
   });
+
+  it('opens a closed section and keeps an open one open', () => {
+    const { isOpen, open } = useSectionCollapse();
+    open(0, 2);
+    expect(isOpen(0, 2)).toBe(true);
+    open(0, 2);
+    expect(isOpen(0, 2)).toBe(true);
+    open(0, 0);
+    expect(isOpen(0, 0)).toBe(true);
+  });
+
+  it('closes on toggle after open', () => {
+    const { isOpen, open, toggle } = useSectionCollapse();
+    open(1, 1);
+    toggle(1, 1);
+    expect(isOpen(1, 1)).toBe(false);
+  });
 });
