@@ -22,4 +22,15 @@ describe('ChecklistItem', () => {
     const wrapper = mount(ChecklistItem, { props });
     expect(wrapper.find('label').text()).toBe(props.text);
   });
+
+  it('adds the highlighted class only when requested', () => {
+    expect(mount(ChecklistItem, { props }).find('label').classes()).not.toContain('is-highlighted');
+    const highlighted = mount(ChecklistItem, { props: { ...props, highlighted: true } });
+    expect(highlighted.find('label').classes()).toContain('is-highlighted');
+  });
+
+  it('exposes the id as data-item-id', () => {
+    const wrapper = mount(ChecklistItem, { props });
+    expect(wrapper.find('label').attributes('data-item-id')).toBe(props.id);
+  });
 });

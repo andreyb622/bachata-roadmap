@@ -3,6 +3,7 @@ interface Props {
   id: string;
   text: string;
   checked: boolean;
+  highlighted?: boolean;
 }
 
 defineProps<Props>();
@@ -11,7 +12,12 @@ const emit = defineEmits<{ toggle: [id: string] }>();
 </script>
 
 <template>
-  <label class="checklist-item" data-test="checklist-item">
+  <label
+    class="checklist-item"
+    :class="{ 'is-highlighted': highlighted }"
+    :data-item-id="id"
+    data-test="checklist-item"
+  >
     <input
       type="checkbox"
       class="checklist-item__input"
