@@ -111,6 +111,15 @@
   min-width: 0;
 }
 
+.side-menu__version {
+  margin-top: auto;
+  padding-top: 16px;
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .side-menu-fade-enter-active,
   .side-menu-fade-leave-active {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useId } from 'vue';
 import { useOverlay } from '@/composables/useOverlay';
+import { APP_VERSION_LABEL } from '@/data/app-meta';
 import { ROUTE_NAMES } from '@/router';
 
 export type MenuAction = 'entities' | 'create' | 'info' | 'reset';
@@ -99,6 +100,7 @@ function select(action: MenuAction): void {
             <span class="side-menu__label">Сбросить прогресс</span>
           </button>
         </nav>
+        <p class="side-menu__version" data-test="menu-version">{{ APP_VERSION_LABEL }}</p>
       </aside>
     </Transition>
   </Teleport>
