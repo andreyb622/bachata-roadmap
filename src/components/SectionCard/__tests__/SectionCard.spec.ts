@@ -42,4 +42,19 @@ describe('SectionCard', () => {
     await card.find('[data-test="section-header"]').trigger('click');
     expect(card.emitted('toggle')).toHaveLength(1);
   });
+
+  it('omits the counter when it is not provided', () => {
+    wrapper = mount(SectionCard, { props: { title: 'Разминка', open: true } });
+    expect(wrapper.find('[data-test="section-count"]').exists()).toBe(false);
+  });
+
+  it('adds the catalog modifier class for the catalog variant', () => {
+    wrapper = mount(SectionCard, { props: { title: 'Разминка', open: true, variant: 'catalog' } });
+    expect(wrapper.classes()).toContain('section-card--catalog');
+  });
+
+  it('has no modifier class without a variant', () => {
+    const card = mountCard(true);
+    expect(card.classes()).not.toContain('section-card--catalog');
+  });
 });
