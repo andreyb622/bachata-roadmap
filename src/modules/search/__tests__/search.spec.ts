@@ -131,12 +131,17 @@ describe('per-locale search', () => {
     ]);
   });
 
-  it('finds the same ids in en as in ru for a plain russian query', () => {
+  it('finds the same ids in xx as in ru for a plain russian query', () => {
     const query = 'перенос веса';
-    const enIds = searchItems(buildSearchIndex(getLocalizedProgram('en'), 'en'), query, 'en').map(
+    const xxIds = searchItems(buildSearchIndex(getLocalizedProgram('xx'), 'xx'), query, 'xx').map(
       (e) => e.id,
     );
     const ruIds = searchItems(buildSearchIndex(getLocalizedProgram('ru')), query).map((e) => e.id);
-    expect(enIds).toEqual(ruIds);
+    expect(xxIds).toEqual(ruIds);
+  });
+
+  it('finds en content by an english query', () => {
+    const index = buildSearchIndex(getLocalizedProgram('en'), 'en');
+    expect(searchItems(index, 'windmill', 'en').map((entry) => entry.id)).toContain('1-2-8');
   });
 });

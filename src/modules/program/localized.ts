@@ -1,5 +1,7 @@
 import { PROGRAM } from './content';
 import type { ProgramItem, ProgramPeriod, ProgramSection } from './content';
+import en from './texts/en';
+import es from './texts/es';
 import ru from './texts/ru';
 
 export interface ProgramTexts {
@@ -23,8 +25,7 @@ export interface LocalizedPeriod extends Omit<ProgramPeriod, 'sections'> {
   readonly sections: readonly LocalizedSection[];
 }
 
-// en/es dictionaries come in stage 4.3; unknown locales fall back to ru.
-const DICTIONARIES: Readonly<Record<string, ProgramTexts | undefined>> = { ru };
+const DICTIONARIES: Readonly<Record<string, ProgramTexts | undefined>> = { ru, en, es };
 
 export function getLocalizedProgram(locale: string): LocalizedPeriod[] {
   const texts: ProgramTexts = DICTIONARIES[locale] ?? ru;

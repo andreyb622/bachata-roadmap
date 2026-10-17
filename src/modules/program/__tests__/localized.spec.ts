@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { PROGRAM } from '../content';
 import { getLocalizedProgram } from '../localized';
 import { getAllItemIds } from '../progress';
+import en from '../texts/en';
+import es from '../texts/es';
 import ru from '../texts/ru';
 
 const program = getLocalizedProgram('ru');
@@ -43,7 +45,39 @@ describe('getLocalizedProgram', () => {
     expect(items.find((item) => item.id === '0-0-0')?.text).toBe('Перенос веса на месте');
   });
 
-  it.each(['en', 'xx'])('falls back to ru for locale %s', (locale) => {
+  it.each(['xx'])('falls back to ru for locale %s', (locale) => {
     expect(getLocalizedProgram(locale)).toEqual(program);
+  });
+});
+
+describe.each([
+  ['en', en],
+  ['es', es],
+])('%s program dictionary', (locale, dictionary) => {
+  it('has the same keys as ru', () => {
+    expect(Object.keys(dictionary.periods)).toEqual(Object.keys(ru.periods));
+    expect(Object.keys(dictionary.sections)).toEqual(Object.keys(ru.sections));
+    expect(Object.keys(dictionary.items)).toEqual(Object.keys(ru.items));
+  });
+
+  it('has no empty strings', () => {
+    const values = [
+      ...Object.values(dictionary.periods).flatMap((period) => [period.badge, period.name]),
+      ...Object.values(dictionary.sections),
+      ...Object.values(dictionary.items),
+    ];
+    expect(values.filter((value) => value.trim() === '')).toEqual([]);
+  });
+
+  it('is used by getLocalizedProgram', () => {
+    const localized = getLocalizedProgram(locale);
+    const localizedItems = localized.flatMap((period) =>
+      period.sections.flatMap((section) => section.items),
+    );
+    expect(localized[0]?.badge).toBe(dictionary.periods['0'].badge);
+    expect(localized[0]?.sections[0]?.title).toBe(dictionary.sections['0-0']);
+    expect(localizedItems.find((item) => item.id === '0-0-0')?.text).toBe(
+      dictionary.items['0-0-0'],
+    );
   });
 });

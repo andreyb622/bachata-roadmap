@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { ELEMENT_MODULES, SOLO_ELEMENTS_TABLE_ROWS } from '../content';
 import { getLocalizedElements } from '../localized';
+import en from '../texts/en';
+import es from '../texts/es';
 import ru from '../texts/ru';
 
 const moduleIds = ELEMENT_MODULES.map((m) => m.key);
@@ -78,7 +80,44 @@ describe('getLocalizedElements', () => {
     expect(elements.solo.rows).toHaveLength(17);
   });
 
-  it.each(['en', 'xx'])('falls back to ru for %s', (locale) => {
+  it.each(['xx'])('falls back to ru for %s', (locale) => {
     expect(getLocalizedElements(locale)).toEqual(elements);
+  });
+});
+
+describe.each([
+  ['en', en],
+  ['es', es],
+])('%s elements dictionary', (locale, dictionary) => {
+  it('has the same keys as ru', () => {
+    expect(Object.keys(dictionary.modules)).toEqual(Object.keys(ru.modules));
+    expect(Object.keys(dictionary.sections)).toEqual(Object.keys(ru.sections));
+    expect(Object.keys(dictionary.items)).toEqual(Object.keys(ru.items));
+    expect(Object.keys(dictionary.notes)).toEqual(Object.keys(ru.notes));
+    expect(Object.keys(dictionary.solo.rows)).toEqual(Object.keys(ru.solo.rows));
+    expect(dictionary.solo.columns).toHaveLength(ru.solo.columns.length);
+  });
+
+  it('has no empty strings', () => {
+    const values = [
+      dictionary.intro,
+      dictionary.solo.badge,
+      dictionary.solo.title,
+      ...dictionary.solo.columns,
+      ...Object.values(dictionary.modules),
+      ...Object.values(dictionary.sections),
+      ...Object.values(dictionary.items),
+      ...Object.values(dictionary.notes),
+      ...Object.values(dictionary.solo.rows),
+    ];
+    expect(values.filter((value) => value.trim() === '')).toEqual([]);
+  });
+
+  it('is used by getLocalizedElements', () => {
+    const localized = getLocalizedElements(locale);
+    expect(localized.intro).toBe(dictionary.intro);
+    expect(localized.modules[0]?.title).toBe(dictionary.modules.basics);
+    expect(localized.solo.title).toBe(dictionary.solo.title);
+    expect(localized.solo.columns).toEqual(dictionary.solo.columns);
   });
 });

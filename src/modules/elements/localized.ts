@@ -1,5 +1,7 @@
 import { ELEMENT_MODULES, SOLO_ELEMENTS_TABLE_ROWS } from './content';
 import type { ElementItem, ElementsModule, ElementsSection, SoloElementRow } from './content';
+import en from './texts/en';
+import es from './texts/es';
 import ru from './texts/ru';
 
 export interface ElementsTexts {
@@ -46,8 +48,7 @@ export interface LocalizedElements {
   };
 }
 
-// en/es dictionaries come in stage 4.3; unknown locales fall back to ru.
-const DICTIONARIES: Readonly<Record<string, ElementsTexts | undefined>> = { ru };
+const DICTIONARIES: Readonly<Record<string, ElementsTexts | undefined>> = { ru, en, es };
 
 export function getLocalizedElements(locale: string): LocalizedElements {
   const texts: ElementsTexts = DICTIONARIES[locale] ?? ru;
