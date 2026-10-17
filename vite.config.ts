@@ -3,6 +3,8 @@ import { readFileSync } from 'node:fs';
 import { defineConfig } from 'vitest/config';
 import vue from '@vitejs/plugin-vue';
 import { VitePWA } from 'vite-plugin-pwa';
+import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite';
+import { fileURLToPath } from 'node:url';
 
 // package.json is our own file, so its shape is known; only `version` is read.
 const packageJson = JSON.parse(
@@ -36,6 +38,11 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    VueI18nPlugin({
+      include: [fileURLToPath(new URL('./src/**/i18n/{ru,en,es}.ts', import.meta.url))],
+      runtimeOnly: true,
+      compositionOnly: true,
+    }),
     VitePWA({
       strategies: 'generateSW',
       registerType: 'autoUpdate',
@@ -44,8 +51,8 @@ export default defineConfig({
       manifest: {
         name: 'Bachata Roadmap',
         short_name: 'Roadmap',
-        description: 'Дорожная карта занятий по бачате с чеклистами и прогрессом',
-        lang: 'ru',
+        description: 'Bachata class roadmap with checklists and progress',
+        lang: 'en',
         start_url: '.',
         scope: '.',
         display: 'standalone',
