@@ -8,6 +8,13 @@ import { ERROR_CODES } from '@/shared/lib/errors';
 import '@/shared/styles/tokens.css';
 import '@/shared/styles/base.css';
 
+if (import.meta.env.DEV) {
+  const previewTheme = new URLSearchParams(window.location.search).get('theme');
+  if (previewTheme === 'light' || previewTheme === 'dark') {
+    document.documentElement.dataset.theme = previewTheme;
+  }
+}
+
 const app = createApp(App);
 app.use(createPinia());
 app.use(router);
