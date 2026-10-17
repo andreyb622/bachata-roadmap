@@ -12,12 +12,14 @@ import {
   useProfilesStore,
 } from '@/modules/profiles';
 import { routes } from '@/app/router';
+import { initSettings } from '../startup';
 
 let wrapper: VueWrapper | null = null;
 
 async function mountApp(path: string) {
   const pinia = createPinia();
   setActivePinia(pinia);
+  initSettings();
   const router = createRouter({ history: createMemoryHistory(), routes });
   await router.push(path);
   await router.isReady();
@@ -101,6 +103,12 @@ describe('App', () => {
   it('saves the system theme on a fresh device', async () => {
     await mountApp('/program/0');
     expect(localStorage.getItem('bachata-settings-v1')).toContain('"theme":"system"');
+  });
+
+  it('saves the system theme on a fresh device opened at /', async () => {
+    await mountApp('/');
+    expect(localStorage.getItem('bachata-settings-v1')).toContain('"theme":"system"');
+    expect(localStorage.getItem('bachata-state-v2')).not.toBeNull();
   });
 
   it('saves the dark theme when app data already exists', async () => {

@@ -18,10 +18,9 @@ import {
   DEFAULT_ENTITY_NAME,
   EntitiesSheet,
   EntityForm,
-  hasStoredState,
   useProfilesStore,
 } from '@/modules/profiles';
-import { SettingsSheet, useSettingsStore, useTheme } from '@/modules/settings';
+import { SettingsSheet, useTheme } from '@/modules/settings';
 import { InstallHint, useInstallHint } from '@/modules/pwa';
 
 const route = useRoute();
@@ -31,8 +30,6 @@ const toast = useToast();
 const initFailed = ref(false);
 let store: ReturnType<typeof useProfilesStore> | null = null;
 
-const hasExistingState = hasStoredState();
-useSettingsStore().init(hasExistingState);
 useTheme();
 
 try {

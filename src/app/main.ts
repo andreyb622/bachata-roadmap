@@ -2,6 +2,7 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import App from './App.vue';
 import { router } from './router';
+import { initSettings } from './startup';
 import { useToast } from '@/shared/composables/useToast';
 import { usePwaUpdate } from '@/modules/pwa';
 import { ERROR_CODES } from '@/shared/lib/errors';
@@ -10,6 +11,7 @@ import '@/shared/styles/base.css';
 
 const app = createApp(App);
 app.use(createPinia());
+initSettings();
 app.use(router);
 
 app.config.errorHandler = (err) => {
