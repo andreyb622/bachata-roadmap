@@ -18,6 +18,24 @@ function stubThrowingLocalStorage(error: Error): void {
   });
 }
 
+function stubQuotaAfterProbeLocalStorage(
+  store: Map<string, string> = new Map(),
+  failing = { value: true },
+): void {
+  vi.stubGlobal('localStorage', {
+    getItem: (key: string) => store.get(key) ?? null,
+    removeItem: (key: string) => {
+      store.delete(key);
+    },
+    setItem: (key: string, value: string) => {
+      if (key === '__bachata_test__') return;
+      if (failing.value && key.startsWith('fail'))
+        throw new DOMException('full', 'QuotaExceededError');
+      store.set(key, value);
+    },
+  });
+}
+
 describe('safe-storage', () => {
   beforeEach(() => {
     localStorage.clear();
@@ -98,5 +116,49 @@ describe('safe-storage', () => {
     safeStorage.clearStorageError();
 
     expect(safeStorage.consumeStorageError()).toBeNull();
+  });
+
+  it('reads the memory value when storage is ok but the write hit the quota', async () => {
+    stubQuotaAfterProbeLocalStorage();
+    const safeStorage = await loadSafeStorage();
+    safeStorage.testStorage();
+
+    expect(safeStorage.storageSet('fail-key', 'v')).toBe(false);
+    expect(safeStorage.storageGet('fail-key')).toBe('v');
+  });
+
+  it('prefers the localStorage value over a stale memory value', async () => {
+    const backing = new Map<string, string>();
+    stubQuotaAfterProbeLocalStorage(backing);
+    const safeStorage = await loadSafeStorage();
+    safeStorage.testStorage();
+    safeStorage.storageSet('fail-key', 'stale');
+    backing.set('fail-key', 'fresh');
+
+    expect(safeStorage.storageGet('fail-key')).toBe('fresh');
+  });
+
+  it('drops the memory copy of a failed write on storageRemove', async () => {
+    stubQuotaAfterProbeLocalStorage();
+    const safeStorage = await loadSafeStorage();
+    safeStorage.testStorage();
+    safeStorage.storageSet('fail-key', 'v');
+
+    safeStorage.storageRemove('fail-key');
+
+    expect(safeStorage.storageGet('fail-key')).toBeNull();
+  });
+
+  it('clears the memory copy after a later successful write and removal', async () => {
+    const failing = { value: true };
+    stubQuotaAfterProbeLocalStorage(new Map(), failing);
+    const safeStorage = await loadSafeStorage();
+    safeStorage.testStorage();
+    safeStorage.storageSet('fail-key', 'stale');
+    failing.value = false;
+    safeStorage.storageSet('fail-key', 'fresh');
+    safeStorage.storageRemove('fail-key');
+
+    expect(safeStorage.storageGet('fail-key')).toBeNull();
   });
 });
