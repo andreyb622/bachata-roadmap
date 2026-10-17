@@ -12,7 +12,7 @@ import type { MenuAction } from './layout/SideMenu/SideMenu.vue';
 import { useStandalone } from '@/shared/composables/useStandalone';
 import { useToast } from '@/shared/composables/useToast';
 import { APP_NAME } from '@/shared/config/app-meta';
-import { PROGRAM } from '@/modules/program';
+import { getLocalizedProgram } from '@/modules/program';
 import { ERROR_CODES } from '@/shared/lib/errors';
 import { routeForTab, tabFromRoute } from './router';
 import {
@@ -26,7 +26,7 @@ import { InstallHint, useInstallHint } from '@/modules/pwa';
 
 const ELEMENT_MODULES_COUNT = 5;
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
@@ -77,7 +77,7 @@ const subtitle = computed(() => {
   if (variant.value === 'elements') return t('shell.subtitle.elements', ELEMENT_MODULES_COUNT);
   const current = tab.value;
   if (current !== null && current >= 0 && current <= 2)
-    return PROGRAM[current]?.name ?? t('shell.subtitle.program');
+    return getLocalizedProgram(locale.value)[current]?.name ?? t('shell.subtitle.program');
   if (current === 3) return t('search.title');
   return t('shell.subtitle.program');
 });

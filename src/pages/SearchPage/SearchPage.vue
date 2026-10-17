@@ -3,7 +3,7 @@ import { useDebounceFn } from '@vueuse/core';
 import { computed, onMounted, ref, useTemplateRef, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
-import { PROGRAM } from '@/modules/program';
+import { getLocalizedProgram } from '@/modules/program';
 import {
   buildSearchIndex,
   getHighlightSegments,
@@ -21,7 +21,7 @@ const inputRef = useTemplateRef<HTMLInputElement>('input');
 
 const inputValue = ref('');
 const query = ref('');
-const index = computed(() => buildSearchIndex(PROGRAM, locale.value));
+const index = computed(() => buildSearchIndex(getLocalizedProgram(locale.value), locale.value));
 
 const updateQuery = useDebounceFn((value: string) => {
   query.value = value;

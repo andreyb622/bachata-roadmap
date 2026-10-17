@@ -1,4 +1,4 @@
-import type { ProgramPeriod } from '@/modules/program';
+import type { LocalizedPeriod } from '@/modules/program';
 
 export type SearchEntry = Readonly<{
   id: string;
@@ -26,7 +26,10 @@ export function normalizeText(text: string, locale = 'ru'): string {
     .replace(/\s+/g, ' ');
 }
 
-export function buildSearchIndex(program: readonly ProgramPeriod[], locale = 'ru'): SearchEntry[] {
+export function buildSearchIndex(
+  program: readonly LocalizedPeriod[],
+  locale = 'ru',
+): SearchEntry[] {
   return program.flatMap((period) =>
     period.sections.flatMap((section, sectionIndex) =>
       section.items.map((item) => ({

@@ -4,7 +4,7 @@ import { flushPromises, mount } from '@vue/test-utils';
 import type { VueWrapper } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import { createMemoryHistory, createRouter } from 'vue-router';
-import { PROGRAM, resetSectionCollapse } from '@/modules/program';
+import { PROGRAM, getLocalizedProgram, resetSectionCollapse } from '@/modules/program';
 import { ROUTE_NAMES } from '@/shared/config/route-names';
 import ProgramPage from '@/pages/ProgramPage/ProgramPage.vue';
 import { useProfilesStore } from '@/modules/profiles';
@@ -45,7 +45,9 @@ describe('ProgramPage', () => {
 
   it('renders the period badge', async () => {
     const { wrapper } = await mountPage('/program/0');
-    expect(wrapper.find('[data-test="period-badge"]').text()).toBe(PROGRAM[0].badge);
+    expect(wrapper.find('[data-test="period-badge"]').text()).toBe(
+      getLocalizedProgram('ru')[0]?.badge,
+    );
   });
 
   it('opens only the first section', async () => {
@@ -89,7 +91,9 @@ describe('ProgramPage', () => {
 
     await router.push('/program/1');
     await flushPromises();
-    expect(wrapper.find('[data-test="period-badge"]').text()).toBe(PROGRAM[1].badge);
+    expect(wrapper.find('[data-test="period-badge"]').text()).toBe(
+      getLocalizedProgram('ru')[1]?.badge,
+    );
     expect(bodies(wrapper)[0]?.isVisible()).toBe(true);
 
     await router.push('/program/0');
