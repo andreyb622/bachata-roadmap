@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import ChecklistItem from '@/components/ChecklistItem/ChecklistItem.vue';
+import ChecklistItem from '../ChecklistItem.vue';
 
 const props = { id: '0-0-0', text: 'Перенос веса на месте', checked: false };
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { TAB_ICONS, TAB_LABELS } from '@/data/program';
+import { TAB_ICONS, TAB_LABELS } from '@/modules/program';
 
 defineProps<{ activeTab: number | null }>();
 

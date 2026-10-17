@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { resetSectionCollapse, useSectionCollapse } from '@/composables/useSectionCollapse';
+import { resetSectionCollapse, useSectionCollapse } from '../useSectionCollapse';
 
 describe('useSectionCollapse', () => {
   beforeEach(resetSectionCollapse);

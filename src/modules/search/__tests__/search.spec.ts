@@ -1,8 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { PROGRAM } from '@/data/program';
-import type { ProgramPeriod } from '@/data/program';
-import { getAllItemIds } from '@/lib/progress';
-import { buildSearchIndex, getHighlightSegments, normalizeText, searchItems } from '@/lib/search';
+import { PROGRAM, getAllItemIds } from '@/modules/program';
+import type { ProgramPeriod } from '@/modules/program';
+import { buildSearchIndex, getHighlightSegments, normalizeText, searchItems } from '../search';
 
 describe('normalizeText', () => {
   it.each([

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { PROGRAM } from '@/data/program';
+import { PROGRAM } from '../content';
 import { countDone, getAllItemIds, percent, periodPercent, sectionCounter } from '../progress';
 
 const period = PROGRAM[0];

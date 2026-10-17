@@ -1,4 +1,4 @@
-import type { ProgramPeriod } from '../data/program';
+import type { ProgramPeriod } from '@/modules/program';
 
 export type SearchEntry = Readonly<{
   id: string;

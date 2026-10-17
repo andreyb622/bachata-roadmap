@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import SectionCard from '@/shared/ui/SectionCard/SectionCard.vue';
-import { ELEMENT_MODULES, ELEMENTS_PAGE, SOLO_ELEMENTS_TABLE } from '@/data/elements';
+import { ELEMENT_MODULES, ELEMENTS_PAGE, SOLO_ELEMENTS_TABLE } from '@/modules/elements';
 
 const SOLO_KEY = 'solo';
 

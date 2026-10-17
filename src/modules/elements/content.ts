@@ -31,8 +31,6 @@ export interface ElementsPageMeta {
   subtitle: string;
   backLabel: string;
   intro: string;
-  documentTitle: string;
-  description: string;
 }
 
 export const ELEMENTS_PAGE = {
@@ -41,8 +39,6 @@ export const ELEMENTS_PAGE = {
   backLabel: 'Назад к программе',
   intro:
     'Сводный перечень всех элементов, сгруппированный по тематическим блокам. Без распределения по занятиям.',
-  documentTitle: 'Bachata Roadmap — элементы по блокам',
-  description: 'Элементы бачаты по тематическим блокам',
 } as const satisfies ElementsPageMeta;
 
 export const ELEMENT_MODULES = [

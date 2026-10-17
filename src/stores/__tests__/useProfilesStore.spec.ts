@@ -2,8 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { useToast } from '@/shared/composables/useToast';
 import { ERROR_CODES, getUserMessage } from '@/shared/lib/errors';
-import { PROGRAM } from '@/data/program';
-import { getAllItemIds } from '@/lib/progress';
+import { PROGRAM, getAllItemIds } from '@/modules/program';
 import { STATE_KEY, getEntityProgressPct } from '@/lib/storage';
 import { useProfilesStore } from '../useProfilesStore';
 

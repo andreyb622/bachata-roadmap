@@ -2,6 +2,9 @@ import { createRouter, createWebHashHistory } from 'vue-router';
 import type { RouteLocationRaw, RouteRecordRaw } from 'vue-router';
 import { useProfilesStore } from '@/stores/useProfilesStore';
 import { ROUTE_NAMES } from '@/shared/config/route-names';
+import { elementsRoutes } from '@/modules/elements';
+import { programRoutes } from '@/modules/program';
+import { searchRoutes } from '@/modules/search';
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -41,22 +44,9 @@ export const routes: RouteRecordRaw[] = [
       }
     },
   },
-  {
-    path: '/program/:period(0|1|2)',
-    name: ROUTE_NAMES.program,
-    component: () => import('@/pages/ProgramPage/ProgramPage.vue'),
-  },
-  {
-    path: '/search',
-    name: ROUTE_NAMES.search,
-    component: () => import('@/pages/SearchPage/SearchPage.vue'),
-  },
-  {
-    path: '/elements',
-    name: ROUTE_NAMES.elements,
-    component: () => import('@/pages/ElementsPage/ElementsPage.vue'),
-    meta: { hideTabs: true, headerVariant: 'elements' },
-  },
+  ...programRoutes,
+  ...searchRoutes,
+  ...elementsRoutes,
   { path: '/:pathMatch(.*)*', redirect: '/' },
 ];
 

@@ -2,9 +2,14 @@
 import { useDebounceFn } from '@vueuse/core';
 import { computed, onMounted, ref, useTemplateRef, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { PROGRAM } from '@/data/program';
-import { buildSearchIndex, getHighlightSegments, normalizeText, searchItems } from '@/lib/search';
-import type { SearchEntry } from '@/lib/search';
+import { PROGRAM } from '@/modules/program';
+import {
+  buildSearchIndex,
+  getHighlightSegments,
+  normalizeText,
+  searchItems,
+} from '@/modules/search';
+import type { SearchEntry } from '@/modules/search';
 import { ROUTE_NAMES } from '@/shared/config/route-names';
 
 const DEBOUNCE_MS = 120;

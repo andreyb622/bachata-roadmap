@@ -1,4 +1,4 @@
-import type { ProgramItem, ProgramPeriod, ProgramSection } from '../data/program';
+import type { ProgramItem, ProgramPeriod, ProgramSection } from './content';
 
 export function getAllItemIds(program: readonly ProgramPeriod[]): string[] {
   return program.flatMap((period) =>

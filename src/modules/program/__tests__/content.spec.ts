@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { PROGRAM } from '@/data/program';
-import type { ProgramPeriod } from '@/data/program';
+import { PROGRAM } from '../content';
+import type { ProgramPeriod } from '../content';
 
 const periods: readonly ProgramPeriod[] = PROGRAM;
 

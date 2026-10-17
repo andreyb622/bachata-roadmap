@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { ELEMENT_MODULES, SOLO_ELEMENTS_TABLE } from '@/data/elements';
-import type { ElementsModule, ElementsSection } from '@/data/elements';
+import { ELEMENT_MODULES, SOLO_ELEMENTS_TABLE } from '../content';
+import type { ElementsModule, ElementsSection } from '../content';
 
 const modules: readonly ElementsModule[] = ELEMENT_MODULES;
 const listSections: readonly ElementsSection[] = modules.flatMap((m) => m.sections);

@@ -15,7 +15,7 @@ import { useInstallHint } from '@/composables/useInstallHint';
 import { useStandalone } from '@/shared/composables/useStandalone';
 import { useToast } from '@/shared/composables/useToast';
 import { APP_NAME } from '@/shared/config/app-meta';
-import { PROGRAM } from '@/data/program';
+import { PROGRAM } from '@/modules/program';
 import { ERROR_CODES } from '@/shared/lib/errors';
 import { DEFAULT_ENTITY_NAME } from '@/lib/storage';
 import { routeForTab, tabFromRoute } from '@/router';
