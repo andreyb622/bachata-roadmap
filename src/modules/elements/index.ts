@@ -1,1 +1,2 @@
-export { ELEMENT_MODULES, ELEMENTS_PAGE, SOLO_ELEMENTS_TABLE } from './content';
+export { getLocalizedElements } from './localized';
+export type { LocalizedElements } from './localized';

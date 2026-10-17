@@ -1,509 +1,462 @@
 export interface ElementItem {
-  text: string;
-  note?: string;
+  readonly key: string;
 }
 
 export interface ElementsSection {
-  title: string;
-  items: readonly ElementItem[];
+  readonly key: string;
+  readonly items: readonly ElementItem[];
 }
 
 export interface ElementsModule {
-  title: string;
-  sections: readonly ElementsSection[];
+  readonly key: string;
+  readonly sections: readonly ElementsSection[];
 }
 
 export interface SoloElementRow {
-  num: number;
-  name: string;
-  module: string;
+  readonly key: string;
+  readonly num: number;
+  readonly module: string;
 }
-
-export interface ElementsTable {
-  badge: string;
-  title: string;
-  columns: readonly string[];
-  rows: readonly SoloElementRow[];
-}
-
-export interface ElementsPageMeta {
-  title: string;
-  subtitle: string;
-  backLabel: string;
-  intro: string;
-}
-
-export const ELEMENTS_PAGE = {
-  title: 'Элементы по блокам',
-  subtitle: '5 модулей · сводный перечень',
-  backLabel: 'Назад к программе',
-  intro:
-    'Сводный перечень всех элементов, сгруппированный по тематическим блокам. Без распределения по занятиям.',
-} as const satisfies ElementsPageMeta;
 
 export const ELEMENT_MODULES = [
   {
-    title: 'Модуль 1 — Основы',
+    key: 'basics',
     sections: [
       {
-        title: 'Ритм и сольные основы',
+        key: 'rhythm-and-solo-basics',
         items: [
-          { text: 'Бейсик (боковой, вперёд-назад, в разных направлениях)' },
-          { text: 'Шаг с точкой' },
-          { text: 'Бейсик на месте (на 5–6 / 8–9 счёте)' },
-          { text: 'Квадрат' },
-          { text: 'V-стэп' },
-          { text: 'Сайт бейсик' },
-          { text: 'Слайд' },
-          { text: 'Скрестный шаг' },
-          { text: 'Диагональка (мадридский) — ввод' },
-          { text: 'Вперёд-назад-назад и назад-вперёд-вперёд — ввод' },
-          { text: 'Остановочный' },
-          { text: 'Замедления сольно — на 2 и на 4 счёта' },
-          { text: 'Поворот сольно — поворот на 1 (в сторону и вперёд)' },
-          { text: 'Обратный поворот на 1' },
-          { text: 'Маятники корпуса и бёдер на основных шагах' },
+          { key: 'basic-step' },
+          { key: 'step-with-point' },
+          { key: 'basic-in-place' },
+          { key: 'square' },
+          { key: 'v-step' },
+          { key: 'side-basic' },
+          { key: 'slide' },
+          { key: 'cross-step' },
+          { key: 'diagonal-madrid-intro' },
+          { key: 'forward-back-back-intro' },
+          { key: 'stop-step' },
+          { key: 'solo-slowdowns' },
+          { key: 'solo-turn-on-one' },
+          { key: 'reverse-turn-on-one' },
+          { key: 'torso-hip-pendulums' },
         ],
       },
       {
-        title: 'Рамочка, хват и перенос веса',
+        key: 'frame-hold-weight-transfer',
         items: [
-          {
-            text: 'Игра с переносом веса (за плечи, за локти, в закрытой позиции) — с ноги на ногу, на рамочке сохраняя ось',
-          },
-          { text: 'Хват — контроль и фигурный' },
-          { text: 'Включить / выключить рамочку, хождение вперёд и назад' },
-          { text: 'Игра веса в открытой позиции' },
+          { key: 'weight-transfer-play' },
+          { key: 'hold-control-and-figure' },
+          { key: 'frame-on-off-walking' },
+          { key: 'weight-play-open-position' },
         ],
       },
       {
-        title: 'Позиции',
+        key: 'positions',
         items: [
-          { text: 'Открытая позиция — бейсик в разных направлениях' },
-          { text: 'Закрытая позиция — бейсик (боковые, вперёд-назад, квадрат)' },
-          { text: 'Полуоткрытая позиция' },
-          { text: 'Замах, раскрытие и закрытие объёма в руках' },
-          { text: 'Как подойти и закрыть партнёра' },
-          {
-            text: 'Переходы закрытая ↔ открытая (партнёр подходит и отходит, руки скользят вниз с контактом)',
-          },
-          { text: 'Замок (руки скрещены)' },
+          { key: 'open-position-basic' },
+          { key: 'closed-position-basic' },
+          { key: 'semi-open-position' },
+          { key: 'swing-open-close-volume' },
+          { key: 'approach-and-close-partner' },
+          { key: 'closed-open-transitions' },
+          { key: 'lock-crossed-hands' },
         ],
       },
       {
-        title: 'Повороты (базовые)',
+        key: 'basic-turns',
         items: [
-          { text: 'Обычный поворот партнёрши в паре' },
-          { text: 'Поворот через фрисби' },
-          { text: 'Поворот партнёрши под рукой (наружная рука)' },
-          { text: 'Поворот за руку' },
-          { text: 'Повороты партнёра — под рукой, через плечо, через бок' },
-          { text: 'Повороты девушки за корпус' },
-          { text: 'Поворот партнёрши внутренней рукой на талии + раскрытие и закрытие' },
-          { text: 'Базовые руки на повороте' },
-          { text: 'Поворот вперёд у партнёрши' },
-          { text: 'Повороты партнёра (контакт вверху)' },
-          { text: 'Повороты девушки через рычаг' },
-          { text: 'Комбинации мужских и женских поворотов — 1 и 2' },
-          { text: 'Опенбрейк на 3 + поворот вперёд у партнёрши' },
-          { text: 'Переходы в закрытую позицию через поворот партнёрши' },
-          { text: 'Поворот на 180 (в закрытой позиции, со слайдом)' },
-          { text: 'Повороты со сменой мест' },
+          { key: 'regular-partner-turn' },
+          { key: 'frisbee-turn' },
+          { key: 'outer-hand-turn' },
+          { key: 'hand-turn' },
+          { key: 'leader-turns' },
+          { key: 'follower-body-turns' },
+          { key: 'inner-hand-waist-turn' },
+          { key: 'basic-hands-on-turn' },
+          { key: 'forward-turn-follower' },
+          { key: 'leader-contact-turns' },
+          { key: 'lever-turns' },
+          { key: 'turn-combinations' },
+          { key: 'open-break-on-three-forward-turn' },
+          { key: 'closed-position-transitions-via-turn' },
+          { key: 'turn-180' },
+          { key: 'place-switch-turns' },
         ],
       },
       {
-        title: 'Прогулка (ввод)',
+        key: 'walk-intro',
         items: [
-          { text: 'Что делать, когда нет бачата-бита (варианты вступлений)' },
-          { text: 'Прогулка (минимально → полноценная)' },
-          { text: 'Прогулка зеркальными руками — накрутил, раскрутили, вперёд-назад, по дуге' },
-          { text: 'Прогулка диагональными руками' },
-          { text: 'Смена направлений' },
-          { text: 'Смена мест' },
+          { key: 'no-bachata-beat' },
+          { key: 'walk' },
+          { key: 'mirrored-hands-walk' },
+          { key: 'diagonal-hands-walk' },
+          { key: 'direction-change' },
+          { key: 'place-change' },
         ],
       },
       {
-        title: 'Аллардо и hammerlock (ввод)',
+        key: 'allardo-hammerlock-intro',
+        items: [{ key: 'allardo' }, { key: 'hammerlock' }],
+      },
+    ],
+  },
+  {
+    key: 'hands-and-leading',
+    sections: [
+      {
+        key: 'leading-and-hand-rules',
         items: [
-          { text: 'Аллардо (зеркальная рука на партнёршу)' },
-          {
-            text: 'Hammerlock — за две руки, затем за одну',
-            note: '(порядок — на усмотрение тренера)',
-          },
+          { key: 'hands-throws-and-turns' },
+          { key: 'three-hand-rules' },
+          { key: 'impulse-vs-constant-leading' },
+          { key: 'contact-keeping-exercise' },
+          { key: 'raise-hand-and-close-partner' },
+        ],
+      },
+      {
+        key: 'turns',
+        items: [
+          { key: 'two-hand-turn' },
+          { key: 'waist-turns-hands-up' },
+          { key: 'shoulder-turn' },
+          { key: 'double-hand-turns' },
+          { key: 'walk-entry-double-hand-turn' },
+          { key: 'lock-contact-break' },
+          { key: 'hand-throw-after-turn' },
+          { key: 'leader-reverse-turn-after-double' },
+          { key: 'reverse-turn' },
+          { key: 'forward-turn' },
+          { key: 'outer-leader-turn' },
+        ],
+      },
+      {
+        key: 'hand-throws',
+        items: [
+          { key: 'throws-bottom-up' },
+          { key: 'two-hand-throws' },
+          { key: 'throw-plus-waist-turn' },
+          { key: 'wrist-styling' },
+        ],
+      },
+      {
+        key: 'allardo-diagonal-hands',
+        items: [
+          { key: 'diagonal-hand-slide' },
+          { key: 'allardo-on-partner-and-self' },
+          { key: 'allardo-two-hands-boat' },
+        ],
+      },
+      {
+        key: 'hammerlock',
+        items: [
+          { key: 'hammerlock-mirrored' },
+          { key: 'hammerlock-diagonal' },
+          { key: 'throw-down-behind-partner' },
+          { key: 'forward-steps-place-change' },
+        ],
+      },
+      {
+        key: 'walk-and-positions',
+        items: [
+          { key: 'walk-opening' },
+          { key: 'partner-pass' },
+          { key: 'closed-corner' },
+          { key: 'walk-two' },
+          { key: 'side-support-in-walk' },
+          { key: 'cbl' },
+        ],
+      },
+      {
+        key: 'rompe-adelante-and-paseala',
+        items: [
+          { key: 'rompe-adelante' },
+          { key: 'paseala' },
+          { key: 'rompe-adelante-paseala-combo' },
+          { key: 'rompe-adelante-lead-follow-parts' },
+        ],
+      },
+      {
+        key: 'styling-intro',
+        items: [{ key: 'styling-elements' }],
+      },
+      {
+        key: 'module-solo-elements',
+        items: [
+          { key: 'forward-back-back' },
+          { key: 'diagonal-madrid' },
+          { key: 'paseala' },
+          { key: 'reverse-basic' },
         ],
       },
     ],
   },
   {
-    title: 'Модуль 2 — Руки и ведение',
+    key: 'shadow-and-styling',
     sections: [
       {
-        title: 'Ведение и правила рук',
+        key: 'shadow-position',
         items: [
-          { text: 'Руки (броски рук и повороты с рукой)' },
-          { text: '3 правила для рук партнёрши — свободная рука, магнитика, импульс' },
-          { text: 'Импульсное vs постоянное ведение' },
-          { text: 'Упражнение на сохранение контакта в руках' },
-          { text: 'Поднятие руки через низ вверх и закрытие партнёра (без бейсика и с бейсиком)' },
+          { key: 'follower-shadow-first-entry' },
+          { key: 'leader-shadow' },
+          { key: 'follower-shadow-second-entry' },
+          { key: 'shadow-definition' },
+          { key: 'shadow-entry-via-turn' },
+          { key: 'shadow-partner-turn' },
+          { key: 'shadow-swap-and-exit' },
+          { key: 'shadow-after-hammerlock' },
+          { key: 'rompe-adelante-shadow' },
         ],
       },
       {
-        title: 'Повороты',
+        key: 'waves-and-isolation',
         items: [
-          { text: 'Поворот за 2 руки' },
-          { text: 'Повороты за талию с руками партнёрши наверху' },
-          { text: 'Поворот за плечо' },
-          { text: 'Повороты под двумя руками (зеркальные и накрест)' },
-          { text: 'Вход в прогулку через поворот под двумя руками' },
-          { text: 'Разрыв контакта в замке после поворота' },
-          { text: 'Бросок руки после поворота под двумя руками' },
-          { text: 'Обратный поворот у партнёра после поворота под двумя руками' },
-          { text: 'Обратный поворот' },
-          { text: 'Поворот вперёд' },
-          { text: 'Внешний поворот партнёра (поворот наружу)' },
+          { key: 'side-wave' },
+          { key: 'side-wave-in-pair' },
+          { key: 'side-wave-closed-open' },
+          { key: 'forward-wave' },
+          { key: 'forward-wave-in-pair' },
+          { key: 'frontal-wave-walk-closed' },
+          { key: 'side-to-frontal-wave' },
+          { key: 'side-wave-level-change' },
+          { key: 'slide-frontal-wave' },
+          { key: 'side-wave-headroll' },
+          { key: 'diagonal-shoulder-wave' },
+          { key: 'impulse-vs-wave' },
+          { key: 'isolation-walk' },
         ],
       },
       {
-        title: 'Броски рук',
+        key: 'headroll',
         items: [
-          { text: 'Броски рук перед собой снизу вверх — зеркальными и диагональными руками' },
-          { text: 'Броски двух рук' },
-          { text: 'Бросок рук + поворот за талию' },
-          { text: 'Стилистика кистей на броске рук' },
+          { key: 'headroll-closed-open' },
+          { key: 'partners-headroll' },
+          { key: 'headroll-forward-accent' },
+          { key: 'headroll-back-accent' },
+          { key: 'slide-headroll-back' },
         ],
       },
       {
-        title: 'Аллардо и диагональные руки',
+        key: 'fold-slide-culito',
         items: [
-          { text: 'Скольжение диагональных рук' },
-          { text: 'Аллардо на девушку и на себя зеркальной рукой' },
-          { text: 'Аллардо двумя руками по очереди и одновременно («лодочка»)' },
+          { key: 'fold' },
+          { key: 'closed-slide' },
+          { key: 'horizontal-hip-circle' },
+          { key: 'vertical-lower-pendulum' },
+          { key: 'closed-counterbalance' },
+          { key: 'intro-combinations' },
         ],
       },
       {
-        title: 'Hammerlock',
-        items: [
-          { text: 'Hammerlock с зеркальными руками (одной и двумя)' },
-          { text: 'Hammerlock диагональными руками' },
-          { text: 'Бросок руки вниз за партнёршу' },
-          { text: 'Шаги вперёд в hammerlock и смена мест через поворот' },
-        ],
+        key: 'windmill-and-combos',
+        items: [{ key: 'windmill' }, { key: 'combo-with-hand-changes' }],
       },
       {
-        title: 'Прогулка и позиции',
-        items: [
-          { text: 'Раскрытие в прогулках' },
-          { text: 'Проходка партнёрши' },
-          { text: 'Закрытая позиция: уголок' },
-          { text: 'Прогулка №2 (со скрестными руками)' },
-          { text: 'Поддержка на бок в прогулке' },
-          { text: 'CBL (cross body lead)' },
-        ],
+        key: 'madrid-and-gancho-intro',
+        items: [{ key: 'madrid' }, { key: 'gancho-circle-steps' }],
       },
       {
-        title: 'Rompe adelante и Paseala',
+        key: 'extras',
         items: [
-          { text: 'Rompe adelante (сразу через уголок, затем добавляя волчек)' },
-          { text: 'Paseala' },
-          { text: 'Комбинирование Rompe adelante и Paseala' },
-          { text: 'Мужская и женская партии на Rompe adelante', note: '(сольно)' },
-        ],
-      },
-      {
-        title: 'Пластика (ввод)',
-        items: [
-          {
-            text: 'Лодочка, ролл бедром (кулито), боковая волна, фронтальная волна, кулито, хедрол',
-            note: '(начать)',
-          },
-        ],
-      },
-      {
-        title: 'Сольные элементы модуля',
-        items: [
-          { text: 'Вперёд-назад-назад и назад-вперёд-вперёд' },
-          { text: 'Диагональ (мадридский)' },
-          { text: 'Paseala' },
-          { text: 'Обратный бейсик (сайд-степ)' },
+          { key: 'teps' },
+          { key: 'syncopated-steps' },
+          { key: 'open-break' },
+          { key: 'intro-musicality' },
         ],
       },
     ],
   },
   {
-    title: 'Модуль 3 — Теневая позиция и пластика',
+    key: 'steps-turns-musicality',
     sections: [
       {
-        title: 'Теневая позиция',
+        key: 'steps',
         items: [
-          { text: 'Теневая женская — 1-й вариант захода (через шаг-точку)' },
-          { text: 'Мужская теневая (через шаг-точку)' },
-          { text: 'Теневая женская — 2-й вариант захода (через уголок) и ролл бедром в теневой' },
-          { text: 'Что такое теневая позиция (парень сзади и парень спереди)' },
-          { text: 'Вход в теневую через поворот партнёрши и раскрытие (руки диагональные)' },
-          { text: 'Поворот партнёрши в теневой' },
-          { text: 'Смена теневой: сзади ↔ спереди + выход через 180' },
-          { text: 'Вход в теневую после hammerlock' },
-          { text: 'Rompe adelante + теневая, когда партнёр спереди' },
+          { key: 'madrid-step' },
+          { key: 'tango-step' },
+          { key: 'dominican-steps' },
+          { key: 'delayed-step' },
+          { key: 'sakaita-step' },
         ],
       },
       {
-        title: 'Волны и изоляция',
+        key: 'turns',
         items: [
-          { text: 'Боковая волна, боковая волна на точку' },
-          { text: 'Боковая волна в паре' },
-          { text: 'Боковая волна в закрытой и открытой позициях' },
-          { text: 'Волна вперёд' },
-          { text: 'Волна вперёд в паре' },
-          { text: 'Фронтальная волна в прогулке и в закрытой позиции' },
-          { text: 'Переход из боковой волны во фронтальную' },
-          { text: 'Боковая волна со сменой уровня' },
-          { text: 'Слайд + фронтальная волна друг на друга' },
-          { text: 'Боковая волна со сменой уровня + хедрол' },
-          { text: 'Диагональная волна от плеча' },
-          { text: 'Отличать импульс в горизонте и волной (в прогулке)' },
-          { text: 'Изоляция верх-низ-низ-верх в прогулке' },
+          { key: 'turn-on-three-seven' },
+          { key: 'turn-on-two-six' },
+          { key: 'double-turns' },
+          { key: 'partners-turn-on-three' },
+          { key: 'waist-lever-shadow-turn-on-two' },
+          { key: 'push-aside-turn-on-three' },
+          { key: 'double-turn-walk-entry' },
+          { key: 'follower-turn-headroll' },
+          { key: 'turn-on-one-headroll' },
+          { key: 'lever-circle-lead' },
+          { key: 'reverse-turn-waiter' },
         ],
       },
       {
-        title: 'Хедрол',
+        key: 'open-break-hammerlock',
         items: [
-          { text: 'Хедрол в закрытой позиции, потом в открытой' },
-          { text: 'Хедрол партнёров' },
-          { text: 'Хедрол с акцентом вперёд в прогулке и после аллардо' },
-          { text: 'Хедрол с акцентом назад — через приглашение вперёд и рукой на плече' },
-          { text: 'Слайд + хедрол с акцентом назад' },
+          { key: 'open-break-mirrored' },
+          { key: 'open-break-in-hammerlock' },
+          { key: 'reverse-turn-hammerlock' },
         ],
       },
       {
-        title: 'Складка, слайд, кулито',
+        key: 'wolchek-windmill-slide',
         items: [
-          { text: 'Складка в закрытой позиции и в прогулке' },
-          { text: 'Слайд в закрытой позиции' },
-          { text: 'Горизонтальный круг таза (кулито) с ведением рукой' },
-          { text: 'Вертикальный маятник низа в закрытой позиции' },
-          { text: 'Контрбаланс в закрытой позиции' },
-          { text: 'Комбинирование элементов на интро и в медленных проигрышах' },
+          { key: 'wolchek' },
+          { key: 'open-slide' },
+          { key: 'slide-endings' },
+          { key: 'descent-ascent' },
         ],
       },
       {
-        title: 'Мельница и связки',
-        items: [{ text: 'Мельница' }, { text: 'Связка + все движения со сменой рук' }],
-      },
-      {
-        title: 'Мадридский и ganchó (ввод)',
-        items: [{ text: 'Мадридский' }, { text: 'Ganchó и шаги по кругу вокруг общего центра' }],
-      },
-      {
-        title: 'Дополнительно',
+        key: 'musicality-and-rhythms',
         items: [
-          { text: 'Тепы и комбинации шагов с ними', note: '(лучше в паре)' },
-          { text: 'Синкопированные шаги: трипл-степ, ча-ча' },
-          { text: 'Опен-брейк' },
-          { text: 'Работа со вступлением (музыкальность)' },
+          { key: 'music-types' },
+          { key: 'footwork-rhythms' },
+          { key: 'bass-rhythm' },
+          { key: 'rhythm-play-variants' },
+          { key: 'sakaita-taki-taki' },
+          { key: 'stop-forward-footwork' },
+        ],
+      },
+      {
+        key: 'walk-direction-changes',
+        items: [
+          { key: 'circle-snake-walk' },
+          { key: 'direction-change-follower-turns' },
+          { key: 'direction-change-hammerlock' },
+          { key: 'allardo-turns-walk' },
+        ],
+      },
+      {
+        key: 'rompe-adelante-variations',
+        items: [
+          { key: 'upper-pendulum' },
+          { key: 'hand-variations-pause' },
+          { key: 'rompe-headroll-forward' },
         ],
       },
     ],
   },
   {
-    title: 'Модуль 4 — Шаги, повороты и музыкальность',
+    key: 'advanced',
     sections: [
       {
-        title: 'Шаги',
+        key: 'hand-throws-advanced',
         items: [
-          { text: 'Мадридский шаг (сначала прямой, потом в диагональ)' },
-          { text: 'Танго-степ' },
-          { text: 'Доминиканские шаги' },
-          { text: 'Шаг с задержкой (шаг под бас)' },
-          { text: 'Шаг с подбивкой (sakaíta)' },
+          { key: 'harder-throws' },
+          { key: 'hammerlock-throws' },
+          { key: 'throws-after-double-turn' },
+          { key: 'elbow-throw-after-turn' },
+          { key: 'side-up-throws' },
+          { key: 'hammerlock-leader-turn-elbow-throw' },
         ],
       },
       {
-        title: 'Повороты',
+        key: 'supports-and-cambre',
         items: [
-          { text: 'Поворот на 3/7' },
-          { text: 'Поворот на 2/6' },
-          { text: 'Двойные повороты' },
-          { text: 'Поворот на 3 у партнёров' },
-          { text: 'Поворот на 2 за талию, за рычаг, выходом из теневой' },
-          { text: 'Выталкивание в сторону и поворот на 3' },
-          { text: 'Двойной поворот + вход в прогулку' },
-          { text: 'Поворот партнёрши на 1–2 и хедрол на 3–4' },
-          { text: 'Поворот на 1 + хедрол' },
-          { text: 'Вождение девушки по кругу за рычаг' },
-          { text: 'Обратный поворот партнёрши через позицию «официант»' },
+          { key: 'support-down' },
+          { key: 'closed-supports' },
+          { key: 'cambre' },
+          { key: 'social-supports' },
+          { key: 'side-opening' },
+          { key: 'wave-headroll-combo' },
+          { key: 'cambre-culito' },
         ],
       },
       {
-        title: 'Опенбрейк и Hammerlock',
+        key: 'headroll-advanced',
         items: [
-          { text: 'Опенбрейк на 3 и на 1 через зеркальные руки' },
-          { text: 'Опенбрейк в Hammerlock' },
-          { text: 'Обратный поворот партнёрши через Hammerlock' },
+          { key: 'headroll-back' },
+          { key: 'headroll-back-from-side-wave' },
+          { key: 'double-headroll' },
+          { key: 'leader-headroll' },
         ],
       },
       {
-        title: 'Волчек, мельница, слайд',
+        key: 'waves-and-fold',
         items: [
-          { text: 'Волчек' },
-          { text: 'Слайд в открытой позиции' },
-          { text: 'Варианты концовки после слайда: хедрол, фронтальная волна, кулито' },
-          { text: 'Спуск / подъём (волна с уходом вниз)' },
+          { key: 'fold-frontal-open' },
+          { key: 'double-wave-basic' },
+          { key: 'big-hip-circle' },
+          { key: 'level-changes' },
         ],
       },
       {
-        title: 'Музыкальность и ритмы',
+        key: 'isolation-and-swivels',
         items: [
-          { text: 'Виды музыки бачаты, ритм, фон, проигрыш' },
-          { text: 'Обыгрывание ногами ритмов 123и4, 1и2и34' },
-          { text: 'Ритм бас (1и34)' },
-          { text: 'Три варианта обыгрывания ритма (плавно, доводчик, роботик)' },
-          { text: 'Sakaíta и таки-таки в паре' },
-          { text: 'Остановочный вперёд + футворк (переборка, таки-таки)' },
+          { key: 'torso-hip-isolation' },
+          { key: 'swivels' },
+          { key: 'chest-points-hip-twist' },
+          { key: 'pair-swivels' },
         ],
       },
       {
-        title: 'Прогулка и смена направлений',
+        key: 'decorations-and-statics',
         items: [
-          { text: 'Прогулка по кругу, змейкой' },
-          { text: 'Смена направлений с поворотами партнёрши' },
-          { text: 'Смена направлений при ведении на себе + с hammerlock' },
-          { text: 'Аллардо: обычные и обратные повороты, прогулка, шаги вперёд-назад' },
+          { key: 'walk-hand-decorations' },
+          { key: 'forward-turn-decoration' },
+          { key: 'soft-point-on-swing' },
+          { key: 'static-elements' },
+          { key: 'contrast-dance' },
         ],
       },
       {
-        title: 'Rompe adelante — варианты',
+        key: 'slowdowns-pushes-walk',
         items: [
-          { text: 'Маятник верха на Rompe adelante' },
-          { text: 'Варианты с руками, обыгрывание паузы на 5' },
-          { text: 'Rompe adelante + хедрол вперёд' },
-        ],
-      },
-    ],
-  },
-  {
-    title: 'Модуль 5 — Продвинутый уровень',
-    sections: [
-      {
-        title: 'Броски рук (углубление)',
-        items: [
-          { text: 'Броски рук сложнее' },
-          { text: 'Броски в hammerlock (за спину, из-за спины, в замок)' },
-          { text: 'Броски после поворота под двумя руками — локтем и замком' },
-          { text: 'Бросок локтем после поворота партнёра' },
-          { text: 'Броски в сторону и вверх' },
-          { text: 'Поворот на Hammerlock у партнёра и бросок с локтя' },
+          { key: 'walk-slowdown' },
+          { key: 'length-push' },
+          { key: 'frontal-push' },
+          { key: 'hand-slide-place-change' },
+          { key: 'contact-extension-walk-exit' },
+          { key: 'stop-partner' },
         ],
       },
       {
-        title: 'Поддержки и камбре',
+        key: 'footwork',
+        items: [{ key: 'leader-hook' }, { key: 'no-lead-footwork' }],
+      },
+      {
+        key: 'turns-and-shadow-advanced',
         items: [
-          { text: 'Поддержка с уходом вниз' },
-          { text: 'Поддержка в закрытой в сторону; вперёд — камбре; на себя' },
-          { text: 'Камбре (после Rompe, в боковой позиции, в прогулке, после складки)' },
-          { text: 'Социальные поддержки (на себя через сторону + складка)' },
-          { text: 'Боковое раскрытие партнёрши (сразу и после хедрола)' },
-          { text: 'Комбинация: боковая волна, хедрол, раскрытие, фронтальная волна, складка' },
-          { text: 'Камбре + кулито' },
+          { key: 'scoop-water-turn' },
+          { key: 'hammerlock-circular-arms' },
+          { key: 'madrid-cross-shadow' },
+          { key: 'shadow-swap' },
         ],
       },
       {
-        title: 'Хедрол (углубление)',
-        items: [
-          { text: 'Хедрол назад' },
-          { text: 'Хедрол назад с боковой волны' },
-          { text: 'Двойной хедрол (у обоих)' },
-          {
-            text: 'Хедрол у партнёра (из фронтальной, после обратного поворота, при выходе из теневой)',
-          },
-        ],
+        key: 'styling-lead',
+        items: [{ key: 'boat-styling-lead' }, { key: 'music-combo-video' }],
       },
       {
-        title: 'Волны и складка',
-        items: [
-          { text: 'Складка в фронтальной открытой позиции с ведением через руки' },
-          { text: 'Двойная волна с бейсиком (в прогулке, как Paseala, в теневой)' },
-          { text: 'Большой круг таза' },
-          { text: 'Смена уровней (+ хедрол и волна)' },
-        ],
+        key: 'extras',
+        items: [{ key: 'rond' }],
       },
-      {
-        title: 'Изоляция и свивлы',
-        items: [
-          { text: 'Изоляция корпуса, изоляция бёдер и восьмёрки' },
-          { text: 'Свивлы (внутренние, внешние на месте и с продвижением)' },
-          { text: 'Изоляция — точки грудной клеткой, подкрутка бедра, плечи' },
-          { text: 'Свивлы в паре и у девушки в теневой / прогулке' },
-        ],
-      },
-      {
-        title: 'Украшения и статика',
-        items: [
-          { text: 'Украшения руками на прогулке (разворот кисти, хлыст, овал лица)' },
-          { text: 'Украшение при повороте вперёд' },
-          { text: 'Мягкая точка на замахе' },
-          { text: 'Статические элементы с игрой рук' },
-          { text: 'Танец на контрасте (с бейсиком и без)' },
-        ],
-      },
-      {
-        title: 'Замедления, выталкивание, прогулка',
-        items: [
-          { text: 'Замедление на 2 и 4 счёта в прогулке' },
-          { text: 'Выталкивание в длину (садить бедро) в прогулке и теневой' },
-          { text: 'Выталкивание партнёрши в фронтальной плоскости' },
-          { text: 'Скольжение по рукам при смене мест' },
-          { text: 'Продление контакта при выходе из прогулки' },
-          { text: 'Как остановить партнёршу во время танца' },
-        ],
-      },
-      {
-        title: 'Футворк',
-        items: [
-          { text: 'Хук у партнёра (ноги накрест)' },
-          {
-            text: 'Футворк без ведения с контактом в поднятой руке (переборка, скольжение, таки-таки, кросс по точкам)',
-          },
-        ],
-      },
-      {
-        title: 'Повороты и теневая (продвинутое)',
-        items: [
-          { text: 'Поворот партнёрши с ведением наружной руки через низ («зачерпнуть воды»)' },
-          { text: 'Hammerlock у партнёра + круговые вращения руками на бейсике' },
-          { text: 'Мадридский шаг и крест на 1 (по дуге) в теневой' },
-          { text: 'Смена теневых (сзади ↔ спереди)' },
-        ],
-      },
-      {
-        title: 'Ведение на пластику',
-        items: [{ text: 'Ведение на пластику в лодочке' }, { text: 'Связка под музыку с видео' }],
-      },
-      { title: 'Дополнительно', items: [{ text: 'Ронд (круговое движение ногой)' }] },
     ],
   },
 ] as const satisfies readonly ElementsModule[];
 
-export const SOLO_ELEMENTS_TABLE = {
-  badge: 'Сводный перечень сольных элементов (Уровень 1)',
-  title: '17 сольных элементов',
-  columns: ['№', 'Элемент', 'Модуль'],
-  rows: [
-    { num: 1, name: 'Бейсик боковой, вперёд и назад', module: '1' },
-    { num: 2, name: 'Квадрат', module: '1' },
-    { num: 3, name: 'Замедление на 2 и на 4 счёта', module: '1' },
-    { num: 4, name: 'Поворот на 1 в сторону и вперёд', module: '1' },
-    { num: 5, name: 'Мужская и женская партии на Rompe adelante', module: '2' },
-    { num: 6, name: 'Paseala', module: '2' },
-    { num: 7, name: 'Слайд', module: '1' },
-    { num: 8, name: 'Остановочный', module: '1' },
-    { num: 9, name: 'Сайт бейсик', module: '1' },
-    { num: 10, name: 'Вперёд-назад-назад и назад-вперёд-вперёд', module: '2' },
-    { num: 11, name: 'Диагональ (мадридский)', module: '2–4' },
-    { num: 12, name: 'V-образный', module: '1' },
-    { num: 13, name: 'Боковая волна', module: '2–3' },
-    { num: 14, name: 'Фронтальная волна', module: '2–3' },
-    { num: 15, name: 'Круг бедром (кулито)', module: '2–3' },
-    { num: 16, name: 'Хедрол', module: '3–5' },
-    { num: 17, name: 'Обратный поворот на 1', module: '1' },
-  ],
-} as const satisfies ElementsTable;
+export const SOLO_ELEMENTS_TABLE_ROWS = [
+  { key: 'basic-side-forward-back', num: 1, module: '1' },
+  { key: 'square', num: 2, module: '1' },
+  { key: 'slowdown-two-four', num: 3, module: '1' },
+  { key: 'turn-on-one', num: 4, module: '1' },
+  { key: 'rompe-adelante-parts', num: 5, module: '2' },
+  { key: 'paseala', num: 6, module: '2' },
+  { key: 'slide', num: 7, module: '1' },
+  { key: 'stop-step', num: 8, module: '1' },
+  { key: 'side-basic', num: 9, module: '1' },
+  { key: 'forward-back-back', num: 10, module: '2' },
+  { key: 'diagonal-madrid', num: 11, module: '2–4' },
+  { key: 'v-shaped', num: 12, module: '1' },
+  { key: 'side-wave', num: 13, module: '2–3' },
+  { key: 'frontal-wave', num: 14, module: '2–3' },
+  { key: 'hip-circle-culito', num: 15, module: '2–3' },
+  { key: 'headroll', num: 16, module: '3–5' },
+  { key: 'reverse-turn-on-one', num: 17, module: '1' },
+] as const satisfies readonly SoloElementRow[];
