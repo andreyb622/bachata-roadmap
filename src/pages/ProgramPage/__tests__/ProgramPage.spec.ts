@@ -4,11 +4,10 @@ import { flushPromises, mount } from '@vue/test-utils';
 import type { VueWrapper } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import { createMemoryHistory, createRouter } from 'vue-router';
-import { resetSectionCollapse } from '@/composables/useSectionCollapse';
-import { PROGRAM } from '@/data/program';
-import { ROUTE_NAMES } from '@/router';
+import { PROGRAM, resetSectionCollapse } from '@/modules/program';
+import { ROUTE_NAMES } from '@/shared/config/route-names';
 import ProgramPage from '@/pages/ProgramPage/ProgramPage.vue';
-import { useProfilesStore } from '@/stores/useProfilesStore';
+import { useProfilesStore } from '@/modules/profiles';
 
 let wrapper: VueWrapper | null = null;
 

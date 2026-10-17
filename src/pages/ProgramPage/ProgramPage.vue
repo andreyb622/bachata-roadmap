@@ -2,14 +2,17 @@
 import { storeToRefs } from 'pinia';
 import { computed, nextTick, onBeforeUnmount, ref, useTemplateRef, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import ChecklistItem from '@/components/ChecklistItem/ChecklistItem.vue';
-import ProgressBar from '@/components/ProgressBar/ProgressBar.vue';
-import SectionCard from '@/components/SectionCard/SectionCard.vue';
-import { useSectionCollapse } from '@/composables/useSectionCollapse';
-import { PROGRAM } from '@/data/program';
-import { periodPercent, sectionCounter } from '@/lib/progress';
-import { ROUTE_NAMES } from '@/router';
-import { useProfilesStore } from '@/stores/useProfilesStore';
+import ProgressBar from '@/shared/ui/ProgressBar/ProgressBar.vue';
+import SectionCard from '@/shared/ui/SectionCard/SectionCard.vue';
+import {
+  ChecklistItem,
+  PROGRAM,
+  periodPercent,
+  sectionCounter,
+  useSectionCollapse,
+} from '@/modules/program';
+import { ROUTE_NAMES } from '@/shared/config/route-names';
+import { useProfilesStore } from '@/modules/profiles';
 
 const HIGHLIGHT_DURATION_MS = 2000;
 
