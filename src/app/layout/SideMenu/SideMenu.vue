@@ -4,7 +4,7 @@ import { useOverlay } from '@/shared/composables/useOverlay';
 import { APP_VERSION_LABEL } from '@/shared/config/app-meta';
 import { ROUTE_NAMES } from '@/shared/config/route-names';
 
-export type MenuAction = 'entities' | 'create' | 'info' | 'reset';
+export type MenuAction = 'entities' | 'create' | 'info' | 'settings' | 'reset';
 
 const emit = defineEmits<{ select: [action: MenuAction] }>();
 
@@ -81,6 +81,15 @@ function select(action: MenuAction): void {
             <span class="side-menu__icon">📑</span>
             <span class="side-menu__label">Элементы по блокам</span>
           </RouterLink>
+          <button
+            type="button"
+            class="side-menu__item"
+            data-test="menu-settings"
+            @click="select('settings')"
+          >
+            <span class="side-menu__icon">⚙</span>
+            <span class="side-menu__label">Настройки</span>
+          </button>
           <button
             type="button"
             class="side-menu__item"

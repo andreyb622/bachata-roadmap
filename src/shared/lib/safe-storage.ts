@@ -50,7 +50,8 @@ export function testStorage(): boolean {
 export function storageGet(key: string): string | null {
   if (storageOk) {
     try {
-      return localStorage.getItem(key);
+      const stored = localStorage.getItem(key);
+      if (stored !== null) return stored;
     } catch {
       // fallback to memory
     }
@@ -62,6 +63,7 @@ export function storageSet(key: string, val: string): boolean {
   if (storageOk) {
     try {
       localStorage.setItem(key, val);
+      memStore.delete(key);
       return true;
     } catch (error) {
       noteStorageWriteError(error);
@@ -73,13 +75,11 @@ export function storageSet(key: string, val: string): boolean {
 }
 
 export function storageRemove(key: string): void {
-  if (storageOk) {
-    try {
-      localStorage.removeItem(key);
-      return;
-    } catch {
-      // fallback to memory
-    }
-  }
   memStore.delete(key);
+  if (!storageOk) return;
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // memory copy is already dropped
+  }
 }

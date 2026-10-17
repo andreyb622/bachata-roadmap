@@ -20,6 +20,7 @@ import {
   EntityForm,
   useProfilesStore,
 } from '@/modules/profiles';
+import { SettingsSheet, useTheme } from '@/modules/settings';
 import { InstallHint, useInstallHint } from '@/modules/pwa';
 
 const route = useRoute();
@@ -28,6 +29,8 @@ const toast = useToast();
 
 const initFailed = ref(false);
 let store: ReturnType<typeof useProfilesStore> | null = null;
+
+useTheme();
 
 try {
   store = useProfilesStore();
@@ -50,6 +53,7 @@ const mainRef = useTemplateRef<HTMLElement>('main');
 
 const isMenuOpen = ref(false);
 const isInfoOpen = ref(false);
+const isSettingsOpen = ref(false);
 const isEntitiesOpen = ref(false);
 const isFormOpen = ref(false);
 const formEntityId = ref<string | null>(null);
@@ -81,6 +85,7 @@ const resetMessage = computed(
 function onMenuSelect(action: MenuAction): void {
   if (action === 'entities') isEntitiesOpen.value = true;
   else if (action === 'info') isInfoOpen.value = true;
+  else if (action === 'settings') isSettingsOpen.value = true;
   else if (action === 'reset') isResetOpen.value = true;
   else {
     formEntityId.value = null;
@@ -131,6 +136,7 @@ watch(tab, (next, prev) => {
   <template v-if="!initFailed">
     <SideMenu v-model:open="isMenuOpen" @select="onMenuSelect" />
     <InfoSheet v-model:open="isInfoOpen" />
+    <SettingsSheet v-model:open="isSettingsOpen" />
     <EntitiesSheet v-model:open="isEntitiesOpen" @edit="onEdit" />
     <EntityForm v-model:open="isFormOpen" :entity-id="formEntityId" />
     <ConfirmDialog

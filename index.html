@@ -2,6 +2,32 @@
 <html lang="ru">
   <head>
     <meta charset="utf-8" />
+    <script>
+      (function () {
+        var theme = 'system';
+        try {
+          var raw = localStorage.getItem('bachata-settings-v1');
+          var saved = raw ? JSON.parse(raw) : null;
+          if (saved && saved.version === 1) {
+            if (saved.theme === 'light' || saved.theme === 'dark') theme = saved.theme;
+          } else if (
+            localStorage.getItem('bachata-state-v2') !== null ||
+            localStorage.getItem('bachata-progress-v1') !== null
+          ) {
+            theme = 'dark';
+          }
+        } catch (error) {
+          // Storage unavailable or corrupt: fall back to the system theme; the app store handles the rest.
+        }
+        if (theme === 'system') {
+          theme =
+            window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+              ? 'dark'
+              : 'light';
+        }
+        document.documentElement.dataset.theme = theme;
+      })();
+    </script>
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"

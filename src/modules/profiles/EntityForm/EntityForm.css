@@ -60,5 +60,5 @@
 
 .entity-form__button--primary {
   background: linear-gradient(135deg, var(--accent), var(--accent2));
-  color: var(--text);
+  color: var(--on-accent);
 }

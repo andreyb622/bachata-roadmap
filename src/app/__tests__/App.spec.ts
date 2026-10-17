@@ -12,12 +12,14 @@ import {
   useProfilesStore,
 } from '@/modules/profiles';
 import { routes } from '@/app/router';
+import { initSettings } from '../startup';
 
 let wrapper: VueWrapper | null = null;
 
 async function mountApp(path: string) {
   const pinia = createPinia();
   setActivePinia(pinia);
+  initSettings();
   const router = createRouter({ history: createMemoryHistory(), routes });
   await router.push(path);
   await router.isReady();
@@ -85,6 +87,34 @@ describe('App', () => {
     await wrapper.vm.$nextTick();
     expect(document.body.textContent).toContain('Меню');
     expect(document.body.querySelector('aside[role="dialog"]')).not.toBeNull();
+  });
+
+  it('opens the settings sheet from the menu', async () => {
+    const { wrapper } = await mountApp('/program/0');
+    await wrapper.find('button[aria-label="Меню"]').trigger('click');
+    await wrapper.vm.$nextTick();
+    document.body.querySelector<HTMLButtonElement>('[data-test="menu-settings"]')?.click();
+    await wrapper.vm.$nextTick();
+    await wrapper.vm.$nextTick();
+    expect(document.body.textContent).toContain('Настройки');
+    expect(document.body.querySelector('[data-test="theme-dark"]')).not.toBeNull();
+  });
+
+  it('saves the system theme on a fresh device', async () => {
+    await mountApp('/program/0');
+    expect(localStorage.getItem('bachata-settings-v1')).toContain('"theme":"system"');
+  });
+
+  it('saves the system theme on a fresh device opened at /', async () => {
+    await mountApp('/');
+    expect(localStorage.getItem('bachata-settings-v1')).toContain('"theme":"system"');
+    expect(localStorage.getItem('bachata-state-v2')).not.toBeNull();
+  });
+
+  it('saves the dark theme when app data already exists', async () => {
+    initStorage();
+    await mountApp('/program/0');
+    expect(localStorage.getItem('bachata-settings-v1')).toContain('"theme":"dark"');
   });
 
   it('returns focus to the menu button after a sheet opened from the menu closes', async () => {

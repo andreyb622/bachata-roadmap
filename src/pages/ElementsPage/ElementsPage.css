@@ -20,8 +20,7 @@
   padding: 5px 12px;
   border-radius: 20px;
   margin: 18px 0 10px;
-  /* no token for this border color */
-  border: 1px solid rgba(232, 67, 147, 0.2);
+  border: 1px solid var(--accent-soft);
 }
 
 .elements-page__intro + .elements-page__badge {
@@ -40,8 +39,7 @@
   font-size: 14px;
   line-height: 1.45;
   color: var(--muted);
-  /* no token: faint divider */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid var(--tint-subtle);
 }
 
 .elements-page__item:last-child {

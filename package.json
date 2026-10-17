@@ -1,6 +1,6 @@
 {
   "name": "bachata-roadmap",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "type-check": "vue-tsc --noEmit",
     "lint": "eslint . --fix",
-    "test": "vitest run"
+    "test": "vitest run",
+    "check": "vue-tsc --noEmit && eslint . && vitest run --reporter=dot"
   },
   "dependencies": {
     "@vueuse/core": "^15.0.0",

@@ -333,6 +333,12 @@ function migrateFromV1(): void {
   storageRemove(KEYS.v1Tab);
 }
 
+/** True if the device already has app data (current or legacy), read before initStorage creates defaults. */
+export function hasStoredState(): boolean {
+  if (!isStorageOk()) testStorage();
+  return storageGet(STATE_KEY) !== null || storageGet(KEYS.v1Progress) !== null;
+}
+
 export function initStorage(): StoredStateV2 {
   testStorage();
   storageRecoveryMessage = null;

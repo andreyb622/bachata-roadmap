@@ -38,7 +38,7 @@ body,
   font-size: 13px;
   line-height: 1.45;
   padding: 10px 16px;
-  border-bottom: 1px solid rgba(255, 234, 167, 0.25);
+  border-bottom: 1px solid var(--warn-border);
 }
 
 html.js-ready .ios-hint {

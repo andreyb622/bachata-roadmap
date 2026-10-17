@@ -7,9 +7,10 @@
   height: calc(var(--safe-top) + var(--header-h));
   padding: var(--safe-top) 16px 0;
   background: var(--header-bg);
+  color: var(--header-text);
   transform: translateZ(0);
   -webkit-transform: translateZ(0);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--header-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -37,7 +38,7 @@
 
 .app-header__subtitle {
   font-size: 11px;
-  color: var(--muted);
+  color: var(--header-muted);
   margin-top: 1px;
 }
 
@@ -46,8 +47,8 @@
   height: 44px;
   border: none;
   border-radius: 10px;
-  background: var(--surface2);
-  color: var(--muted);
+  background: var(--header-surface);
+  color: var(--header-muted);
   font-size: 16px;
   cursor: pointer;
   display: flex;
@@ -62,11 +63,11 @@
 }
 
 .app-header__btn:active {
-  background: var(--accent-glow);
-  color: var(--accent2);
+  background: var(--header-accent-glow);
+  color: var(--header-accent);
 }
 
 .app-header__btn:focus-visible {
-  outline: 2px solid var(--accent2);
+  outline: 2px solid var(--header-accent);
   outline-offset: 2px;
 }
