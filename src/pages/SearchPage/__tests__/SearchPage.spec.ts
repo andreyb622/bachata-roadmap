@@ -3,7 +3,7 @@ import { flushPromises, mount } from '@vue/test-utils';
 import type { VueWrapper } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import { createMemoryHistory, createRouter } from 'vue-router';
-import { ROUTE_NAMES } from '@/router';
+import { ROUTE_NAMES } from '@/shared/config/route-names';
 import SearchPage from '@/pages/SearchPage/SearchPage.vue';
 
 let wrapper: VueWrapper | null = null;

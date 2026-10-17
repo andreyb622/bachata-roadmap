@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
-import ProgressBar from '@/components/ProgressBar/ProgressBar.vue';
+import ProgressBar from '@/shared/ui/ProgressBar/ProgressBar.vue';
 
 describe('ProgressBar', () => {
   it.each([0, 42])('renders %i percent', (percent) => {

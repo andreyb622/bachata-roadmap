@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useId } from 'vue';
-import { useOverlay } from '@/composables/useOverlay';
-import { APP_VERSION_LABEL } from '@/data/app-meta';
-import { ROUTE_NAMES } from '@/router';
+import { useOverlay } from '@/shared/composables/useOverlay';
+import { APP_VERSION_LABEL } from '@/shared/config/app-meta';
+import { ROUTE_NAMES } from '@/shared/config/route-names';
 
 export type MenuAction = 'entities' | 'create' | 'info' | 'reset';
 

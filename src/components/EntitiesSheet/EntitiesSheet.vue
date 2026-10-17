@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import BottomSheet from '@/components/BottomSheet/BottomSheet.vue';
-import ConfirmDialog from '@/components/ConfirmDialog/ConfirmDialog.vue';
-import { useToast } from '@/composables/useToast';
-import { ERROR_CODES } from '@/lib/errors';
+import BottomSheet from '@/shared/ui/BottomSheet/BottomSheet.vue';
+import ConfirmDialog from '@/shared/ui/ConfirmDialog/ConfirmDialog.vue';
+import { useToast } from '@/shared/composables/useToast';
+import { ERROR_CODES } from '@/shared/lib/errors';
 import { DEFAULT_ENTITY_NAME } from '@/lib/storage';
 import { routeForTab } from '@/router';
 import { useProfilesStore } from '@/stores/useProfilesStore';

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import type { VueWrapper } from '@vue/test-utils';
-import SectionCard from '@/components/SectionCard/SectionCard.vue';
+import SectionCard from '@/shared/ui/SectionCard/SectionCard.vue';
 
 let wrapper: VueWrapper | null = null;
 

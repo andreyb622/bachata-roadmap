@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, useId, useTemplateRef, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import BottomSheet from '@/components/BottomSheet/BottomSheet.vue';
-import { useToast } from '@/composables/useToast';
-import { ERROR_CODES } from '@/lib/errors';
+import BottomSheet from '@/shared/ui/BottomSheet/BottomSheet.vue';
+import { useToast } from '@/shared/composables/useToast';
+import { ERROR_CODES } from '@/shared/lib/errors';
 import { MAX_ENTITY_NAME_LEN } from '@/lib/storage';
 import { routeForTab } from '@/router';
 import { useProfilesStore } from '@/stores/useProfilesStore';

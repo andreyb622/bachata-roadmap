@@ -1,5 +1,5 @@
 import { readonly, ref } from 'vue';
-import { getUserMessage } from '../lib/errors';
+import { getUserMessage } from '@/shared/lib/errors';
 
 interface ToastEntry {
   message: string;

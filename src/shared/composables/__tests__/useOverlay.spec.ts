@@ -3,7 +3,7 @@ import { defineComponent, h, ref } from 'vue';
 import type { Ref } from 'vue';
 import { mount } from '@vue/test-utils';
 import type { VueWrapper } from '@vue/test-utils';
-import { useOverlay } from '@/composables/useOverlay';
+import { useOverlay } from '@/shared/composables/useOverlay';
 
 const wrappers: VueWrapper[] = [];
 

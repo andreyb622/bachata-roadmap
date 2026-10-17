@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { nextTick, useId, useTemplateRef, watch } from 'vue';
-import { useOverlay } from '@/composables/useOverlay';
+import { useOverlay } from '@/shared/composables/useOverlay';
 
 const { title, zLayer = 'sheet' } = defineProps<{
   title: string;

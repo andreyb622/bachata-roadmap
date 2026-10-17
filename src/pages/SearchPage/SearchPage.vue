@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router';
 import { PROGRAM } from '@/data/program';
 import { buildSearchIndex, getHighlightSegments, normalizeText, searchItems } from '@/lib/search';
 import type { SearchEntry } from '@/lib/search';
-import { ROUTE_NAMES } from '@/router';
+import { ROUTE_NAMES } from '@/shared/config/route-names';
 
 const DEBOUNCE_MS = 120;
 

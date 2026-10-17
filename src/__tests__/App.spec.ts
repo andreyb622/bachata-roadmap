@@ -4,7 +4,7 @@ import type { VueWrapper } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import { createMemoryHistory, createRouter } from 'vue-router';
 import App from '@/App.vue';
-import { useToast } from '@/composables/useToast';
+import { useToast } from '@/shared/composables/useToast';
 import { getSavedTabIndex, initStorage, setSavedTabIndex } from '@/lib/storage';
 import { useProfilesStore } from '@/stores/useProfilesStore';
 import { routes } from '@/router';

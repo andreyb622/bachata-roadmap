@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { ERROR_CODES, GENERIC_MESSAGE, getStorageRecoveryCode, getUserMessage } from '@/lib/errors';
+import {
+  ERROR_CODES,
+  GENERIC_MESSAGE,
+  getStorageRecoveryCode,
+  getUserMessage,
+} from '@/shared/lib/errors';
 
 const quotaMessage = getUserMessage(ERROR_CODES.STORAGE_QUOTA_EXCEEDED);
 const unavailableMessage = getUserMessage(ERROR_CODES.STORAGE_UNAVAILABLE);

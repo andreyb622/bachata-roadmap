@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { ERROR_CODES, getStorageRecoveryCode, getUserMessage } from '@/lib/errors';
+import { ERROR_CODES, getStorageRecoveryCode, getUserMessage } from '@/shared/lib/errors';
 
 type StorageModule = typeof import('@/lib/storage');
 

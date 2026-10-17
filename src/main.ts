@@ -2,11 +2,11 @@ import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import App from './App.vue';
 import { router } from './router';
-import { useToast } from './composables/useToast';
+import { useToast } from '@/shared/composables/useToast';
 import { usePwaUpdate } from '@/composables/usePwaUpdate';
-import { ERROR_CODES } from './lib/errors';
-import './styles/tokens.css';
-import './styles/base.css';
+import { ERROR_CODES } from '@/shared/lib/errors';
+import './shared/styles/tokens.css';
+import './shared/styles/base.css';
 
 const app = createApp(App);
 app.use(createPinia());

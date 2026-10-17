@@ -1,9 +1,9 @@
 import { computed, ref } from 'vue';
 import { defineStore } from 'pinia';
-import { useToast } from '../composables/useToast';
+import { useToast } from '@/shared/composables/useToast';
 import { PROGRAM } from '../data/program';
-import { ERROR_CODES, getUserMessage } from '../lib/errors';
-import type { ErrorCode } from '../lib/errors';
+import { ERROR_CODES, getUserMessage } from '@/shared/lib/errors';
+import type { ErrorCode } from '@/shared/lib/errors';
 import { getAllItemIds } from '../lib/progress';
 import {
   clearActiveProgress,

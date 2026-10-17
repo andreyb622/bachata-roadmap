@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { ERROR_CODES, getUserMessage } from '@/lib/errors';
+import { ERROR_CODES, getUserMessage } from '@/shared/lib/errors';
 import { useToast } from '../useToast';
 
 beforeEach(() => {

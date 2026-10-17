@@ -1,4 +1,4 @@
-import { formatVersionLabel } from '@/lib/version';
+import { formatVersionLabel } from '@/shared/lib/version';
 
 export const APP_NAME = 'Bachata Roadmap';
 export const APP_SHORT_NAME = 'Roadmap';

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import BottomSheet from '@/components/BottomSheet/BottomSheet.vue';
+import BottomSheet from '@/shared/ui/BottomSheet/BottomSheet.vue';
 
 const open = defineModel<boolean>('open', { default: false });
 </script>

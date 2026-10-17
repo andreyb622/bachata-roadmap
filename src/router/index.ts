@@ -1,13 +1,7 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import type { RouteLocationRaw, RouteRecordRaw } from 'vue-router';
 import { useProfilesStore } from '@/stores/useProfilesStore';
-
-export const ROUTE_NAMES = {
-  home: 'home',
-  program: 'program',
-  search: 'search',
-  elements: 'elements',
-} as const;
+import { ROUTE_NAMES } from '@/shared/config/route-names';
 
 declare module 'vue-router' {
   interface RouteMeta {

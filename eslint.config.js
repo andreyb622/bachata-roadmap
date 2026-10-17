@@ -8,4 +8,24 @@ export default [
   ...pluginVue.configs['flat/recommended'],
   { files: ['**/*.vue'], languageOptions: { parserOptions: { parser: tseslint.parser } } },
   eslintConfigPrettier,
+  {
+    files: ['src/shared/**/*.{ts,vue}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@/*', '!@/shared', '!@/shared/**'],
+              message: 'shared/ must not import from other layers (architecture.md §1)',
+            },
+            {
+              group: ['../../*'],
+              message: 'shared/ must not import from other layers (architecture.md §1)',
+            },
+          ],
+        },
+      ],
+    },
+  },
 ];

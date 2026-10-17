@@ -1,5 +1,5 @@
-import { ERROR_CODES, getStorageRecoveryCode, getUserMessage } from './errors';
-import type { ErrorCode } from './errors';
+import { ERROR_CODES, getStorageRecoveryCode, getUserMessage } from '@/shared/lib/errors';
+import type { ErrorCode } from '@/shared/lib/errors';
 
 export const STATE_KEY = 'bachata-state-v2';
 export const DEFAULT_ENTITY_NAME = 'Мой прогресс';

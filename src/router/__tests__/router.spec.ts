@@ -2,7 +2,8 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { createMemoryHistory, createRouter } from 'vue-router';
 import { initStorage, setSavedTabIndex } from '@/lib/storage';
-import { ROUTE_NAMES, routeForTab, routes, tabFromRoute } from '@/router';
+import { ROUTE_NAMES } from '@/shared/config/route-names';
+import { routeForTab, routes, tabFromRoute } from '@/router';
 
 function makeRouter() {
   return createRouter({ history: createMemoryHistory(), routes });

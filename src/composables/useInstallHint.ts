@@ -1,6 +1,6 @@
 import { getCurrentScope, onScopeDispose, ref } from 'vue';
 import type { Ref } from 'vue';
-import { useStandalone } from './useStandalone';
+import { useStandalone } from '@/shared/composables/useStandalone';
 
 export const INSTALL_HINT_KEY = 'bachata-install-hint-dismissed';
 
