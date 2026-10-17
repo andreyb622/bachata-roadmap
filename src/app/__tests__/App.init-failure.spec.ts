@@ -2,11 +2,11 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { mount } from '@vue/test-utils';
 import { createPinia } from 'pinia';
 import { createMemoryHistory, createRouter } from 'vue-router';
-import App from '@/App.vue';
+import App from '@/app/App.vue';
 import { useToast } from '@/shared/composables/useToast';
 import { ERROR_CODES, getUserMessage } from '@/shared/lib/errors';
 import ProgramPage from '@/pages/ProgramPage/ProgramPage.vue';
-import { routes } from '@/router';
+import { routes } from '@/app/router';
 
 vi.mock('@/modules/profiles', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/modules/profiles')>()),

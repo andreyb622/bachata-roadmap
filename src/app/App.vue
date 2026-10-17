@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { computed, ref, useTemplateRef, watch, watchEffect } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import AppHeader from '@/components/AppHeader/AppHeader.vue';
+import AppHeader from './layout/AppHeader/AppHeader.vue';
 import AppToast from '@/shared/ui/AppToast/AppToast.vue';
-import BottomTabs from '@/components/BottomTabs/BottomTabs.vue';
+import BottomTabs from './layout/BottomTabs/BottomTabs.vue';
 import ConfirmDialog from '@/shared/ui/ConfirmDialog/ConfirmDialog.vue';
-import InfoSheet from '@/components/InfoSheet/InfoSheet.vue';
-import SideMenu from '@/components/SideMenu/SideMenu.vue';
-import type { MenuAction } from '@/components/SideMenu/SideMenu.vue';
+import InfoSheet from './layout/InfoSheet/InfoSheet.vue';
+import SideMenu from './layout/SideMenu/SideMenu.vue';
+import type { MenuAction } from './layout/SideMenu/SideMenu.vue';
 import { useStandalone } from '@/shared/composables/useStandalone';
 import { useToast } from '@/shared/composables/useToast';
 import { APP_NAME } from '@/shared/config/app-meta';
 import { PROGRAM } from '@/modules/program';
 import { ERROR_CODES } from '@/shared/lib/errors';
-import { routeForTab, tabFromRoute } from '@/router';
+import { routeForTab, tabFromRoute } from './router';
 import {
   DEFAULT_ENTITY_NAME,
   EntitiesSheet,

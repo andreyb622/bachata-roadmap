@@ -3,7 +3,7 @@ import { mount } from '@vue/test-utils';
 import type { VueWrapper } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import { createMemoryHistory, createRouter } from 'vue-router';
-import App from '@/App.vue';
+import App from '@/app/App.vue';
 import { useToast } from '@/shared/composables/useToast';
 import {
   getSavedTabIndex,
@@ -11,7 +11,7 @@ import {
   setSavedTabIndex,
   useProfilesStore,
 } from '@/modules/profiles';
-import { routes } from '@/router';
+import { routes } from '@/app/router';
 
 let wrapper: VueWrapper | null = null;
 

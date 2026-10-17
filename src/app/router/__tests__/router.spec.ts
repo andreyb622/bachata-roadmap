@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia';
 import { createMemoryHistory, createRouter } from 'vue-router';
 import { initStorage, setSavedTabIndex } from '@/modules/profiles';
 import { ROUTE_NAMES } from '@/shared/config/route-names';
-import { routeForTab, routes, tabFromRoute } from '@/router';
+import { routeForTab, routes, tabFromRoute } from '@/app/router';
 
 function makeRouter() {
   return createRouter({ history: createMemoryHistory(), routes });

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { routeForTab } from '@/router';
+import { routeForTab } from '@/app/router';
 
 const { variant } = defineProps<{
   title: string;

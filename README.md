@@ -22,18 +22,17 @@ Vue 3, TypeScript, Vite, Pinia, vite-plugin-pwa, Vitest.
 
 ## Структура
 
-- `src/components/`, `src/pages/` — UI, у каждого компонента свой `.css`
-- `src/composables/`, `src/stores/` — состояние и логика (Pinia)
-- `src/lib/` — чистые функции: хранилище, прогресс, поиск, ошибки
-- `src/data/` — программа и элементы
-- `src/router/`, `src/styles/` — маршруты (hash) и глобальные стили
+- `src/app/` — точка входа, `App.vue`, маршруты (hash), каркас (шапка, вкладки, меню)
+- `src/pages/` — экраны по маршрутам, у каждого свой `.css`
+- `src/modules/` — предметные модули: `program`, `profiles` (хранилище, Pinia), `search`, `elements`, `pwa`
+- `src/shared/` — общий код без предметной логики: `ui`, `composables`, `lib`, `config`, `styles`
 - `public/` — иконка, `sw-legacy-cleanup.js`, редирект `elementy.html`
 - `guidebook/` — исходные материалы программы
 - `.github/workflows/deploy.yml` — деплой на GitHub Pages
 
 ## Данные пользователя
 
-Только `localStorage`, всё через `src/lib/storage.ts`.
+Только `localStorage`, всё через `src/modules/profiles/storage.ts`.
 
 - Ключ `bachata-state-v2`, формат `{ version: 2, entities, activeId, progress, tabs }`.
 - Резервные ключи: `bachata-state-v2-last-good` и `bachata-state-v2-corrupt-backup`.

@@ -5,8 +5,8 @@ import { router } from './router';
 import { useToast } from '@/shared/composables/useToast';
 import { usePwaUpdate } from '@/modules/pwa';
 import { ERROR_CODES } from '@/shared/lib/errors';
-import './shared/styles/tokens.css';
-import './shared/styles/base.css';
+import '@/shared/styles/tokens.css';
+import '@/shared/styles/base.css';
 
 const app = createApp(App);
 app.use(createPinia());
