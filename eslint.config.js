@@ -79,6 +79,7 @@ export default [
   moduleBlock('program', []),
   moduleBlock('profiles', ['program']),
   moduleBlock('search', ['program']),
+  moduleBlock('settings', []),
   moduleBlock('elements', []),
   moduleBlock('pwa', []),
   {
