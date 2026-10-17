@@ -22,8 +22,8 @@ import {
   switchEntity as storageSwitchEntity,
   toggleProgressItem,
   updateEntity as storageUpdateEntity,
-} from '../lib/storage';
-import type { StoredEntity } from '../lib/storage';
+} from './storage';
+import type { StoredEntity } from './storage';
 
 export type ActionResult<T = void> = { ok: true; value: T } | { ok: false; code: ErrorCode };
 

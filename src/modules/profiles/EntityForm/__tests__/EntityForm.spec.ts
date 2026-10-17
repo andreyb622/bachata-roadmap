@@ -3,10 +3,15 @@ import { mount } from '@vue/test-utils';
 import type { VueWrapper } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import { createMemoryHistory, createRouter } from 'vue-router';
-import EntityForm from '@/components/EntityForm/EntityForm.vue';
+import EntityForm from '../EntityForm.vue';
 import { useToast } from '@/shared/composables/useToast';
-import { routes } from '@/router';
-import { useProfilesStore } from '@/stores/useProfilesStore';
+import { ROUTE_NAMES } from '@/shared/config/route-names';
+import { useProfilesStore } from '../../store';
+
+const routes = [
+  { path: '/search', name: ROUTE_NAMES.search, component: { render: () => null } },
+  { path: '/program/:period', name: ROUTE_NAMES.program, component: { render: () => null } },
+];
 
 let wrapper: VueWrapper | null = null;
 

@@ -1,5 +1,15 @@
 import { ERROR_CODES, getStorageRecoveryCode, getUserMessage } from '@/shared/lib/errors';
-import type { ErrorCode } from '@/shared/lib/errors';
+import {
+  clearStorageError,
+  isStorageOk,
+  noteStorageSaveFailed,
+  storageGet,
+  storageRemove,
+  storageSet,
+  testStorage,
+} from '@/shared/lib/safe-storage';
+
+export { consumeStorageError, isStorageOk } from '@/shared/lib/safe-storage';
 
 export const STATE_KEY = 'bachata-state-v2';
 export const DEFAULT_ENTITY_NAME = 'Мой прогресс';
@@ -35,27 +45,8 @@ interface LoadResult {
   issue: LoadIssue | null;
 }
 
-const memStore = new Map<string, string>();
-let storageOk = false;
 let state: StoredStateV2 | null = null;
 let storageRecoveryMessage: string | null = null;
-let lastStorageError: ErrorCode | null = null;
-
-function isQuotaExceeded(error: unknown): boolean {
-  if (typeof error !== 'object' || error === null) return false;
-  const { name, code } = error as { name?: unknown; code?: unknown }; // probing unknown error fields
-  return name === 'QuotaExceededError' || code === 22 || code === 1014;
-}
-
-function noteStorageWriteError(error: unknown): void {
-  lastStorageError = isQuotaExceeded(error)
-    ? ERROR_CODES.STORAGE_QUOTA_EXCEEDED
-    : ERROR_CODES.STORAGE_SAVE_FAILED;
-}
-
-function clearStorageError(): void {
-  lastStorageError = null;
-}
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
@@ -200,54 +191,6 @@ function normalizeState(raw: unknown): StoredStateV2 | null {
   };
 }
 
-function testStorage(): boolean {
-  try {
-    const key = '__bachata_test__';
-    localStorage.setItem(key, '1');
-    localStorage.removeItem(key);
-    return true;
-  } catch {
-    return false;
-  }
-}
-
-function storageGet(key: string): string | null {
-  if (storageOk) {
-    try {
-      return localStorage.getItem(key);
-    } catch {
-      // fallback to memory
-    }
-  }
-  return memStore.get(key) ?? null;
-}
-
-function storageSet(key: string, val: string): boolean {
-  if (storageOk) {
-    try {
-      localStorage.setItem(key, val);
-      return true;
-    } catch (error) {
-      noteStorageWriteError(error);
-    }
-  }
-
-  memStore.set(key, val);
-  return !storageOk;
-}
-
-function storageRemove(key: string): void {
-  if (storageOk) {
-    try {
-      localStorage.removeItem(key);
-      return;
-    } catch {
-      // fallback to memory
-    }
-  }
-  memStore.delete(key);
-}
-
 function generateId(): string {
   return `e_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 }
@@ -281,8 +224,8 @@ function saveState(): boolean {
   const mainSaved = storageSet(STATE_KEY, serialized);
   const backupSaved = storageSet(KEYS.lastGood, serialized);
 
-  if (storageOk && (!mainSaved || !backupSaved)) {
-    lastStorageError ??= ERROR_CODES.STORAGE_SAVE_FAILED;
+  if (isStorageOk() && (!mainSaved || !backupSaved)) {
+    noteStorageSaveFailed();
     return false;
   }
 
@@ -391,7 +334,7 @@ function migrateFromV1(): void {
 }
 
 export function initStorage(): StoredStateV2 {
-  storageOk = testStorage();
+  testStorage();
   storageRecoveryMessage = null;
 
   try {
@@ -421,18 +364,8 @@ export function initStorage(): StoredStateV2 {
   return requireState();
 }
 
-export function isStorageOk(): boolean {
-  return storageOk;
-}
-
 export function getStorageRecoveryMessage(): string | null {
   return storageRecoveryMessage;
-}
-
-export function consumeStorageError(): ErrorCode | null {
-  const code = lastStorageError;
-  lastStorageError = null;
-  return code;
 }
 
 export function getState(): StoredStateV2 {

@@ -5,9 +5,9 @@ import BottomSheet from '@/shared/ui/BottomSheet/BottomSheet.vue';
 import ConfirmDialog from '@/shared/ui/ConfirmDialog/ConfirmDialog.vue';
 import { useToast } from '@/shared/composables/useToast';
 import { ERROR_CODES } from '@/shared/lib/errors';
-import { DEFAULT_ENTITY_NAME } from '@/lib/storage';
-import { routeForTab } from '@/router';
-import { useProfilesStore } from '@/stores/useProfilesStore';
+import { DEFAULT_ENTITY_NAME } from '../storage';
+import { routeForTab } from '@/shared/config/route-names';
+import { useProfilesStore } from '../store';
 
 const emit = defineEmits<{ edit: [id: string] }>();
 

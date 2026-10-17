@@ -12,7 +12,7 @@ import {
   useSectionCollapse,
 } from '@/modules/program';
 import { ROUTE_NAMES } from '@/shared/config/route-names';
-import { useProfilesStore } from '@/stores/useProfilesStore';
+import { useProfilesStore } from '@/modules/profiles';
 
 const HIGHLIGHT_DURATION_MS = 2000;
 

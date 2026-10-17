@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { afterEach, describe, expect, it } from 'vitest';
 import { nextTick } from 'vue';
-import InstallHint from '@/components/InstallHint/InstallHint.vue';
+import InstallHint from '../InstallHint.vue';
 
 const HTML_CLASS = 'install-hint-visible';
 const HEIGHT_VAR = '--install-hint-h';

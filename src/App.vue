@@ -5,21 +5,22 @@ import AppHeader from '@/components/AppHeader/AppHeader.vue';
 import AppToast from '@/shared/ui/AppToast/AppToast.vue';
 import BottomTabs from '@/components/BottomTabs/BottomTabs.vue';
 import ConfirmDialog from '@/shared/ui/ConfirmDialog/ConfirmDialog.vue';
-import EntitiesSheet from '@/components/EntitiesSheet/EntitiesSheet.vue';
-import EntityForm from '@/components/EntityForm/EntityForm.vue';
 import InfoSheet from '@/components/InfoSheet/InfoSheet.vue';
-import InstallHint from '@/components/InstallHint/InstallHint.vue';
 import SideMenu from '@/components/SideMenu/SideMenu.vue';
 import type { MenuAction } from '@/components/SideMenu/SideMenu.vue';
-import { useInstallHint } from '@/composables/useInstallHint';
 import { useStandalone } from '@/shared/composables/useStandalone';
 import { useToast } from '@/shared/composables/useToast';
 import { APP_NAME } from '@/shared/config/app-meta';
 import { PROGRAM } from '@/modules/program';
 import { ERROR_CODES } from '@/shared/lib/errors';
-import { DEFAULT_ENTITY_NAME } from '@/lib/storage';
 import { routeForTab, tabFromRoute } from '@/router';
-import { useProfilesStore } from '@/stores/useProfilesStore';
+import {
+  DEFAULT_ENTITY_NAME,
+  EntitiesSheet,
+  EntityForm,
+  useProfilesStore,
+} from '@/modules/profiles';
+import { InstallHint, useInstallHint } from '@/modules/pwa';
 
 const route = useRoute();
 const router = useRouter();

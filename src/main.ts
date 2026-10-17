@@ -3,7 +3,7 @@ import { createPinia } from 'pinia';
 import App from './App.vue';
 import { router } from './router';
 import { useToast } from '@/shared/composables/useToast';
-import { usePwaUpdate } from '@/composables/usePwaUpdate';
+import { usePwaUpdate } from '@/modules/pwa';
 import { ERROR_CODES } from '@/shared/lib/errors';
 import './shared/styles/tokens.css';
 import './shared/styles/base.css';

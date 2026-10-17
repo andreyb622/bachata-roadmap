@@ -3,8 +3,8 @@ import { createPinia, setActivePinia } from 'pinia';
 import { useToast } from '@/shared/composables/useToast';
 import { ERROR_CODES, getUserMessage } from '@/shared/lib/errors';
 import { PROGRAM, getAllItemIds } from '@/modules/program';
-import { STATE_KEY, getEntityProgressPct } from '@/lib/storage';
-import { useProfilesStore } from '../useProfilesStore';
+import { STATE_KEY, getEntityProgressPct } from '../storage';
+import { useProfilesStore } from '../store';
 
 function freshStore() {
   setActivePinia(createPinia());

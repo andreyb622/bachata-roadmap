@@ -4,9 +4,9 @@ import { useRouter } from 'vue-router';
 import BottomSheet from '@/shared/ui/BottomSheet/BottomSheet.vue';
 import { useToast } from '@/shared/composables/useToast';
 import { ERROR_CODES } from '@/shared/lib/errors';
-import { MAX_ENTITY_NAME_LEN } from '@/lib/storage';
-import { routeForTab } from '@/router';
-import { useProfilesStore } from '@/stores/useProfilesStore';
+import { MAX_ENTITY_NAME_LEN } from '../storage';
+import { routeForTab } from '@/shared/config/route-names';
+import { useProfilesStore } from '../store';
 
 const { entityId } = defineProps<{ entityId: string | null }>();
 

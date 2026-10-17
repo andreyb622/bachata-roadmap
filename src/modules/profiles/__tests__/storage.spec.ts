@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { ERROR_CODES, getStorageRecoveryCode, getUserMessage } from '@/shared/lib/errors';
 
-type StorageModule = typeof import('@/lib/storage');
+type StorageModule = typeof import('../storage');
 
 const STATE_KEY = 'bachata-state-v2';
 const LAST_GOOD_KEY = 'bachata-state-v2-last-good';
@@ -13,7 +13,7 @@ let storage: StorageModule;
 
 async function loadStorage(): Promise<StorageModule> {
   vi.resetModules();
-  return import('@/lib/storage');
+  return import('../storage');
 }
 
 function seedV2(payload: unknown): void {

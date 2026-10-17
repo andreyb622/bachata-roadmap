@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
 import { createMemoryHistory, createRouter } from 'vue-router';
-import { initStorage, setSavedTabIndex } from '@/lib/storage';
+import { initStorage, setSavedTabIndex } from '@/modules/profiles';
 import { ROUTE_NAMES } from '@/shared/config/route-names';
 import { routeForTab, routes, tabFromRoute } from '@/router';
 

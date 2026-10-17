@@ -7,7 +7,7 @@ import { createMemoryHistory, createRouter } from 'vue-router';
 import { PROGRAM, resetSectionCollapse } from '@/modules/program';
 import { ROUTE_NAMES } from '@/shared/config/route-names';
 import ProgramPage from '@/pages/ProgramPage/ProgramPage.vue';
-import { useProfilesStore } from '@/stores/useProfilesStore';
+import { useProfilesStore } from '@/modules/profiles';
 
 let wrapper: VueWrapper | null = null;
 

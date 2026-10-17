@@ -1,7 +1,9 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import type { RouteLocationRaw, RouteRecordRaw } from 'vue-router';
-import { useProfilesStore } from '@/stores/useProfilesStore';
-import { ROUTE_NAMES } from '@/shared/config/route-names';
+import type { RouteRecordRaw } from 'vue-router';
+import { useProfilesStore } from '@/modules/profiles';
+import { ROUTE_NAMES, SEARCH_TAB, routeForTab } from '@/shared/config/route-names';
+
+export { SEARCH_TAB, routeForTab };
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -10,8 +12,6 @@ declare module 'vue-router' {
   }
 }
 
-const SEARCH_TAB = 3;
-
 export function tabFromRoute(route: {
   name?: unknown;
   params: Record<string, unknown>;
@@ -19,14 +19,6 @@ export function tabFromRoute(route: {
   if (route.name === ROUTE_NAMES.program) return Number(route.params.period);
   if (route.name === ROUTE_NAMES.search) return SEARCH_TAB;
   return null;
-}
-
-export function routeForTab(tab: number): RouteLocationRaw {
-  if (tab === SEARCH_TAB) return { name: ROUTE_NAMES.search };
-  if (Number.isInteger(tab) && tab >= 0 && tab <= 2) {
-    return { name: ROUTE_NAMES.program, params: { period: String(tab) } };
-  }
-  return { name: ROUTE_NAMES.program, params: { period: '0' } };
 }
 
 export const routes: RouteRecordRaw[] = [

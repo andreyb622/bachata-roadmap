@@ -5,8 +5,12 @@ import { createPinia, setActivePinia } from 'pinia';
 import { createMemoryHistory, createRouter } from 'vue-router';
 import App from '@/App.vue';
 import { useToast } from '@/shared/composables/useToast';
-import { getSavedTabIndex, initStorage, setSavedTabIndex } from '@/lib/storage';
-import { useProfilesStore } from '@/stores/useProfilesStore';
+import {
+  getSavedTabIndex,
+  initStorage,
+  setSavedTabIndex,
+  useProfilesStore,
+} from '@/modules/profiles';
 import { routes } from '@/router';
 
 let wrapper: VueWrapper | null = null;

@@ -8,7 +8,8 @@ import { ERROR_CODES, getUserMessage } from '@/shared/lib/errors';
 import ProgramPage from '@/pages/ProgramPage/ProgramPage.vue';
 import { routes } from '@/router';
 
-vi.mock('@/stores/useProfilesStore', () => ({
+vi.mock('@/modules/profiles', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/modules/profiles')>()),
   useProfilesStore: () => {
     throw new Error('boom');
   },
