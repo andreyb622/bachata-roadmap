@@ -107,3 +107,34 @@ describe('getHighlightSegments', () => {
     expect(getHighlightSegments('Перенос', query)).toEqual([{ text: 'Перенос', isMatch: false }]);
   });
 });
+
+describe('per-locale search', () => {
+  it.each([
+    ['Ёлка  Йод', 'ru', 'елка йод'],
+    ['Canción  Ñandú', 'es', 'cancion nandu'],
+    ['Café', 'en', 'cafe'],
+  ])('normalizes %j for %s to %j', (input, locale, expected) => {
+    expect(normalizeText(input, locale)).toBe(expected);
+  });
+
+  it('highlights an accented word for a plain query', () => {
+    expect(getHighlightSegments('Canción', 'cancion', 'es')).toEqual([
+      { text: 'Canción', isMatch: true },
+    ]);
+  });
+
+  it('highlights decomposed (NFD) text for a plain query', () => {
+    const decomposed = 'Cancio\u0301n';
+    expect(normalizeText(decomposed, 'es')).toBe('cancion');
+    expect(getHighlightSegments(decomposed, 'cancion', 'es')).toEqual([
+      { text: 'Canción', isMatch: true },
+    ]);
+  });
+
+  it('finds the same ids in en as in ru for a plain russian query', () => {
+    const query = 'перенос веса';
+    const enIds = searchItems(buildSearchIndex(PROGRAM, 'en'), query, 'en').map((e) => e.id);
+    const ruIds = searchItems(buildSearchIndex(PROGRAM), query).map((e) => e.id);
+    expect(enIds).toEqual(ruIds);
+  });
+});

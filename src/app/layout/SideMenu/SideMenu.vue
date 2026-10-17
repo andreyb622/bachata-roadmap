@@ -112,7 +112,9 @@ function select(action: MenuAction): void {
             <span class="side-menu__label">{{ t('shell.resetProgress') }}</span>
           </button>
         </nav>
-        <p class="side-menu__version" data-test="menu-version">{{ APP_VERSION_LABEL }}</p>
+        <p class="side-menu__version" data-test="menu-version">
+          {{ t('shell.version', { details: APP_VERSION_LABEL }) }}
+        </p>
       </aside>
     </Transition>
   </Teleport>

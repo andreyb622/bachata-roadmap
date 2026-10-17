@@ -2,6 +2,7 @@ export default {
   shell: {
     elementsTitle: 'Элементы по блокам',
     menu: 'Меню',
+    version: 'Версия {details}',
     back: 'Назад к программе',
     about: 'О приложении',
     resetProgress: 'Сбросить прогресс',

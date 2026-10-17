@@ -15,3 +15,6 @@ export function createAppI18n(messages: Record<string, MessageSchema>) {
 }
 
 export type AppI18n = ReturnType<typeof createAppI18n>;
+
+export { default as sharedEn } from './en';
+export { default as sharedEs } from './es';

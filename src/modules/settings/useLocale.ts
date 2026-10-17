@@ -1,6 +1,6 @@
 import { computed } from 'vue';
 import type { ComputedRef } from 'vue';
-import { LOCALES_ENABLED } from '@/shared/config/locales';
+import { isLocaleSwitchEnabled } from '@/shared/config/locales';
 import { LOCALES } from './storage';
 import type { Locale } from './storage';
 import { useSettingsStore } from './store';
@@ -30,6 +30,6 @@ export function useLocale(hasExistingState: boolean): ComputedRef<ResolvedLocale
   const settings = useSettingsStore();
   const languages = navigator.languages?.length ? [...navigator.languages] : [navigator.language];
   return computed(() =>
-    resolveLocale(settings.locale, hasExistingState, languages, LOCALES_ENABLED),
+    resolveLocale(settings.locale, hasExistingState, languages, isLocaleSwitchEnabled()),
   );
 }

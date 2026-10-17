@@ -15,21 +15,21 @@ import { ROUTE_NAMES } from '@/shared/config/route-names';
 
 const DEBOUNCE_MS = 120;
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const router = useRouter();
 const inputRef = useTemplateRef<HTMLInputElement>('input');
 
 const inputValue = ref('');
 const query = ref('');
-const index = buildSearchIndex(PROGRAM);
+const index = computed(() => buildSearchIndex(PROGRAM, locale.value));
 
 const updateQuery = useDebounceFn((value: string) => {
   query.value = value;
 }, DEBOUNCE_MS);
 watch(inputValue, updateQuery);
 
-const results = computed(() => searchItems(index, query.value));
-const hasQuery = computed(() => normalizeText(query.value) !== '');
+const results = computed(() => searchItems(index.value, query.value, locale.value));
+const hasQuery = computed(() => normalizeText(query.value, locale.value) !== '');
 
 onMounted(() => inputRef.value?.focus());
 
@@ -78,7 +78,7 @@ function openResult(entry: SearchEntry): void {
           >
           <span class="search-result__text">
             <template
-              v-for="(segment, segmentIndex) in getHighlightSegments(entry.text, query)"
+              v-for="(segment, segmentIndex) in getHighlightSegments(entry.text, query, locale)"
               :key="segmentIndex"
             >
               <mark v-if="segment.isMatch" class="search-result__mark">{{ segment.text }}</mark>
