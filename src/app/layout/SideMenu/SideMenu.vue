@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useId } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useOverlay } from '@/shared/composables/useOverlay';
 import { APP_VERSION_LABEL } from '@/shared/config/app-meta';
 import { ROUTE_NAMES } from '@/shared/config/route-names';
@@ -7,6 +8,8 @@ import { ROUTE_NAMES } from '@/shared/config/route-names';
 export type MenuAction = 'entities' | 'create' | 'info' | 'settings' | 'reset';
 
 const emit = defineEmits<{ select: [action: MenuAction] }>();
+
+const { t } = useI18n();
 
 const open = defineModel<boolean>('open', { default: false });
 
@@ -47,11 +50,11 @@ function select(action: MenuAction): void {
         :aria-labelledby="titleId"
       >
         <div class="side-menu__header">
-          <h2 :id="titleId" class="side-menu__title">Меню</h2>
+          <h2 :id="titleId" class="side-menu__title">{{ t('shell.menu') }}</h2>
           <button
             type="button"
             class="side-menu__close"
-            aria-label="Закрыть"
+            :aria-label="t('ui.close')"
             data-test="menu-close"
             @click="close"
           >
@@ -66,7 +69,7 @@ function select(action: MenuAction): void {
             @click="select('entities')"
           >
             <span class="side-menu__icon">👥</span>
-            <span class="side-menu__label">Ученики и группы</span>
+            <span class="side-menu__label">{{ t('profiles.entities.title') }}</span>
           </button>
           <button
             type="button"
@@ -75,11 +78,11 @@ function select(action: MenuAction): void {
             @click="select('create')"
           >
             <span class="side-menu__icon">＋</span>
-            <span class="side-menu__label">Новый ученик / группа</span>
+            <span class="side-menu__label">{{ t('profiles.form.createTitle') }}</span>
           </button>
           <RouterLink :to="{ name: ROUTE_NAMES.elements }" class="side-menu__item" @click="close">
             <span class="side-menu__icon">📑</span>
-            <span class="side-menu__label">Элементы по блокам</span>
+            <span class="side-menu__label">{{ t('shell.elementsTitle') }}</span>
           </RouterLink>
           <button
             type="button"
@@ -88,7 +91,7 @@ function select(action: MenuAction): void {
             @click="select('settings')"
           >
             <span class="side-menu__icon">⚙</span>
-            <span class="side-menu__label">Настройки</span>
+            <span class="side-menu__label">{{ t('settings.title') }}</span>
           </button>
           <button
             type="button"
@@ -97,7 +100,7 @@ function select(action: MenuAction): void {
             @click="select('info')"
           >
             <span class="side-menu__icon">ℹ</span>
-            <span class="side-menu__label">О приложении</span>
+            <span class="side-menu__label">{{ t('shell.about') }}</span>
           </button>
           <button
             type="button"
@@ -106,7 +109,7 @@ function select(action: MenuAction): void {
             @click="select('reset')"
           >
             <span class="side-menu__icon">↺</span>
-            <span class="side-menu__label">Сбросить прогресс</span>
+            <span class="side-menu__label">{{ t('shell.resetProgress') }}</span>
           </button>
         </nav>
         <p class="side-menu__version" data-test="menu-version">{{ APP_VERSION_LABEL }}</p>

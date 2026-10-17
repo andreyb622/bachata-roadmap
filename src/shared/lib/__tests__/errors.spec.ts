@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   ERROR_CODES,
-  GENERIC_MESSAGE,
+  getGenericMessage,
   getStorageRecoveryCode,
   getUserMessage,
 } from '@/shared/lib/errors';
@@ -37,7 +37,7 @@ describe('getUserMessage', () => {
   });
 
   it('returns the generic message for a blank string', () => {
-    expect(getUserMessage('   ')).toBe(GENERIC_MESSAGE);
+    expect(getUserMessage('   ')).toBe(getGenericMessage());
   });
 
   it('maps an Error with a known code', () => {
@@ -64,11 +64,11 @@ describe('getUserMessage', () => {
   });
 
   it('returns the generic message for a plain Error', () => {
-    expect(getUserMessage(new Error('boom'))).toBe(GENERIC_MESSAGE);
+    expect(getUserMessage(new Error('boom'))).toBe(getGenericMessage());
   });
 
   it.each([null, undefined, {}, 42])('returns the generic message for %j', (value) => {
-    expect(getUserMessage(value)).toBe(GENERIC_MESSAGE);
+    expect(getUserMessage(value)).toBe(getGenericMessage());
   });
 });
 

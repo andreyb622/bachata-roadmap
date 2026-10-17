@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, useId, useTemplateRef, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import BottomSheet from '@/shared/ui/BottomSheet/BottomSheet.vue';
 import { useToast } from '@/shared/composables/useToast';
@@ -12,6 +13,7 @@ const { entityId } = defineProps<{ entityId: string | null }>();
 
 const open = defineModel<boolean>('open', { default: false });
 
+const { t } = useI18n();
 const store = useProfilesStore();
 const router = useRouter();
 const { show, showError } = useToast();
@@ -22,8 +24,12 @@ const name = ref('');
 let focusTimer: ReturnType<typeof setTimeout> | null = null;
 
 const isEdit = computed(() => entityId !== null);
-const title = computed(() => (isEdit.value ? 'Редактировать' : 'Новый ученик / группа'));
-const submitLabel = computed(() => (isEdit.value ? 'Сохранить' : 'Создать'));
+const title = computed(() =>
+  isEdit.value ? t('profiles.form.editTitle') : t('profiles.form.createTitle'),
+);
+const submitLabel = computed(() =>
+  isEdit.value ? t('profiles.form.save') : t('profiles.form.create'),
+);
 
 function close(): void {
   open.value = false;
@@ -35,7 +41,7 @@ function saveEdit(id: string, value: string): void {
     showError(result.code);
     return;
   }
-  show('Имя обновлено');
+  show(t('profiles.toast.renamed'));
   close();
 }
 
@@ -45,7 +51,7 @@ function saveCreate(value: string): void {
     showError(result.code);
     return;
   }
-  show(`Создано: ${value}`);
+  show(t('profiles.toast.created', { name: value }));
   router.push(routeForTab(0));
   close();
 }
@@ -88,7 +94,7 @@ onBeforeUnmount(clearFocusTimer);
 <template>
   <BottomSheet v-model:open="open" :title="title">
     <form class="entity-form" @submit.prevent="save">
-      <label class="entity-form__label" :for="inputId">Имя или название группы</label>
+      <label class="entity-form__label" :for="inputId">{{ t('profiles.form.label') }}</label>
       <input
         :id="inputId"
         ref="input"
@@ -96,7 +102,7 @@ onBeforeUnmount(clearFocusTimer);
         class="entity-form__input"
         type="text"
         :maxlength="MAX_ENTITY_NAME_LEN"
-        placeholder="Например: Маша или Группа А"
+        :placeholder="t('profiles.form.placeholder')"
         autocomplete="off"
         autocorrect="off"
         spellcheck="false"
@@ -109,7 +115,7 @@ onBeforeUnmount(clearFocusTimer);
           data-test="entity-cancel"
           @click="close"
         >
-          Отмена
+          {{ t('ui.cancel') }}
         </button>
         <button
           type="submit"

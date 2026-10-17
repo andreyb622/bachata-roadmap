@@ -1,3 +1,5 @@
+import { translate } from '@/shared/i18n/translate';
+
 export const ERROR_CODES = {
   STORAGE_UNAVAILABLE: 'storage_unavailable',
   STORAGE_PARSE_ERROR: 'storage_parse_error',
@@ -29,43 +31,15 @@ export type ErrorCode = (typeof ERROR_CODES)[keyof typeof ERROR_CODES];
 
 type MessageContext = Record<string, string | number | null | undefined>;
 
-export const GENERIC_MESSAGE =
-  'Что-то пошло не так. Попробуйте ещё раз или перезагрузите страницу.';
+export function getGenericMessage(): string {
+  return translate('errors.generic');
+}
 
-const MESSAGES: Record<ErrorCode, string> = {
-  [ERROR_CODES.STORAGE_UNAVAILABLE]:
-    'Хранилище недоступно — прогресс не сохранится после перезагрузки',
-  [ERROR_CODES.STORAGE_PARSE_ERROR]: 'Сохранённые данные повреждены и не читаются',
-  [ERROR_CODES.STORAGE_INVALID_STRUCTURE]: 'Сохранённые данные имеют неверную структуру',
-  [ERROR_CODES.STORAGE_RECOVERED_BACKUP]:
-    'Данные повреждены — восстановлена последняя сохранённая копия',
-  [ERROR_CODES.STORAGE_RECOVERED_PARTIAL]:
-    'Данные частично повреждены — восстановлена последняя копия',
-  [ERROR_CODES.STORAGE_NEW_PROFILE_PARSE]:
-    'Данные повреждены — создан новый профиль, резервная копия сохранена',
-  [ERROR_CODES.STORAGE_NEW_PROFILE_STRUCTURE]:
-    'Структура данных повреждена — создан новый профиль, резервная копия сохранена',
-  [ERROR_CODES.STORAGE_LOAD_RECOVERED]:
-    'Ошибка загрузки — восстановлена последняя сохранённая копия',
-  [ERROR_CODES.STORAGE_INIT_FAILED]:
-    'Не удалось загрузить сохранённые данные — создан новый профиль',
-  [ERROR_CODES.STORAGE_SAVE_FAILED]: 'Не удалось сохранить изменения на устройстве',
-  [ERROR_CODES.STORAGE_QUOTA_EXCEEDED]:
-    'Недостаточно места на устройстве — удалите лишние данные браузера',
-
-  [ERROR_CODES.ENTITY_NAME_REQUIRED]: 'Введите имя или название',
-  [ERROR_CODES.ENTITY_NAME_TOO_LONG]: 'Слишком длинное имя — сократите до {maxLen} символов',
-  [ERROR_CODES.ENTITY_CREATE_FAILED]: 'Не удалось создать ученика или группу',
-  [ERROR_CODES.ENTITY_NOT_FOUND]: 'Запись не найдена — обновите список',
-  [ERROR_CODES.ENTITY_UPDATE_FAILED]: 'Не удалось сохранить имя',
-  [ERROR_CODES.ENTITY_DELETE_LAST]: 'Нельзя удалить последнего ученика или группу',
-  [ERROR_CODES.ENTITY_DELETE_FAILED]: 'Не удалось удалить запись',
-  [ERROR_CODES.ENTITY_SWITCH_FAILED]: 'Не удалось переключить ученика или группу',
-  [ERROR_CODES.PROGRESS_SAVE_FAILED]: 'Не удалось сохранить прогресс',
-
-  [ERROR_CODES.APP_INIT_FAILED]: 'Не удалось загрузить приложение — перезагрузите страницу',
-  [ERROR_CODES.APP_UNKNOWN]: GENERIC_MESSAGE,
+const COUNT_PARAM: Partial<Record<ErrorCode, string>> = {
+  [ERROR_CODES.ENTITY_NAME_TOO_LONG]: 'maxLen',
 };
+
+const UNKNOWN_COUNT = 5;
 
 const ERROR_NAME_MAP: Record<string, ErrorCode> = {
   QuotaExceededError: ERROR_CODES.STORAGE_QUOTA_EXCEEDED,
@@ -73,14 +47,19 @@ const ERROR_NAME_MAP: Record<string, ErrorCode> = {
 };
 
 function isErrorCode(value: string): value is ErrorCode {
-  return Object.hasOwn(MESSAGES, value);
+  return (Object.values(ERROR_CODES) as string[]).includes(value);
 }
 
-function formatMessage(template: string, context: MessageContext): string {
-  return template.replace(/\{(\w+)\}/g, (_, key: string) => {
-    const value = context[key];
-    return value != null ? String(value) : `{${key}}`;
-  });
+function formatMessage(code: ErrorCode, context: MessageContext): string {
+  const params: Record<string, string | number> = {};
+  for (const [name, value] of Object.entries(context)) {
+    if (value !== null && value !== undefined) params[name] = value;
+  }
+  const countParam = COUNT_PARAM[code];
+  if (!countParam) return translate(`errors.${code}`, params);
+  const count = Number(params[countParam]);
+  params[countParam] ??= `{${countParam}}`;
+  return translate(`errors.${code}`, params, Number.isFinite(count) ? count : UNKNOWN_COUNT);
 }
 
 function mapErrorInstance(error: Error): ErrorCode | null {
@@ -106,18 +85,18 @@ function mapErrorInstance(error: Error): ErrorCode | null {
 
 export function getUserMessage(codeOrError: unknown, context: MessageContext = {}): string {
   if (typeof codeOrError === 'string') {
-    if (isErrorCode(codeOrError)) return formatMessage(MESSAGES[codeOrError], context);
+    if (isErrorCode(codeOrError)) return formatMessage(codeOrError, context);
     if (codeOrError.trim()) return codeOrError;
-    return GENERIC_MESSAGE;
+    return getGenericMessage();
   }
 
   if (codeOrError instanceof Error) {
     const mapped = mapErrorInstance(codeOrError);
     if (mapped) return getUserMessage(mapped, context);
-    return GENERIC_MESSAGE;
+    return getGenericMessage();
   }
 
-  return GENERIC_MESSAGE;
+  return getGenericMessage();
 }
 
 export function getStorageRecoveryCode(

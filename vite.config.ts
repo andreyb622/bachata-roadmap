@@ -72,5 +72,9 @@ export default defineConfig({
     }),
   ],
   resolve: { alias: { '@': decodeURIComponent(new URL('./src', import.meta.url).pathname) } },
-  test: { environment: 'happy-dom', include: ['src/**/__tests__/**/*.spec.ts'] },
+  test: {
+    environment: 'happy-dom',
+    include: ['src/**/__tests__/**/*.spec.ts'],
+    setupFiles: ['src/app/__tests__/setup-i18n.ts'],
+  },
 });

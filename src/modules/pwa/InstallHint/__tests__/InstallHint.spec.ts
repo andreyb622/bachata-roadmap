@@ -64,4 +64,15 @@ describe('InstallHint', () => {
     expect(wrapper.emitted('close')).toHaveLength(1);
     wrapper.unmount();
   });
+
+  it('renders the original Russian text', () => {
+    const wrapper = mount(InstallHint, { props: { visible: true } });
+    expect(wrapper.get('.install-hint__text').text()).toBe(
+      'Установить как приложение: Safari → Поделиться → «На экран «Домой»». Работает офлайн после первого открытия.',
+    );
+    expect(wrapper.get('[data-test="install-hint-close"]').attributes('aria-label')).toBe(
+      'Закрыть',
+    );
+    wrapper.unmount();
+  });
 });

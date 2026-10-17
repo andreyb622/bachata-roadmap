@@ -8,3 +8,4 @@ export {
   initStorage,
   setSavedTabIndex,
 } from './storage';
+export { default as profilesRu } from './i18n/ru';

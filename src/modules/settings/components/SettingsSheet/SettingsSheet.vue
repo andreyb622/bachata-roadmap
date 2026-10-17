@@ -1,23 +1,25 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import BottomSheet from '@/shared/ui/BottomSheet/BottomSheet.vue';
 import { useSettingsStore } from '../../store';
 import type { Theme } from '../../storage';
 
 const open = defineModel<boolean>('open', { default: false });
 
+const { t } = useI18n();
 const store = useSettingsStore();
 
-const options: { value: Theme; label: string }[] = [
-  { value: 'system', label: 'Как в системе' },
-  { value: 'light', label: 'Светлая' },
-  { value: 'dark', label: 'Тёмная' },
+const options: { value: Theme; labelKey: string }[] = [
+  { value: 'system', labelKey: 'settings.themeOptions.system' },
+  { value: 'light', labelKey: 'settings.themeOptions.light' },
+  { value: 'dark', labelKey: 'settings.themeOptions.dark' },
 ];
 </script>
 
 <template>
-  <BottomSheet v-model:open="open" title="Настройки">
+  <BottomSheet v-model:open="open" :title="t('settings.title')">
     <fieldset class="settings-sheet__group">
-      <legend class="settings-sheet__legend">Тема</legend>
+      <legend class="settings-sheet__legend">{{ t('settings.theme') }}</legend>
       <label
         v-for="option in options"
         :key="option.value"
@@ -31,7 +33,7 @@ const options: { value: Theme; label: string }[] = [
           :checked="store.theme === option.value"
           @change="store.setTheme(option.value)"
         />
-        <span>{{ option.label }}</span>
+        <span>{{ t(option.labelKey) }}</span>
       </label>
     </fieldset>
   </BottomSheet>

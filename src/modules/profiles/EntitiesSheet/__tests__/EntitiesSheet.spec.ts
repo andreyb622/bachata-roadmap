@@ -62,6 +62,15 @@ describe('EntitiesSheet', () => {
     expect(rows[1]?.textContent).toContain('активен');
   });
 
+  it('renders the original Russian empty state', async () => {
+    const { store } = await mountSheet();
+    store.$patch({ entities: [] });
+    await flush();
+    expect(query('[data-test="entities-empty"]')?.textContent).toBe(
+      'Пока никого нет.Откройте меню ☰ и нажмите «Новый ученик / группа».',
+    );
+  });
+
   it('refuses to delete the last entity without a dialog', async () => {
     const { store } = await mountSheet();
     query('[data-test="entity-delete"]')?.click();

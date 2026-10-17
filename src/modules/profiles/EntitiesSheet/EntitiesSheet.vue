@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRouter } from 'vue-router';
 import BottomSheet from '@/shared/ui/BottomSheet/BottomSheet.vue';
 import ConfirmDialog from '@/shared/ui/ConfirmDialog/ConfirmDialog.vue';
@@ -13,6 +14,7 @@ const emit = defineEmits<{ edit: [id: string] }>();
 
 const open = defineModel<boolean>('open', { default: false });
 
+const { t } = useI18n();
 const store = useProfilesStore();
 const router = useRouter();
 const { show, showError } = useToast();
@@ -37,7 +39,7 @@ function switchTo(id: string): void {
   }
   router.push(routeForTab(store.savedTab));
   close();
-  show(`Выбрано: ${result.value.name ?? DEFAULT_ENTITY_NAME}`);
+  show(t('profiles.toast.selected', { name: result.value.name ?? DEFAULT_ENTITY_NAME }));
 }
 
 function askDelete(id: string): void {
@@ -51,7 +53,9 @@ function askDelete(id: string): void {
     return;
   }
   deleteId.value = id;
-  deleteMessage.value = `Удалить «${entity.name ?? DEFAULT_ENTITY_NAME}»? Прогресс будет потерян.`;
+  deleteMessage.value = t('profiles.confirm.delete', {
+    name: entity.name ?? DEFAULT_ENTITY_NAME,
+  });
   isDeleteOpen.value = true;
 }
 
@@ -63,20 +67,28 @@ function confirmDelete(): void {
     showError(result.code);
     return;
   }
-  show(`Удалено: ${result.value.entity.name ?? 'запись'}`);
+  show(
+    t('profiles.toast.deleted', {
+      name: result.value.entity.name ?? t('profiles.toast.deletedFallback'),
+    }),
+  );
   if (result.value.wasActive) router.push(routeForTab(store.savedTab));
 }
 </script>
 
 <template>
-  <BottomSheet v-model:open="open" title="Ученики и группы">
-    <div
+  <BottomSheet v-model:open="open" :title="t('profiles.entities.title')">
+    <i18n-t
       v-if="store.entities.length === 0"
+      scope="global"
+      keypath="profiles.entities.empty"
+      tag="div"
       class="entities-sheet__empty"
       data-test="entities-empty"
     >
-      Пока никого нет.<br />Откройте меню <strong>☰</strong> и нажмите «Новый ученик / группа».
-    </div>
+      <template #br><br /></template>
+      <template #icon><strong>☰</strong></template>
+    </i18n-t>
     <div v-else class="entities-sheet__list">
       <div
         v-for="entity in store.entities"
@@ -93,16 +105,16 @@ function confirmDelete(): void {
         >
           <span class="entities-sheet__name">{{ entity.name ?? DEFAULT_ENTITY_NAME }}</span>
           <span class="entities-sheet__percent">{{ store.entityPercents[entity.id] ?? 0 }}%</span>
-          <span v-if="entity.id === store.activeEntityId" class="entities-sheet__badge"
-            >активен</span
-          >
+          <span v-if="entity.id === store.activeEntityId" class="entities-sheet__badge">{{
+            t('profiles.entities.active')
+          }}</span>
         </button>
         <div class="entities-sheet__actions">
           <button
             type="button"
             class="entities-sheet__action"
-            title="Редактировать"
-            aria-label="Редактировать"
+            :title="t('profiles.entities.edit')"
+            :aria-label="t('profiles.entities.edit')"
             data-test="entity-edit"
             @click="emit('edit', entity.id)"
           >
@@ -111,8 +123,8 @@ function confirmDelete(): void {
           <button
             type="button"
             class="entities-sheet__action entities-sheet__action--danger"
-            title="Удалить"
-            aria-label="Удалить"
+            :title="t('profiles.entities.delete')"
+            :aria-label="t('profiles.entities.delete')"
             data-test="entity-delete"
             @click="askDelete(entity.id)"
           >
@@ -125,7 +137,7 @@ function confirmDelete(): void {
   <ConfirmDialog
     v-model:open="isDeleteOpen"
     :message="deleteMessage"
-    confirm-label="Удалить"
+    :confirm-label="t('profiles.confirm.deleteAction')"
     @confirm="confirmDelete"
   />
 </template>
