@@ -1,119 +1,156 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import BottomSheet from '@/shared/ui/BottomSheet/BottomSheet.vue';
+
+const ELEMENT_MODULES_COUNT = 5;
+
+const { t } = useI18n();
 
 const open = defineModel<boolean>('open', { default: false });
 </script>
 
 <template>
-  <BottomSheet v-model:open="open" title="О приложении">
+  <BottomSheet v-model:open="open" :title="t('shell.about')">
     <div class="info-sheet">
       <div class="info-sheet__block">
-        <div class="info-sheet__block-title">Что это</div>
-        <p class="info-sheet__block-text">
-          <strong>Bachata Roadmap</strong> — мобильное приложение с дорожной картой занятий:
-          разминка, соло, элементы в паре и справочные блоки. Можно установить на экран «Домой» и
-          пользоваться офлайн.
-        </p>
+        <div class="info-sheet__block-title">{{ t('shell.info.what.title') }}</div>
+        <i18n-t
+          scope="global"
+          keypath="shell.info.what.text"
+          tag="p"
+          class="info-sheet__block-text"
+        >
+          <template #name
+            ><strong>{{ t('app.name') }}</strong></template
+          >
+        </i18n-t>
       </div>
 
       <div class="info-sheet__block">
-        <div class="info-sheet__block-title">Вкладки</div>
+        <div class="info-sheet__block-title">{{ t('shell.info.tabs.title') }}</div>
         <ul class="info-sheet__block-list">
-          <li><strong>3 мес / 3–5 / 6+</strong> — программа по этапам обучения</li>
-          <li><strong>Поиск</strong> — быстрый поиск элемента по названию или разделу</li>
-          <li>
-            <strong>📑 Элементы по блокам</strong> — сводный справочник по 5 модулям (в меню ☰)
-          </li>
+          <i18n-t scope="global" keypath="shell.info.tabs.program" tag="li">
+            <template #label
+              ><strong>{{ t('shell.info.tabs.programLabel') }}</strong></template
+            >
+          </i18n-t>
+          <i18n-t scope="global" keypath="shell.info.tabs.search" tag="li">
+            <template #label
+              ><strong>{{ t('search.title') }}</strong></template
+            >
+          </i18n-t>
+          <i18n-t scope="global" keypath="shell.info.tabs.elements" tag="li">
+            <template #label
+              ><strong>{{ t('shell.info.tabs.elementsLabel') }}</strong></template
+            >
+            <template #modules>{{ t('shell.info.tabs.modules', ELEMENT_MODULES_COUNT) }}</template>
+          </i18n-t>
         </ul>
       </div>
 
       <div class="info-sheet__block">
-        <div class="info-sheet__block-title">Чеклисты и прогресс</div>
+        <div class="info-sheet__block-title">{{ t('shell.info.checklists.title') }}</div>
         <ul class="info-sheet__block-list">
-          <li>Нажмите на элемент, чтобы отметить его выполненным</li>
-          <li>Повторное нажатие снимает отметку</li>
-          <li>Над списком — <strong>прогресс-бар</strong> по текущему периоду</li>
-          <li>В заголовке секции — счётчик <strong>выполнено / всего</strong></li>
+          <li>{{ t('shell.info.checklists.tap') }}</li>
+          <li>{{ t('shell.info.checklists.untap') }}</li>
+          <i18n-t scope="global" keypath="shell.info.checklists.bar" tag="li">
+            <template #label
+              ><strong>{{ t('shell.info.checklists.barLabel') }}</strong></template
+            >
+          </i18n-t>
+          <i18n-t scope="global" keypath="shell.info.checklists.counter" tag="li">
+            <template #label
+              ><strong>{{ t('shell.info.checklists.counterLabel') }}</strong></template
+            >
+          </i18n-t>
         </ul>
       </div>
 
       <div class="info-sheet__block">
-        <div class="info-sheet__block-title">Секции</div>
-        <p class="info-sheet__block-text">
-          Нажмите на заголовок раздела (Разминка, Элементы в паре и т.д.), чтобы свернуть или
-          развернуть список.
-        </p>
+        <div class="info-sheet__block-title">{{ t('shell.info.sections.title') }}</div>
+        <p class="info-sheet__block-text">{{ t('shell.info.sections.text') }}</p>
       </div>
 
       <div class="info-sheet__block">
-        <div class="info-sheet__block-title">Поиск</div>
-        <p class="info-sheet__block-text">
-          Введите название фигуры или раздела. Нажмите на результат — приложение откроет нужную
-          вкладку и период.
-        </p>
+        <div class="info-sheet__block-title">{{ t('shell.info.search.title') }}</div>
+        <p class="info-sheet__block-text">{{ t('shell.info.search.text') }}</p>
       </div>
 
       <div class="info-sheet__block">
-        <div class="info-sheet__block-title">Ученики и группы</div>
+        <div class="info-sheet__block-title">{{ t('shell.info.profiles.title') }}</div>
         <ul class="info-sheet__block-list">
-          <li>
-            В меню <strong>☰</strong> — список учеников и групп, создание, справочник и сброс
-          </li>
-          <li><strong>Ученики и группы</strong> — переключение, редактирование и удаление</li>
-          <li><strong>Новый ученик / группа</strong> — отдельный прогресс для каждого</li>
-          <li>Имя задаёте сами — это может быть человек или название группы</li>
-          <li>У каждого свой прогресс и своя последняя вкладка</li>
+          <i18n-t scope="global" keypath="shell.info.profiles.menu" tag="li">
+            <template #icon><strong>☰</strong></template>
+          </i18n-t>
+          <i18n-t scope="global" keypath="shell.info.profiles.switch" tag="li">
+            <template #label
+              ><strong>{{ t('profiles.entities.title') }}</strong></template
+            >
+          </i18n-t>
+          <i18n-t scope="global" keypath="shell.info.profiles.create" tag="li">
+            <template #label
+              ><strong>{{ t('profiles.form.createTitle') }}</strong></template
+            >
+          </i18n-t>
+          <li>{{ t('shell.info.profiles.name') }}</li>
+          <li>{{ t('shell.info.profiles.own') }}</li>
         </ul>
       </div>
 
       <div class="info-sheet__block">
-        <div class="info-sheet__block-title">Сохранение</div>
+        <div class="info-sheet__block-title">{{ t('shell.info.saving.title') }}</div>
         <ul class="info-sheet__block-list">
-          <li>
-            Прогресс, список учеников и последняя вкладка сохраняются автоматически на устройстве
-          </li>
-          <li>После первого открытия приложение работает без интернета</li>
-          <li>При каждом сохранении создаётся резервная копия на случай повреждения данных</li>
-          <li>Обновление приложения <strong>не удаляет</strong> учеников и их прогресс</li>
+          <li>{{ t('shell.info.saving.auto') }}</li>
+          <li>{{ t('shell.info.saving.offline') }}</li>
+          <li>{{ t('shell.info.saving.backup') }}</li>
+          <i18n-t scope="global" keypath="shell.info.saving.update" tag="li">
+            <template #label
+              ><strong>{{ t('shell.info.saving.updateLabel') }}</strong></template
+            >
+          </i18n-t>
         </ul>
       </div>
 
       <div class="info-sheet__block">
-        <div class="info-sheet__block-title">Обновления</div>
-        <p class="info-sheet__block-text">
-          При выходе новой версии приложение подтягивает её само при следующем открытии или возврате
-          на вкладку. Страница может перезагрузиться один раз — это нормально. Ваши данные при этом
-          сохраняются.
-        </p>
+        <div class="info-sheet__block-title">{{ t('shell.info.updates.title') }}</div>
+        <p class="info-sheet__block-text">{{ t('shell.info.updates.text') }}</p>
       </div>
 
       <div class="info-sheet__block">
-        <div class="info-sheet__block-title">Если что-то пошло не так</div>
+        <div class="info-sheet__block-title">{{ t('shell.info.problems.title') }}</div>
         <ul class="info-sheet__block-list">
-          <li>Внизу экрана появляется короткое сообщение с объяснением</li>
-          <li>Если данные повреждены — приложение попробует восстановить последнюю копию</li>
-          <li>
-            Если хранилище недоступно (режим инкогнито и т.п.) — прогресс не сохранится после
-            перезагрузки
-          </li>
-          <li>Не хватает места на устройстве — освободите память в настройках браузера</li>
+          <li>{{ t('shell.info.problems.message') }}</li>
+          <li>{{ t('shell.info.problems.corrupted') }}</li>
+          <li>{{ t('shell.info.problems.unavailable') }}</li>
+          <li>{{ t('shell.info.problems.space') }}</li>
         </ul>
       </div>
 
       <div class="info-sheet__block">
-        <div class="info-sheet__block-title">Установка на iPhone</div>
-        <p class="info-sheet__block-text">
-          Откройте ссылку в <strong>Safari</strong> → Поделиться → «На экран «Домой»». Не открывайте
-          из приложения «Файлы» — там PWA не работает.
-        </p>
+        <div class="info-sheet__block-title">{{ t('shell.info.install.title') }}</div>
+        <i18n-t
+          scope="global"
+          keypath="shell.info.install.text"
+          tag="p"
+          class="info-sheet__block-text"
+        >
+          <template #label><strong>Safari</strong></template>
+        </i18n-t>
       </div>
 
       <div class="info-sheet__block">
-        <div class="info-sheet__block-title">Сброс прогресса</div>
-        <p class="info-sheet__block-text">
-          Кнопка <strong>↺</strong> в меню сбрасывает отметки только для
-          <strong>текущего</strong> выбранного ученика или группы после подтверждения.
-        </p>
+        <div class="info-sheet__block-title">{{ t('shell.info.reset.title') }}</div>
+        <i18n-t
+          scope="global"
+          keypath="shell.info.reset.text"
+          tag="p"
+          class="info-sheet__block-text"
+        >
+          <template #icon><strong>↺</strong></template>
+          <template #label
+            ><strong>{{ t('shell.info.reset.labelCurrent') }}</strong></template
+          >
+        </i18n-t>
       </div>
     </div>
   </BottomSheet>

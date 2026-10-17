@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { nextTick, useId, useTemplateRef, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useOverlay } from '@/shared/composables/useOverlay';
 
 const { title, zLayer = 'sheet' } = defineProps<{
   title: string;
   zLayer?: 'sheet' | 'dialog';
 }>();
+
+const { t } = useI18n();
 
 const open = defineModel<boolean>('open', { default: false });
 
@@ -57,7 +60,7 @@ watch(open, async (isOpen) => {
           <button
             type="button"
             class="bottom-sheet__close"
-            aria-label="Закрыть"
+            :aria-label="t('ui.close')"
             data-test="sheet-close"
             @click="close"
           >

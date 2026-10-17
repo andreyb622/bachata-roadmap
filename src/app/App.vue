@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, useTemplateRef, watch, watchEffect } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import AppHeader from './layout/AppHeader/AppHeader.vue';
 import AppToast from '@/shared/ui/AppToast/AppToast.vue';
@@ -23,6 +24,9 @@ import {
 import { SettingsSheet, useTheme } from '@/modules/settings';
 import { InstallHint, useInstallHint } from '@/modules/pwa';
 
+const ELEMENT_MODULES_COUNT = 5;
+
+const { t } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const toast = useToast();
@@ -64,22 +68,22 @@ const variant = computed(() => route.meta.headerVariant ?? 'main');
 
 const title = computed(() =>
   variant.value === 'elements'
-    ? 'Элементы по блокам'
+    ? t('shell.elementsTitle')
     : `${APP_NAME} · ${store?.activeEntity?.name ?? DEFAULT_ENTITY_NAME}`,
 );
 
 const subtitle = computed(() => {
-  if (initFailed.value) return 'Ошибка загрузки';
-  if (variant.value === 'elements') return '5 модулей · сводный перечень';
+  if (initFailed.value) return t('shell.subtitle.loadError');
+  if (variant.value === 'elements') return t('shell.subtitle.elements', ELEMENT_MODULES_COUNT);
   const current = tab.value;
   if (current !== null && current >= 0 && current <= 2)
-    return PROGRAM[current]?.name ?? 'Программа занятий';
-  if (current === 3) return 'Поиск';
-  return 'Программа занятий';
+    return PROGRAM[current]?.name ?? t('shell.subtitle.program');
+  if (current === 3) return t('search.title');
+  return t('shell.subtitle.program');
 });
 
-const resetMessage = computed(
-  () => `Сбросить прогресс для «${store?.activeEntity?.name ?? DEFAULT_ENTITY_NAME}»?`,
+const resetMessage = computed(() =>
+  t('shell.confirm.reset', { name: store?.activeEntity?.name ?? DEFAULT_ENTITY_NAME }),
 );
 
 function onMenuSelect(action: MenuAction): void {
@@ -101,7 +105,7 @@ function onEdit(id: string): void {
 
 function onResetConfirm(): void {
   store?.clearProgress();
-  toast.show('Прогресс сброшен');
+  toast.show(t('shell.toast.progressReset'));
 }
 
 function onSelect(index: number): void {
@@ -142,7 +146,7 @@ watch(tab, (next, prev) => {
     <ConfirmDialog
       v-model:open="isResetOpen"
       :message="resetMessage"
-      confirm-label="Сбросить"
+      :confirm-label="t('shell.confirm.resetAction')"
       @confirm="onResetConfirm"
     />
   </template>

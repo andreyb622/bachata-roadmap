@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, useTemplateRef, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const props = defineProps<{ visible: boolean }>();
 
 const emit = defineEmits<{ close: [] }>();
+
+const { t } = useI18n();
 
 const rootRef = useTemplateRef<HTMLElement>('root');
 
@@ -38,14 +41,15 @@ onBeforeUnmount(clearOffset);
 
 <template>
   <div v-if="visible" ref="root" class="install-hint">
-    <p class="install-hint__text">
-      <strong>Установить как приложение:</strong> Safari → Поделиться → «На экран «Домой»». Работает
-      офлайн после первого открытия.
-    </p>
+    <i18n-t scope="global" keypath="pwa.installHint.text" tag="p" class="install-hint__text">
+      <template #title
+        ><strong>{{ t('pwa.installHint.title') }}</strong></template
+      >
+    </i18n-t>
     <button
       type="button"
       class="install-hint__close"
-      aria-label="Закрыть"
+      :aria-label="t('ui.close')"
       data-test="install-hint-close"
       @click="emit('close')"
     >

@@ -13,11 +13,20 @@ export type SearchEntry = Readonly<{
 
 export type HighlightSegment = { text: string; isMatch: boolean };
 
-export function normalizeText(text: string): string {
-  return text.toLowerCase().replaceAll('ё', 'е').trim().replace(/\s+/g, ' ');
+function foldChar(char: string, locale: string): string {
+  const lower = char.toLowerCase();
+  if (locale === 'ru') return lower === 'ё' ? 'е' : lower;
+  return lower.normalize('NFD').replace(/\p{M}/gu, '');
 }
 
-export function buildSearchIndex(program: readonly ProgramPeriod[]): SearchEntry[] {
+export function normalizeText(text: string, locale = 'ru'): string {
+  return Array.from(text.normalize('NFC'), (char) => foldChar(char, locale))
+    .join('')
+    .trim()
+    .replace(/\s+/g, ' ');
+}
+
+export function buildSearchIndex(program: readonly ProgramPeriod[], locale = 'ru'): SearchEntry[] {
   return program.flatMap((period) =>
     period.sections.flatMap((section, sectionIndex) =>
       section.items.map((item) => ({
@@ -27,15 +36,19 @@ export function buildSearchIndex(program: readonly ProgramPeriod[]): SearchEntry
         periodName: period.name,
         sectionIndex,
         sectionTitle: section.title,
-        normalizedText: normalizeText(item.text),
-        normalizedSection: normalizeText(section.title),
+        normalizedText: normalizeText(item.text, locale),
+        normalizedSection: normalizeText(section.title, locale),
       })),
     ),
   );
 }
 
-export function searchItems(index: readonly SearchEntry[], query: string): SearchEntry[] {
-  const normalizedQuery = normalizeText(query);
+export function searchItems(
+  index: readonly SearchEntry[],
+  query: string,
+  locale = 'ru',
+): SearchEntry[] {
+  const normalizedQuery = normalizeText(query, locale);
   if (!normalizedQuery) return [];
   return index.filter(
     (entry) =>
@@ -44,16 +57,21 @@ export function searchItems(index: readonly SearchEntry[], query: string): Searc
   );
 }
 
-function foldChars(text: string): string {
+function foldChars(text: string, locale: string): string {
   return Array.from(text, (char) => {
-    const folded = char.toLowerCase().replaceAll('ё', 'е');
+    const folded = foldChar(char, locale);
     return folded.length === char.length ? folded : char;
   }).join('');
 }
 
-export function getHighlightSegments(text: string, query: string): HighlightSegment[] {
-  const normalizedQuery = normalizeText(query);
-  const start = normalizedQuery ? foldChars(text).indexOf(normalizedQuery) : -1;
+export function getHighlightSegments(
+  sourceText: string,
+  query: string,
+  locale = 'ru',
+): HighlightSegment[] {
+  const text = sourceText.normalize('NFC');
+  const normalizedQuery = normalizeText(query, locale);
+  const start = normalizedQuery ? foldChars(text, locale).indexOf(normalizedQuery) : -1;
   if (start === -1) return [{ text, isMatch: false }];
 
   const end = start + normalizedQuery.length;

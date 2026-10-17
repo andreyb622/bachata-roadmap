@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import BottomSheet from '@/shared/ui/BottomSheet/BottomSheet.vue';
 
 defineProps<{
   message: string;
   confirmLabel: string;
 }>();
+
+const { t } = useI18n();
 
 const emit = defineEmits<{ confirm: [] }>();
 
@@ -29,7 +32,7 @@ function confirm(): void {
         data-test="confirm-cancel"
         @click="cancel"
       >
-        Отмена
+        {{ t('ui.cancel') }}
       </button>
       <button
         type="button"

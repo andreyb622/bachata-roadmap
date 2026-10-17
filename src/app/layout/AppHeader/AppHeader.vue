@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
 import { routeForTab } from '@/app/router';
 
 const { variant } = defineProps<{
@@ -6,6 +7,8 @@ const { variant } = defineProps<{
   subtitle: string;
   variant: 'main' | 'elements';
 }>();
+
+const { t } = useI18n();
 
 const emit = defineEmits<{ 'open-menu': [] }>();
 </script>
@@ -16,7 +19,7 @@ const emit = defineEmits<{ 'open-menu': [] }>();
       v-if="variant === 'elements'"
       :to="routeForTab(0)"
       class="app-header__btn"
-      aria-label="Назад к программе"
+      :aria-label="t('shell.back')"
       data-test="header-back"
       >←</RouterLink
     >
@@ -28,8 +31,8 @@ const emit = defineEmits<{ 'open-menu': [] }>();
       v-if="variant === 'main'"
       type="button"
       class="app-header__btn"
-      title="Меню"
-      aria-label="Меню"
+      :title="t('shell.menu')"
+      :aria-label="t('shell.menu')"
       @click="emit('open-menu')"
     >
       ☰
