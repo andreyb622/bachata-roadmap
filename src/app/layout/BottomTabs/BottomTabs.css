@@ -7,8 +7,6 @@
   height: calc(var(--safe-bottom) + var(--tab-h));
   padding-bottom: var(--safe-bottom);
   background: var(--tabbar-bg);
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
   border-top: 1px solid var(--border);
   display: flex;
 }

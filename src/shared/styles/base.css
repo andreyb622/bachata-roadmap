@@ -22,9 +22,15 @@ body {
 }
 
 html,
-body,
+body {
+  height: 100%;
+  overflow: hidden;
+}
+
 #app {
-  height: 100dvh;
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
 }
 
 .ios-hint {
