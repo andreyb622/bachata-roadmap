@@ -8,6 +8,7 @@ export default {
     back: 'Volver al programa',
     about: 'Acerca de la aplicación',
     resetProgress: 'Restablecer progreso',
+    tabs: { period0: '3 meses', period1: '3–5', period2: '6+' },
     subtitle: {
       loadError: 'Error de carga',
       program: 'Programa de clases',

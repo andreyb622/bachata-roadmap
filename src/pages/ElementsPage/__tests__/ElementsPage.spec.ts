@@ -3,7 +3,6 @@ import { flushPromises, mount } from '@vue/test-utils';
 import type { VueWrapper } from '@vue/test-utils';
 import { createPinia, setActivePinia } from 'pinia';
 import { createMemoryHistory, createRouter } from 'vue-router';
-import { ELEMENTS_PAGE } from '@/modules/elements';
 import ElementsPage from '@/pages/ElementsPage/ElementsPage.vue';
 
 let wrapper: VueWrapper | null = null;
@@ -30,7 +29,9 @@ describe('ElementsPage', () => {
 
   it('renders the intro', async () => {
     const page = await mountPage();
-    expect(page.find('.elements-page__intro').text()).toBe(ELEMENTS_PAGE.intro);
+    expect(page.find('.elements-page__intro').text()).toBe(
+      'Сводный перечень всех элементов, сгруппированный по тематическим блокам. Без распределения по занятиям.',
+    );
   });
 
   it('renders module badges and the solo table badge', async () => {

@@ -6,6 +6,7 @@ export default {
     back: 'Назад к программе',
     about: 'О приложении',
     resetProgress: 'Сбросить прогресс',
+    tabs: { period0: '3 мес', period1: '3–5', period2: '6+' },
     subtitle: {
       loadError: 'Ошибка загрузки',
       program: 'Программа занятий',

@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia';
 import { computed, nextTick, onBeforeUnmount, ref, useTemplateRef, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import { useRoute, useRouter } from 'vue-router';
 import ProgressBar from '@/shared/ui/ProgressBar/ProgressBar.vue';
 import SectionCard from '@/shared/ui/SectionCard/SectionCard.vue';
 import {
   ChecklistItem,
-  PROGRAM,
+  getLocalizedProgram,
   periodPercent,
   sectionCounter,
   useSectionCollapse,
@@ -16,10 +17,11 @@ import { useProfilesStore } from '@/modules/profiles';
 
 const HIGHLIGHT_DURATION_MS = 2000;
 
+const { locale } = useI18n();
 const route = useRoute();
 const router = useRouter();
 const pageRef = useTemplateRef<HTMLElement>('page');
-const period = computed(() => PROGRAM[Number(route.params.period)]);
+const period = computed(() => getLocalizedProgram(locale.value)[Number(route.params.period)]);
 
 const store = useProfilesStore();
 const { activeProgress } = storeToRefs(store);

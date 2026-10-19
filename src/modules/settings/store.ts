@@ -1,5 +1,7 @@
 import { ref } from 'vue';
 import { defineStore } from 'pinia';
+import { isLocaleSwitchEnabled } from '@/shared/config/locales';
+import { readBrowserLanguages, resolveFirstLaunchLocale } from './locale';
 import { LOCALES, loadSettings, resolveDefaultTheme, saveSettings, THEMES } from './storage';
 import type { Locale, Settings, Theme } from './storage';
 
@@ -15,7 +17,11 @@ export const useSettingsStore = defineStore('settings', () => {
     const loaded = loadSettings();
     if (loaded === null) {
       theme.value = resolveDefaultTheme(hasExistingState);
-      locale.value = LOCALES.system;
+      locale.value = resolveFirstLaunchLocale(
+        hasExistingState,
+        readBrowserLanguages(),
+        isLocaleSwitchEnabled(),
+      );
       saveSettings(toSettings());
       return;
     }

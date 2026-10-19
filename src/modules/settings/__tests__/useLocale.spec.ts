@@ -39,9 +39,28 @@ describe('useLocale', () => {
     vi.unstubAllGlobals();
   });
 
-  it('resolves to ru while locales are disabled', () => {
-    useSettingsStore().init(false);
+  it('resolves a released payload to ru for an existing user', () => {
+    localStorage.setItem(
+      'bachata-settings-v1',
+      JSON.stringify({ version: 1, theme: 'system', locale: 'system' }),
+    );
     vi.stubGlobal('navigator', { languages: ['en-US'], language: 'en-US' });
-    expect(useLocale(false).value).toBe('ru');
+    useSettingsStore().init(true);
+    expect(useLocale(true).value).toBe('ru');
+  });
+
+  it('resolves the phone language for a new user', () => {
+    vi.stubGlobal('navigator', { languages: ['es-ES'], language: 'es-ES' });
+    useSettingsStore().init(false);
+    expect(useLocale(false).value).toBe('es');
+  });
+
+  it('keeps the persisted phone locale on the second launch', () => {
+    vi.stubGlobal('navigator', { languages: ['es-ES'], language: 'es-ES' });
+    useSettingsStore().init(false);
+    setActivePinia(createPinia());
+    useSettingsStore().init(true);
+    expect(useLocale(true).value).toBe('es');
+    expect(useSettingsStore().locale).toBe('es');
   });
 });

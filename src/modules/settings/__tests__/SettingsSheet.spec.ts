@@ -5,6 +5,13 @@ import { createPinia, setActivePinia } from 'pinia';
 import SettingsSheet from '../components/SettingsSheet/SettingsSheet.vue';
 import { useSettingsStore } from '../store';
 
+const localeSwitch = vi.hoisted(() => ({ enabled: true }));
+
+vi.mock('@/shared/config/locales', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/shared/config/locales')>()),
+  isLocaleSwitchEnabled: () => localeSwitch.enabled,
+}));
+
 let wrapper: VueWrapper | null = null;
 
 describe('SettingsSheet', () => {
@@ -19,17 +26,21 @@ describe('SettingsSheet', () => {
     wrapper?.unmount();
     wrapper = null;
     localStorage.clear();
-    vi.unstubAllEnvs();
+    localeSwitch.enabled = true;
   });
 
-  it('hides the language control by default', () => {
+  it('shows the language control when the locale switch is enabled', () => {
+    expect(document.body.querySelector('[data-test="locale-ru"]')).not.toBeNull();
+  });
+
+  it('hides the language control when the locale switch is disabled', () => {
+    wrapper?.unmount();
+    localeSwitch.enabled = false;
+    wrapper = mount(SettingsSheet, { props: { open: true }, attachTo: document.body });
     expect(document.body.querySelector('[data-test="locale-ru"]')).toBeNull();
   });
 
-  it('shows the language control in development and saves the chosen locale', () => {
-    wrapper?.unmount();
-    vi.stubEnv('MODE', 'development');
-    wrapper = mount(SettingsSheet, { props: { open: true }, attachTo: document.body });
+  it('lists the locales and saves the chosen locale when the switch is enabled', () => {
     const labels = [...document.body.querySelectorAll('[data-test^="locale-"]')].map((label) =>
       label.textContent?.trim(),
     );
@@ -40,7 +51,7 @@ describe('SettingsSheet', () => {
   });
 
   it('renders three theme radios with the system one checked', () => {
-    const labels = [...document.body.querySelectorAll('.settings-sheet__option')].map((label) =>
+    const labels = [...document.body.querySelectorAll('[data-test^="theme-"]')].map((label) =>
       label.textContent?.trim(),
     );
     expect(labels).toEqual(['Как в системе', 'Светлая', 'Тёмная']);

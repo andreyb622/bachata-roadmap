@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { PROGRAM, getAllItemIds } from '@/modules/program';
-import type { ProgramPeriod } from '@/modules/program';
+import { PROGRAM, getAllItemIds, getLocalizedProgram } from '@/modules/program';
+import type { LocalizedPeriod } from '@/modules/program';
 import { buildSearchIndex, getHighlightSegments, normalizeText, searchItems } from '../search';
 
 describe('normalizeText', () => {
@@ -17,13 +17,13 @@ describe('normalizeText', () => {
 
 describe('buildSearchIndex', () => {
   it('has one entry per item with stable ids', () => {
-    const index = buildSearchIndex(PROGRAM);
+    const index = buildSearchIndex(getLocalizedProgram('ru'));
     expect(index.map((entry) => entry.id)).toEqual(getAllItemIds(PROGRAM));
   });
 });
 
 describe('searchItems', () => {
-  const index = buildSearchIndex(PROGRAM);
+  const index = buildSearchIndex(getLocalizedProgram('ru'));
 
   it.each([[''], ['   ']])('returns nothing for query %j', (query) => {
     expect(searchItems(index, query)).toEqual([]);
@@ -35,18 +35,18 @@ describe('searchItems', () => {
   });
 
   it('treats ё and е as equal in both directions', () => {
-    const program: ProgramPeriod[] = [
+    const program: LocalizedPeriod[] = [
       {
         id: 0,
         badge: '',
         name: 'p',
-        sections: [{ title: 'S', items: [{ id: 'a', text: 'Всё' }] }],
+        sections: [{ id: 'x-0', title: 'S', items: [{ id: 'a', text: 'Всё' }] }],
       },
       {
         id: 1,
         badge: '',
         name: 'p',
-        sections: [{ title: 'S', items: [{ id: 'b', text: 'Все' }] }],
+        sections: [{ id: 'x-1', title: 'S', items: [{ id: 'b', text: 'Все' }] }],
       },
     ];
     const plain = buildSearchIndex(program);
@@ -131,10 +131,17 @@ describe('per-locale search', () => {
     ]);
   });
 
-  it('finds the same ids in en as in ru for a plain russian query', () => {
+  it('finds the same ids in xx as in ru for a plain russian query', () => {
     const query = 'перенос веса';
-    const enIds = searchItems(buildSearchIndex(PROGRAM, 'en'), query, 'en').map((e) => e.id);
-    const ruIds = searchItems(buildSearchIndex(PROGRAM), query).map((e) => e.id);
-    expect(enIds).toEqual(ruIds);
+    const xxIds = searchItems(buildSearchIndex(getLocalizedProgram('xx'), 'xx'), query, 'xx').map(
+      (e) => e.id,
+    );
+    const ruIds = searchItems(buildSearchIndex(getLocalizedProgram('ru')), query).map((e) => e.id);
+    expect(xxIds).toEqual(ruIds);
+  });
+
+  it('finds en content by an english query', () => {
+    const index = buildSearchIndex(getLocalizedProgram('en'), 'en');
+    expect(searchItems(index, 'windmill', 'en').map((entry) => entry.id)).toContain('1-2-8');
   });
 });

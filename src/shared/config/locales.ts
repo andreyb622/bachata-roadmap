@@ -1,5 +1,5 @@
-/** Locale switching is off in production: production stays ru-only until the owner enables locales. */
-export const LOCALES_ENABLED = false;
+/** Locale switching is on in production; the development override stays so the flag can be flipped back. */
+export const LOCALES_ENABLED = true;
 
 export function isLocaleSwitchEnabled(): boolean {
   return LOCALES_ENABLED || import.meta.env.MODE === 'development';

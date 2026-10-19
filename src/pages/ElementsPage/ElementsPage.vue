@@ -1,15 +1,23 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 import SectionCard from '@/shared/ui/SectionCard/SectionCard.vue';
-import { ELEMENT_MODULES, ELEMENTS_PAGE, SOLO_ELEMENTS_TABLE } from '@/modules/elements';
+import { getLocalizedElements } from '@/modules/elements';
 
 const SOLO_KEY = 'solo';
 
-const sectionKey = (moduleIndex: number, sectionIndex: number) =>
-  `m${moduleIndex}-s${sectionIndex}`;
+const { locale } = useI18n();
+const elements = computed(() => getLocalizedElements(locale.value));
+
+const sectionKey = (moduleKey: string, sectionKeyPart: string) => `${moduleKey}/${sectionKeyPart}`;
 
 const openKeys = ref<Set<string>>(
-  new Set([...ELEMENT_MODULES.map((_, moduleIndex) => sectionKey(moduleIndex, 0)), SOLO_KEY]),
+  new Set([
+    ...elements.value.modules.flatMap((module) =>
+      module.sections.slice(0, 1).map((section) => sectionKey(module.key, section.key)),
+    ),
+    SOLO_KEY,
+  ]),
 );
 
 function toggle(key: string) {
@@ -21,37 +29,33 @@ function toggle(key: string) {
 
 <template>
   <section class="elements-page">
-    <p class="elements-page__intro">{{ ELEMENTS_PAGE.intro }}</p>
-    <template v-for="(module, moduleIndex) in ELEMENT_MODULES" :key="module.title">
+    <p class="elements-page__intro">{{ elements.intro }}</p>
+    <template v-for="module in elements.modules" :key="module.key">
       <div class="elements-page__badge">{{ module.title }}</div>
       <SectionCard
-        v-for="(section, sectionIndex) in module.sections"
-        :key="sectionKey(moduleIndex, sectionIndex)"
+        v-for="section in module.sections"
+        :key="sectionKey(module.key, section.key)"
         variant="catalog"
         :title="section.title"
         :counter="String(section.items.length)"
-        :open="openKeys.has(sectionKey(moduleIndex, sectionIndex))"
-        @toggle="toggle(sectionKey(moduleIndex, sectionIndex))"
+        :open="openKeys.has(sectionKey(module.key, section.key))"
+        @toggle="toggle(sectionKey(module.key, section.key))"
       >
         <ul class="elements-page__list">
-          <li
-            v-for="(item, itemIndex) in section.items"
-            :key="itemIndex"
-            class="elements-page__item"
-          >
+          <li v-for="item in section.items" :key="item.key" class="elements-page__item">
             {{ item.text
-            }}<template v-if="'note' in item"
+            }}<template v-if="item.note"
               >{{ ' ' }}<em class="elements-page__note">{{ item.note }}</em></template
             >
           </li>
         </ul>
       </SectionCard>
     </template>
-    <div class="elements-page__badge">{{ SOLO_ELEMENTS_TABLE.badge }}</div>
+    <div class="elements-page__badge">{{ elements.solo.badge }}</div>
     <SectionCard
       variant="catalog"
-      :title="SOLO_ELEMENTS_TABLE.title"
-      :counter="String(SOLO_ELEMENTS_TABLE.rows.length)"
+      :title="elements.solo.title"
+      :counter="String(elements.solo.rows.length)"
       :open="openKeys.has(SOLO_KEY)"
       @toggle="toggle(SOLO_KEY)"
     >
@@ -59,11 +63,11 @@ function toggle(key: string) {
         <table class="elements-page__table">
           <thead>
             <tr>
-              <th v-for="column in SOLO_ELEMENTS_TABLE.columns" :key="column">{{ column }}</th>
+              <th v-for="column in elements.solo.columns" :key="column">{{ column }}</th>
             </tr>
           </thead>
           <tbody>
-            <tr v-for="row in SOLO_ELEMENTS_TABLE.rows" :key="row.num">
+            <tr v-for="row in elements.solo.rows" :key="row.key">
               <td class="elements-page__num">{{ row.num }}</td>
               <td>{{ row.name }}</td>
               <td>{{ row.module }}</td>
