@@ -35,11 +35,29 @@ describe('settings store', () => {
     expect(readStored()).toEqual({ version: 1, theme: 'dark', locale: 'system' });
   });
 
-  it('defaults to system for new users and persists it', () => {
+  it('defaults a new user to system theme and the phone locale', () => {
+    vi.stubGlobal('navigator', { languages: ['es-ES'], language: 'es-ES' });
     const store = useSettingsStore();
     store.init(false);
     expect(store.theme).toBe('system');
-    expect(readStored()).toEqual({ version: 1, theme: 'system', locale: 'system' });
+    expect(store.locale).toBe('es');
+    expect(readStored()).toEqual({ version: 1, theme: 'system', locale: 'es' });
+  });
+
+  it('keeps system locale for an existing user without settings', () => {
+    vi.stubGlobal('navigator', { languages: ['es-ES'], language: 'es-ES' });
+    useSettingsStore().init(true);
+    expect(readStored()).toEqual({ version: 1, theme: 'dark', locale: 'system' });
+  });
+
+  it.each(['system', 'light', 'dark'])('keeps a released %s payload untouched', (theme) => {
+    const original = JSON.stringify({ version: 1, theme, locale: 'system' });
+    localStorage.setItem(SETTINGS_KEY, original);
+    vi.stubGlobal('navigator', { languages: ['es-ES'], language: 'es-ES' });
+    const store = useSettingsStore();
+    store.init(true);
+    expect(store.locale).toBe('system');
+    expect(localStorage.getItem(SETTINGS_KEY)).toBe(original);
   });
 
   it('overwrites a corrupt payload with defaults', () => {
