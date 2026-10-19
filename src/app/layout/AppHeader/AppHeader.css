@@ -8,8 +8,6 @@
   padding: var(--safe-top) 16px 0;
   background: var(--header-bg);
   color: var(--header-text);
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
   border-bottom: 1px solid var(--header-border);
   display: flex;
   align-items: center;
